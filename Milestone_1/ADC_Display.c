@@ -23,6 +23,7 @@
 #include "utils/ustdlib.h"
 #include "circBufT.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+#include "buttons4.h"
 
 //*****************************************************************************
 // Constants
@@ -145,21 +146,40 @@ initDisplay (void)
 // Function to display the mean ADC value (10-bit value, note) and sample count.
 //
 //*****************************************************************************
+
 void
-displayMeanVal(uint16_t meanVal, uint32_t count, int32_t initial_ADC_val)
+displayMeanVal(uint16_t meanVal, uint32_t initial_ADC_Val)
 {
     char string[17];  // 16 characters across the display
 
     // Form a new string for the line.  The maximum width specified for the
     //  number field ensures it is displayed right justified.
-    usnprintf (string, sizeof(string), "Init ADC = %4d", initial_ADC_val);
-    OLEDStringDraw (string, 0, 0);
     usnprintf (string, sizeof(string), "Mean ADC = %4d", meanVal);
     // Update line on display.
     OLEDStringDraw (string, 0, 1);
+}
 
-    usnprintf (string, sizeof(string), "Sample # %5d", count);
-    OLEDStringDraw (string, 0, 3);
+
+
+void displayAltitude_Perc(uint16_t meanVal, uint32_t initial_ADC_Val)
+{
+    uint16_t altitude_percent;
+    char string[17];
+
+    altitude_percent = ((meanVal * 1000) / 4095 + initial_ADC_Val);
+
+    usnprintf (string, sizeof(string), "Altitude = %2d %", altitude_percent);
+    OLEDStringDraw(string, 0, 0);
+
+}
+
+
+void displayNothing(void)
+{
+    OLEDStringDraw("                ", 0, 0);
+    OLEDStringDraw("                ", 0, 1);
+    OLEDStringDraw("                ", 0, 2);
+    OLEDStringDraw("                ", 0, 3);
 }
 
 int
@@ -171,27 +191,73 @@ main(void)
     initADC ();
     initDisplay ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
+    //uint16_t count = 0;
 
     sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-    int32_t initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+    SysCtlDelay(SysCtlClockGet() /10);
+
     sum = 0;
 
+    initButtons();
+
+
+    typedef enum {
+        STATE_PERC,       // display altitude percentages state
+        STATE_MEAN_ADC_VAL,     // display mean adc values state
+        STATE_OFF,        // screen off state
+    } display_state_t;
+
+
+
+    display_state_t current_state;
+    current_state = STATE_PERC; //initialize display state
     //
     // Enable interrupts to the processor.
     IntMasterEnable();
 
     while (1)
     {
+        updateButtons();
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
         sum = 0;
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+        int32_t initial_ADC_val = 0;    // initialize first value
 
-        // Calculate and display the rounded mean of the buffer contents
-        displayMeanVal ((2 * sum + BUF_SIZE) / 2 / BUF_SIZE, g_ulSampCnt, initial_ADC_val);
+       /*if (count > 20) */
+       switch(current_state)
+       {
+       case STATE_PERC:
+           displayAltitude_Perc((2 * sum + BUF_SIZE) / 2 / BUF_SIZE, initial_ADC_val);
+           break;
+       case STATE_MEAN_ADC_VAL:
+           // Calculate and display the rounded mean of the buffer contents
+           displayMeanVal ((2 * sum + BUF_SIZE) / 2 / BUF_SIZE, initial_ADC_val);
+           break;
+       case STATE_OFF:
+           displayNothing();
+           break;
+       }
+
+       if (checkButton(UP) == PUSHED)
+       {
+           if (current_state < STATE_OFF) {
+               current_state++;
+           }
+
+       }else if (checkButton(DOWN) == PUSHED)
+       {
+           if (current_state > 0) {
+               current_state--;
+           }
+       }
+
 
         SysCtlDelay (SysCtlClockGet() / 6);  // Update display at ~ 2 Hz
+
+
+        //count++;
     }
 }
 
