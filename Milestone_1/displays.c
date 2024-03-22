@@ -54,7 +54,7 @@ displayNothing(void)
 void
 displayADCVal(uint32_t ADC_val)
 {
-    //displayNothing();
+    displayNothing();
     char string[17];  // 16 characters across the display
 
     // Form a new string for the line.  The maximum width specified for the
@@ -68,7 +68,7 @@ displayADCVal(uint32_t ADC_val)
 void
 displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_Val)
 {
-    //displayNothing();
+    displayNothing();
     uint32_t altitude_percent;
     char string[17];
 

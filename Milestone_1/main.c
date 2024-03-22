@@ -36,6 +36,12 @@
 //*****************************************************************************
 #define BUF_SIZE 10
 
+typedef enum {
+
+    STATE_PERC,             // display altitude percentages state
+    STATE_MEAN_ADC_VAL,     // display mean adc values state
+    STATE_OFF,              // screen off state
+} display_state_t;
 
 int
 main(void)
@@ -47,21 +53,12 @@ main(void)
     initADC ();
     initDisplay ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
-    //uint16_t count = 0;
+    initButtons();
+
+    // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6);
     sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
     initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
-    displayADCVal (initial_ADC_val);
-
-    initButtons();
-
-
-    typedef enum {
-        STATE_PERC,             // display altitude percentages state
-        STATE_MEAN_ADC_VAL,     // display mean adc values state
-        STATE_OFF,              // screen off state
-    } display_state_t;
-
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
@@ -77,7 +74,6 @@ main(void)
         // circular buffer and display it, together with the sample number.
         sum = 0;
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-        displayADCVal ((2 * sum + BUF_SIZE) / 2 / BUF_SIZE);
 
        switch(current_state)
        {
@@ -92,25 +88,19 @@ main(void)
            displayNothing();
            break;
        }
-
        if (checkButton(UP) == PUSHED)
        {
            if (current_state < STATE_OFF) {
                current_state++;
            }
-
-       } else if (checkButton(DOWN) == PUSHED)
-       {
-           if (current_state > 0) {
-               current_state--;
+           else {
+               current_state = STATE_PERC;
            }
        }
 
 
         SysCtlDelay (SysCtlClockGet() / 6);  // Update display at ~ 2 Hz
 
-
-        //count++;
     }
 }
 
