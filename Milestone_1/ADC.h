@@ -15,6 +15,7 @@
 
 #include "circBuffer.h"
 
+extern circBuf_t g_inBuffer;
 
 void
 SysTickIntHandler(void);

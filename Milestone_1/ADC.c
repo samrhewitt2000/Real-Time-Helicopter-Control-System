@@ -37,7 +37,7 @@
 //static circBuf_t *g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 //moved this to ADC.h as extern
 
-
+circBuf_t g_inBuffer;
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
 //*****************************************************************************

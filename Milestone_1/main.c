@@ -41,18 +41,18 @@ int
 main(void)
 {
     uint32_t sum = 0;
+    uint32_t initial_ADC_val = 0;    // initialize first value
 
     initClock ();
     initADC ();
     initDisplay ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
     //uint16_t count = 0;
-
-    int32_t initial_ADC_val = 0;    // initialize first value
-    initial_ADC_val = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+    SysCtlDelay (SysCtlClockGet() / 6);
+    sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+    initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
     displayADCVal (initial_ADC_val);
 
-    SysCtlDelay(SysCtlClockGet() /10);
     initButtons();
 
 
@@ -61,7 +61,6 @@ main(void)
         STATE_MEAN_ADC_VAL,     // display mean adc values state
         STATE_OFF,              // screen off state
     } display_state_t;
-
 
 
     display_state_t current_state;
@@ -78,8 +77,8 @@ main(void)
         // circular buffer and display it, together with the sample number.
         sum = 0;
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+        displayADCVal ((2 * sum + BUF_SIZE) / 2 / BUF_SIZE);
 
-       /*if (count > 20) */
        switch(current_state)
        {
        case STATE_PERC:
@@ -114,3 +113,4 @@ main(void)
         //count++;
     }
 }
+

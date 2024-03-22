@@ -22,7 +22,7 @@ typedef struct {
 	uint32_t *data;		// pointer to the data
 } circBuf_t;
 
-static circBuf_t g_inBuffer;
+//static circBuf_t g_inBuffer;
 
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
