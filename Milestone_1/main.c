@@ -46,8 +46,8 @@ typedef enum {
 int
 main(void)
 {
-    uint32_t sum = 0;
-    uint32_t initial_ADC_val = 0;    // initialize first value
+    int32_t sum = 0;
+    int32_t initial_ADC_val = 0;    // initialize first value
     initButtons();
 
     initClock ();

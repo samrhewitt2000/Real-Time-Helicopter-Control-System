@@ -18,10 +18,10 @@ void
 initDisplay (void);
 
 void
-displayADCVal(uint32_t current_ADC_val);
+displayADCVal(int32_t current_ADC_val);
 
 void
-displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_val);
+displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val);
 
 void
 displayNothing(void);
