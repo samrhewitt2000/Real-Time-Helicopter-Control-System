@@ -90,7 +90,7 @@ main(void)
        }
        if (checkButton(UP) == PUSHED)
        {
-           if (current_state < STATE_OFF) {
+           if (current_state != STATE_OFF) {
                current_state++;
            }
            else {
@@ -99,7 +99,7 @@ main(void)
        }
 
 
-        SysCtlDelay (SysCtlClockGet() / 6);  // Update display at ~ 2 Hz
+        SysCtlDelay (SysCtlClockGet() / 12);  // Update display at ~ 2 Hz
 
     }
 }

@@ -21,7 +21,7 @@ void
 displayADCVal(uint32_t current_ADC_val);
 
 void
-displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_Val);
+displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_val);
 
 void
 displayNothing(void);

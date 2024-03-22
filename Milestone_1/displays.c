@@ -66,15 +66,17 @@ displayADCVal(uint32_t ADC_val)
 
 
 void
-displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_Val)
+displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_val)
 {
     displayNothing();
-    uint32_t altitude_percent;
     char string[17];
 
-    altitude_percent = ((current_ADC_val * 1000) / 4095 + initial_ADC_Val);
-    //altitude_percent = initial_ADC_Val;
-
+    uint32_t altitude_percent;
+    if (current_ADC_val < initial_ADC_val) {
+        altitude_percent = ((current_ADC_val - initial_ADC_val) / 4095 - initial_ADC_val);
+    } else {
+        altitude_percent = 0;
+    }
     usnprintf (string, sizeof(string), "Alt: %2d percent", altitude_percent);
     OLEDStringDraw(string, 0, 0);
 }
