@@ -54,7 +54,7 @@ displayNothing(void)
 void
 displayADCVal(int32_t ADC_val)
 {
-    displayNothing();
+
     char string[17];  // 16 characters across the display
 
     // Form a new string for the line.  The maximum width specified for the
@@ -68,12 +68,12 @@ displayADCVal(int32_t ADC_val)
 void
 displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val)
 {
-    displayNothing();
+
     char string[17];
 
     int32_t altitude_percent;
 
     altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
-    usnprintf (string, sizeof(string), "Alt: %2d percent", altitude_percent);
-    OLEDStringDraw(string, 0, 0);
+    usnprintf (string, sizeof(string), "Alt: %2d      ", altitude_percent);
+    OLEDStringDraw(string, 0, 1);
 }

@@ -75,7 +75,7 @@ main(void)
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
 
         if (checkButton(LEFT) == PUSHED) {
-            initial_ADC_val = sum;
+            initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
         }
 
        switch(current_state)
@@ -102,7 +102,7 @@ main(void)
        }
 
 
-        SysCtlDelay (SysCtlClockGet() / 12);  // Update display at ~ 2 Hz
+        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
 
     }
 }
