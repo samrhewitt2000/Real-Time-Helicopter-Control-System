@@ -73,7 +73,9 @@ displayAltitudePerc(uint32_t current_ADC_val, uint32_t initial_ADC_val)
 
     uint32_t altitude_percent;
     if (current_ADC_val < initial_ADC_val) {
-        altitude_percent = ((current_ADC_val - initial_ADC_val) / 4095 - initial_ADC_val);
+        //altitude_percent = ((current_ADC_val - initial_ADC_val) / 4095 - initial_ADC_val);
+        altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
+        //altitude_percent = (400 * (current_ADC_val - initial_ADC_val)) / 4095;
     } else {
         altitude_percent = 0;
     }

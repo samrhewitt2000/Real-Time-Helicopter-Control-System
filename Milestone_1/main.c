@@ -48,12 +48,12 @@ main(void)
 {
     uint32_t sum = 0;
     uint32_t initial_ADC_val = 0;    // initialize first value
+    initButtons();
 
     initClock ();
     initADC ();
     initDisplay ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
-    initButtons();
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6);
@@ -68,12 +68,15 @@ main(void)
 
     while (1)
     {
-        updateButtons();
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
         sum = 0;
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+
+        if (checkButton(LEFT) == PUSHED) {
+            initial_ADC_val = sum;
+        }
 
        switch(current_state)
        {

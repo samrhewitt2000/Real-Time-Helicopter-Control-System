@@ -52,6 +52,7 @@ SysTickIntHandler(void)
     // Initiate a conversion
     //
     ADCProcessorTrigger(ADC0_BASE, 3); 
+    updateButtons();
     g_ulSampCnt++;
 }
 
