@@ -46,20 +46,17 @@ typedef enum {
 int
 main(void)
 {
-    int32_t sum = 0;
     int32_t initial_ADC_val = 0;    // initialize first value
+    
     initButtons();
-
     initClock ();
     initADC ();
     initDisplay ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     // calculate exactly how long this needs to be
-    SysCtlDelay (SysCtlClockGet() / 6);
-    sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-    current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
-    initial_ADC_val = current_ADC_val;
+    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
@@ -72,9 +69,7 @@ main(void)
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
-        sum = 0;
-        sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-        current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
         if (checkButton(LEFT) == PUSHED) {
             initial_ADC_val = current_ADC_val;
