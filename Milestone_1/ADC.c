@@ -144,7 +144,7 @@ initADC (void)
 //
 //*****************************************************************************
 int32_t
-update_ADC_val(circBuf_t *buffer, uint32_t buf_size)
+get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
 {
     int32_t sum = 0;
     sum = sum_CircBuf_vals (sum, &buffer, buf_size);
