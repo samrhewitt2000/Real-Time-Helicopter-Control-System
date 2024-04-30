@@ -58,7 +58,8 @@ main(void)
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6);
     sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-    initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+    current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+    initial_ADC_val = current_ADC_val;
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
@@ -73,19 +74,20 @@ main(void)
         // circular buffer and display it, together with the sample number.
         sum = 0;
         sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
+        current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
 
         if (checkButton(LEFT) == PUSHED) {
-            initial_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+            initial_ADC_val = current_ADC_val;
         }
 
        switch(current_state)
        {
        case STATE_PERC:
-           displayAltitudePerc((2 * sum + BUF_SIZE) / 2 / BUF_SIZE, initial_ADC_val);
+           displayAltitudePerc(current_ADC_val, initial_ADC_val);
            break;
        case STATE_MEAN_ADC_VAL:
            // Calculate and display the rounded mean of the buffer contents
-           displayADCVal ((2 * sum + BUF_SIZE) / 2 / BUF_SIZE);
+           displayADCVal (current_ADC_val);
            break;
        case STATE_OFF:
            displayNothing();
