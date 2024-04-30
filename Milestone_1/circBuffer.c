@@ -74,9 +74,9 @@ freeCircBuf (circBuf_t * buffer)
 }
 
 // *******************************************************
-// loopCircBuf:
+// sum_CircBuf_vals:
 uint32_t
-loopCircBuf (uint32_t sum, circBuf_t *buffer, uint32_t buf_size)
+sum_CircBuf_vals (uint32_t sum, circBuf_t *buffer, uint32_t buf_size)
 {
     uint16_t i;
     for (i = 0; i < buf_size; i++) {
