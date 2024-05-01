@@ -1,5 +1,5 @@
 //*****************************************************************************
-//
+//THIS IS MILESTONE 2
 // main.c - main logic for the Tiva board
 //
 // Author:  Caleb Westbury & Sam
