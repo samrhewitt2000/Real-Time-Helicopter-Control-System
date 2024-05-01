@@ -147,6 +147,6 @@ int32_t
 get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
 {
     int32_t sum = 0;
-    sum = sum_CircBuf_vals (sum, &buffer, buf_size);
+    sum = sum_CircBuf_vals (sum, buffer, buf_size);
     return (2 * sum + buf_size) / 2 / buf_size;
 }
