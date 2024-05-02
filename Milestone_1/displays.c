@@ -85,6 +85,8 @@ displayYaw(uint32_t display_col, uint32_t display_row)
 
     char string[17];
     //print yaw angle
-    usnprintf (string, sizeof(string), "Yaw: %d.0", (10 * yaw_angle / 10), );   //(10 * yaw_angle % 10) for decimal point not sure
+    usnprintf (string, sizeof(string), "Yaw: %d.%d", (10 * yaw_angle / 10), (10 * yaw_angle % 10));//    , (10 * yaw_angle % 10)   remove this part if it doesnt work
     OLEDStringDraw (string, display_col, display_row);
+
+    
 }
