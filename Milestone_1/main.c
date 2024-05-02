@@ -47,7 +47,7 @@ typedef enum {
 
 int
 main(void)
-git {
+{
     int32_t initial_ADC_val = 0;    // initialize first value
     int32_t current_ADC_val = 0;    // initialize first value
     
@@ -88,7 +88,7 @@ git {
        {
        case STATE_PERC:
            displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
-           displayYaw(current_ADC_val, initial_ADC_val, 0, 2);
+           displayYaw(yaw_angle, 0, 2);
            break;
        case STATE_MEAN_ADC_VAL:
            // Calculate and display the rounded mean of the buffer contents

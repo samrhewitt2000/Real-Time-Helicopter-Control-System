@@ -27,6 +27,8 @@ typedef struct {
 sorry had to leave feel free to delete probs easier way
 */
 
+volatile static int32_t yaw_angle = 0;  // Global variable to store yaw angle
+
 void
 PB0_IntHandler(void);
 

@@ -15,7 +15,7 @@
 #include "driverlib/interrupt.h"
 #include "yaw.h"
 
-volatile int32_t yaw_angle = 0;  // Global variable to store yaw angle
+//volatile int32_t yaw_angle = 0;  // Global variable to store yaw angle
 
 void PB0_IntHandler(void)
 {

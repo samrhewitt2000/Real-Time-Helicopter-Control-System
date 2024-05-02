@@ -79,12 +79,11 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t d
 }
 
 void
-displayYaw(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
+displayYaw(int32_t yaw, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];
 
-    int32_t yaw = current_ADC_val - initial_ADC_val;
     usnprintf (string, sizeof(string), "Yaw: %2d      ", yaw);
     OLEDStringDraw (string, display_col, display_row);
 }
