@@ -51,7 +51,7 @@ typedef enum {
 
 int
 main(void)
-{
+ {
     int32_t initial_ADC_val = 0;    // initialize first value
     int32_t current_ADC_val = 0;    // initialize first value
     
