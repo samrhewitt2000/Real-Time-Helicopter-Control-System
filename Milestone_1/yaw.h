@@ -27,9 +27,13 @@ typedef struct {
 sorry had to leave feel free to delete probs easier way
 */
 
+void
+PB0_IntHandler(void);
 
 void
-PORTBIntHandler(void);
+PB1_IntHandler(void);
 
+void
+initYaw (void);
 
 #endif /* YAW_H_ */

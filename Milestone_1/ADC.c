@@ -1,6 +1,6 @@
 //*****************************************************************************
 //
-// ADCdemo1.c - Simple interrupt driven program which samples with AIN0
+// ADC.c - Simple interrupt driven program which samples with AIN0
 //
 // Author:  P.J. Bones  UCECE
 // Last modified:   8.2.2018

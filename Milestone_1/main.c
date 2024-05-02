@@ -30,6 +30,8 @@
 #include "ADC.h"
 #include "buttons5.h"
 
+#include "yaw.h"
+
 
 //*****************************************************************************
 // Constants
@@ -45,17 +47,23 @@ typedef enum {
 
 int
 main(void)
-{
+git {
     int32_t initial_ADC_val = 0;    // initialize first value
+    int32_t current_ADC_val = 0;    // initialize first value
     
     initButtons();
     initClock ();
     initADC ();
     initDisplay ();
+    initYaw ();
+    //initCircBuf (&altitude_ADC_buf, BUF_SIZE);
+    //how do we fill this with yaw ADC vals instead of altitude ADC vals?
+    //initCircBuf (&yaw_ADC_buf, BUF_SIZE);
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+    //initial_ADC_val = get_ADC_val(&altitude_ADC_buf, BUF_SIZE);
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     display_state_t current_state;
@@ -69,6 +77,7 @@ main(void)
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
+        //current_ADC_val = get_ADC_val(&altitude_ADC_buf, BUF_SIZE);
         current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
         if (checkButton(LEFT) == PUSHED) {
@@ -78,17 +87,18 @@ main(void)
        switch(current_state)
        {
        case STATE_PERC:
-           displayAltitudePerc(current_ADC_val, initial_ADC_val);
+           displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
+           displayYaw(current_ADC_val, initial_ADC_val, 0, 2);
            break;
        case STATE_MEAN_ADC_VAL:
            // Calculate and display the rounded mean of the buffer contents
-           displayADCVal (current_ADC_val);
+           displayADCVal (current_ADC_val, 0, 1);
            break;
        case STATE_OFF:
            displayNothing();
            break;
        }
-       if (checkButton(UP) == PUSHED)
+       /*if (checkButton(UP) == PUSHED)
        {
            if (current_state != STATE_OFF) {
                current_state++;
@@ -96,10 +106,9 @@ main(void)
            else {
                current_state = STATE_PERC;
            }
-       }
+       }*/
 
-
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
+       SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
 
     }
 }

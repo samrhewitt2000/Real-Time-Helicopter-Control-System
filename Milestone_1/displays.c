@@ -52,7 +52,7 @@ displayNothing(void)
 }
 
 void
-displayADCVal(int32_t ADC_val)
+displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];  // 16 characters across the display
@@ -61,12 +61,12 @@ displayADCVal(int32_t ADC_val)
     //  number field ensures it is displayed right justified.
     usnprintf (string, sizeof(string), "Mean ADC: %3d", ADC_val);
     // Update line on display.
-    OLEDStringDraw (string, 0, 1);
+    OLEDStringDraw (string, display_col, display_row);
 }
 
 
 void
-displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val)
+displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];
@@ -75,5 +75,16 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val)
 
     altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
     usnprintf (string, sizeof(string), "Alt: %2d      ", altitude_percent);
-    OLEDStringDraw(string, 0, 1);
+    OLEDStringDraw (string, display_col, display_row);
+}
+
+void
+displayYaw(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
+{
+
+    char string[17];
+
+    int32_t yaw = current_ADC_val - initial_ADC_val;
+    usnprintf (string, sizeof(string), "Yaw: %2d      ", yaw);
+    OLEDStringDraw (string, display_col, display_row);
 }
