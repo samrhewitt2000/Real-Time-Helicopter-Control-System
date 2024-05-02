@@ -27,6 +27,6 @@ void
 displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
 
 void
-displayYaw(int32_t yaw, uint32_t display_col, uint32_t display_row);
+displayYaw(uint32_t display_col, uint32_t display_row);
 
 #endif /*DISPLAYS_H_*/

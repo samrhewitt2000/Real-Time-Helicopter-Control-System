@@ -2,7 +2,7 @@
  * yaw.h
  *
  *  Created on: 1/05/2024
- *      Author: she108
+ *      Authors: Sam Hewitt and Caleb Westbury
  */
 
 #ifndef YAW_H_
@@ -16,13 +16,15 @@ typedef enum {
     PHASE_4      // 10
 } phase_t;
 
-volatile static int32_t yaw_angle = 0;  // Global variable to store yaw angle
+extern volatile int32_t yaw_ticks;  // Global variable to store yaw angle ticks
 
-volatile static phase_t current_phase = PHASE_1;
+extern volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
 
-volatile static phase_t prev_phase = PHASE_1;
+extern volatile phase_t current_phase;
 
-phase_t get_current_phase(void);
+extern volatile phase_t prev_phase;
+
+//phase_t get_current_phase(void);
 
 void
 PB_IntHandler(void);

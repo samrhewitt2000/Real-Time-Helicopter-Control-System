@@ -74,6 +74,7 @@ ADCIntHandler(void)
     //
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
+
     //
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
@@ -107,7 +108,9 @@ initADC (void)
     //
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-    
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0))
+    {
+    }
     // Enable sample sequence 3 with a processor signal trigger.  Sequence 3
     // will do a single sample when the processor sends a signal to start the
     // conversion.
