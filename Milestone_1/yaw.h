@@ -8,32 +8,24 @@
 #ifndef YAW_H_
 #define YAW_H_
 
-
-/*
-
 typedef enum {
-	On,
-	Off
-} sensorState_t
 
-
-// struct to hold each pin state for switch FSM
-
-typedef struct {
-	sensorState_t pinA;
-	sensorState_t pinB;
-} pinState_t;
-
-sorry had to leave feel free to delete probs easier way
-*/
+    PHASE_1,     // 00
+    PHASE_2,     // 01
+    PHASE_3,     // 11
+    PHASE_4      // 10
+} phase_t;
 
 volatile static int32_t yaw_angle = 0;  // Global variable to store yaw angle
 
-void
-PB0_IntHandler(void);
+volatile static phase_t current_phase = PHASE_1;
+
+volatile static phase_t prev_phase = PHASE_1;
+
+phase_t get_current_phase(void);
 
 void
-PB1_IntHandler(void);
+PB_IntHandler(void);
 
 void
 initYaw (void);

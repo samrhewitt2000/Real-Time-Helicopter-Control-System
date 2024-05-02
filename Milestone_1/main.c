@@ -30,6 +30,8 @@
 #include "ADC.h"
 #include "buttons5.h"
 
+#include "inc/hw_ints.h"
+
 #include "yaw.h"
 
 
@@ -56,15 +58,13 @@ main(void)
     initADC ();
     initDisplay ();
     initYaw ();
-    //initCircBuf (&altitude_ADC_buf, BUF_SIZE);
-    //how do we fill this with yaw ADC vals instead of altitude ADC vals?
-    //initCircBuf (&yaw_ADC_buf, BUF_SIZE);
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
-    //initial_ADC_val = get_ADC_val(&altitude_ADC_buf, BUF_SIZE);
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
+    prev_phase = get_current_phase();
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
@@ -77,7 +77,6 @@ main(void)
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
-        //current_ADC_val = get_ADC_val(&altitude_ADC_buf, BUF_SIZE);
         current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
         if (checkButton(LEFT) == PUSHED) {

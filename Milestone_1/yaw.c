@@ -15,38 +15,81 @@
 #include "driverlib/interrupt.h"
 #include "yaw.h"
 
-//volatile int32_t yaw_angle = 0;  // Global variable to store yaw angle
-
-void PB0_IntHandler(void)
+phase_t get_current_phase(void)
 {
-    // Read the current state of PB1 (channel B)
+
+    phase_t current_phase;
+
+    uint8_t channel_a_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0);
     uint8_t channel_b_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1);
 
-    // Update yaw angle based on the state change of PB0 (channel A)
-    if (channel_b_state) {
-        yaw_angle++;  // Clockwise rotation
-    } else {
-        yaw_angle--;  // Counterclockwise rotation
+    if (channel_a_state)
+    {
+        if (channel_b_state)
+        {
+            current_phase = PHASE_3;
+        }
+        else {
+            current_phase = PHASE_4;
+        }
     }
-
-    // Clear the interrupt for PB0
-    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0);
+    else
+    {
+        if (channel_b_state)
+        {
+            current_phase = PHASE_2;
+        }
+        else {
+            current_phase = PHASE_1;
+        }
+    }
+    return current_phase;
 }
 
-void PB1_IntHandler(void)
+
+void PB_IntHandler(void)
 {
-    // Read the current state of PB0 (channel A)
-    uint8_t channel_a_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0);
 
-    // Update yaw angle based on the state change of PB1 (channel B)
-    if (channel_a_state) {
-        yaw_angle--;  // Counterclockwise rotation
-    } else {
-        yaw_angle++;  // Clockwise rotation
-    }
+    current_phase = get_current_phase();
 
-    // Clear the interrupt for PB1
-    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_1);
+    switch(current_phase)
+           {
+           case PHASE_1:
+               if (prev_phase == PHASE_4)
+               {
+                   yaw_angle++;
+               } else {
+                   yaw_angle--;
+               }
+               break;
+           case PHASE_2:
+               if (current_phase > prev_phase)
+               {
+                   yaw_angle++;
+               } else {
+                   yaw_angle--;
+               }
+               break;
+           case PHASE_3:
+               if (current_phase > prev_phase)
+               {
+                   yaw_angle++;
+               } else {
+                   yaw_angle--;
+               }
+               break;
+           case PHASE_4:
+               if (prev_phase == PHASE_3)
+               {
+                   yaw_angle++;
+               } else {
+                   yaw_angle--;
+               }
+               break;
+           }
+
+    prev_phase = current_phase;
+    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
 
 void
@@ -65,8 +108,7 @@ initYaw (void)
     GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1, GPIO_BOTH_EDGES);
 
     // Register Interrupt Handlers
-    GPIOIntRegister(GPIO_PORTB_BASE, PB0_IntHandler);
-    GPIOIntRegister(GPIO_PORTB_BASE, PB1_IntHandler);
+    GPIOIntRegister(GPIO_PORTB_BASE, PB_IntHandler);
 
     // Enable GPIO Interrupts
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
