@@ -2,7 +2,7 @@
  * quadrature.c
  *
  *  Created on: 1/05/2024
- *      Author: she108 and Caleb Westbury
+ *      Author: Sam Hewitt and Caleb Westbury
  */
 
 
@@ -15,89 +15,28 @@
 #include "driverlib/interrupt.h"
 #include "yaw.h"
 
-phase_t get_current_phase(void)
-{
 
-    phase_t current_phase;
+volatile int32_t yaw_angle = 0;  // Global variable to store yaw angle
+volatile phase_t current_phase = PHASE_4;
+volatile phase_t prev_phase = PHASE_4;
 
-    uint8_t channel_a_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0);
-    uint8_t channel_b_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1);
-
-    if (channel_a_state)
-    {
-        if (channel_b_state)
-        {
-            current_phase = PHASE_3;
-        }
-        else {
-            current_phase = PHASE_4;
-        }
-    }
-    else
-    {
-        if (channel_b_state)
-        {
-            current_phase = PHASE_2;
-        }
-        else {
-            current_phase = PHASE_1;
-        }
-    }
-    return current_phase;
-}
-
-
-void PB_IntHandler(void)
-{
-
-    current_phase = get_current_phase();
-
-    switch(current_phase)
-           {
-           case PHASE_1:
-               if (prev_phase == PHASE_4)
-               {
-                   yaw_angle++;
-               } else {
-                   yaw_angle--;
-               }
-               break;
-           case PHASE_2:
-               if (current_phase > prev_phase)
-               {
-                   yaw_angle++;
-               } else {
-                   yaw_angle--;
-               }
-               break;
-           case PHASE_3:
-               if (current_phase > prev_phase)
-               {
-                   yaw_angle++;
-               } else {
-                   yaw_angle--;
-               }
-               break;
-           case PHASE_4:
-               if (prev_phase == PHASE_3)
-               {
-                   yaw_angle++;
-               } else {
-                   yaw_angle--;
-               }
-               break;
-           }
-
-    prev_phase = current_phase;
-    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-}
 
 void
 initYaw (void)
 {
-    // Enable Peripheral Clocks
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
+
+
+
+
+//    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+//    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+
+    // Enable Peripheral
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB))
+    {
+    }
     // Configure GPIO Pins (PB0 and PB1) as Inputs
     GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
@@ -116,3 +55,114 @@ initYaw (void)
     // Enable Master Interrupts
     IntMasterEnable();
 }
+
+
+
+
+
+
+//phase_t get_current_phase(void)
+//{
+//
+//    phase_t current_phase;
+//
+////    uint8_t channel_a_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0);
+////    uint8_t channel_b_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1);
+//
+//    if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //Sensor A high
+//    {
+//        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1))//sensor B high
+//        {
+//            current_phase = PHASE_3; // 11
+//        }
+//        else {  // sensor b low
+//            current_phase = PHASE_4; //10
+//        }
+//    }
+//    else //sensor A low
+//    {
+//        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //sensor B high
+//        {
+//            current_phase = PHASE_2;//01
+//        }
+//        else {  //sensor b low
+//            current_phase = PHASE_1;// 00
+//        }
+//    }
+//    return current_phase;
+//}
+//
+
+void PB_IntHandler(void)
+{
+
+    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+
+    phase_t current_phase;
+    //determine the phase based on sensor values
+    if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //Sensor A high
+    {
+        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1))//sensor B high
+        {
+            current_phase = PHASE_3; // 11
+        }
+        else {  // sensor b low
+            current_phase = PHASE_4; //10
+        }
+    }
+    else //sensor A low
+    {
+        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1)) //sensor B high
+        {
+            current_phase = PHASE_2;//01
+        }
+        else {  //sensor b low
+            current_phase = PHASE_1;// 00
+        }
+    }
+    //increment yaw based on current value
+    switch(current_phase)
+    {
+        case PHASE_1:
+            if (prev_phase == PHASE_4)
+                {
+                yaw_angle++;
+            } else if (prev_phase == PHASE_2)
+                {
+                yaw_angle--;
+            }
+            break;
+        case PHASE_2:
+            if (prev_phase == PHASE_1)
+                {
+                yaw_angle++;
+            } else if (prev_phase == PHASE_3)
+                {
+                yaw_angle--;
+            }
+            break;
+        case PHASE_3:
+            if (prev_phase == PHASE_2)
+            {
+                yaw_angle++;
+            } else if (prev_phase == PHASE_4)
+                {
+                yaw_angle--;
+            }
+            break;
+           case PHASE_4:
+               if (prev_phase == PHASE_3)
+               {
+                   yaw_angle++;
+                   } else if (prev_phase == PHASE_1)
+                   {
+                   yaw_angle--;
+               }
+               break;
+           }
+    prev_phase = current_phase;
+
+    GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+}
+

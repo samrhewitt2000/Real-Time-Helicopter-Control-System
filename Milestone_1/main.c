@@ -26,13 +26,15 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+#include "yaw.h"
 #include "displays.h"
 #include "ADC.h"
 #include "buttons5.h"
 
-#include "inc/hw_ints.h"
 
-#include "yaw.h"
+
+
+#include "inc/hw_ints.h"
 
 
 //*****************************************************************************
@@ -53,6 +55,11 @@ main(void)
     int32_t initial_ADC_val = 0;    // initialize first value
     int32_t current_ADC_val = 0;    // initialize first value
     
+    // Enable interrupts to the processor.
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
+    {
+    }
     initButtons();
     initClock ();
     initADC ();
@@ -60,16 +67,24 @@ main(void)
     initYaw ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
+    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+//    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+//    GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_DIR_MODE_OUT);
+
+
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
-    prev_phase = get_current_phase();
+    //prev_phase = get_current_phase();
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
     //
-    // Enable interrupts to the processor.
+
+
+
+
     IntMasterEnable();
 
     while (1)
@@ -87,7 +102,10 @@ main(void)
        {
        case STATE_PERC:
            displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
-           displayYaw(yaw_angle, 0, 2);
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+           //SysCtlDelay(SysCtlClockGet() / yaw_angle);
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
+           displayYaw(0, 2);
            break;
        case STATE_MEAN_ADC_VAL:
            // Calculate and display the rounded mean of the buffer contents
@@ -106,7 +124,6 @@ main(void)
                current_state = STATE_PERC;
            }
        }*/
-
        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
 
     }
