@@ -3,6 +3,7 @@
  *
  *  Created on: 1/05/2024
  *      Authors: Sam Hewitt and Caleb Westbury
+ *      Authors: Sam Hewitt and Caleb Westbury
  */
 
 #ifndef YAW_H_
@@ -21,9 +22,12 @@ extern volatile int32_t yaw_ticks;  // Global variable to store yaw angle ticks
 extern volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
 
 extern volatile phase_t current_phase;
+extern volatile phase_t current_phase;
 
 extern volatile phase_t prev_phase;
+extern volatile phase_t prev_phase;
 
+//phase_t get_current_phase(void);
 //phase_t get_current_phase(void);
 
 void

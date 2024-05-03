@@ -3,6 +3,7 @@
 // displays.c - LED display logic for the Tiva board
 //
 // Author:  Caleb Westbury & Sam Hewitt
+// Author:  Caleb Westbury & Sam Hewitt
 // Last modified:   22/03/2024
 //
 //*****************************************************************************
@@ -27,6 +28,7 @@
 #include "ADC.h"
 #include "buttons5.h"
 #include "displays.h"
+#include "yaw.h"
 #include "yaw.h"
 
 
@@ -81,6 +83,7 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t d
 
 void
 displayYaw(uint32_t display_col, uint32_t display_row)
+displayYaw(uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];
@@ -92,4 +95,6 @@ displayYaw(uint32_t display_col, uint32_t display_row)
     usnprintf (string, sizeof(string), "Yaw: %d.%d", yaw_angle_int, yaw_angle_decimal);
     OLEDStringDraw("                ", display_col, display_row);
     OLEDStringDraw (string, display_col, display_row);
+
+    
 }

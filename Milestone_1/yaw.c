@@ -3,6 +3,7 @@
  *
  *  Created on: 1/05/2024
  *      Author: Sam Hewitt and Caleb Westbury
+ *      Author: Sam Hewitt and Caleb Westbury
  */
 
 
@@ -94,28 +95,42 @@ void PB_IntHandler(void)
 
     GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 
+    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+
     phase_t current_phase;
+    //determine the phase based on sensor values
+    if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //Sensor A high
     //determine the phase based on sensor values
     if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //Sensor A high
     {
         if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1))//sensor B high
+        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1))//sensor B high
         {
             current_phase = PHASE_3; // 11
+            current_phase = PHASE_3; // 11
         }
+        else {  // sensor b low
+            current_phase = PHASE_4; //10
         else {  // sensor b low
             current_phase = PHASE_4; //10
         }
     }
     else //sensor A low
+    else //sensor A low
     {
         if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1)) //sensor B high
+        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1)) //sensor B high
         {
+            current_phase = PHASE_2;//01
             current_phase = PHASE_2;//01
         }
         else {  //sensor b low
             current_phase = PHASE_1;// 00
+        else {  //sensor b low
+            current_phase = PHASE_1;// 00
         }
     }
+    //increment yaw based on current value
     //increment yaw based on current value
     switch(current_phase)
     {
@@ -169,5 +184,7 @@ void PB_IntHandler(void)
 
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
+
 
