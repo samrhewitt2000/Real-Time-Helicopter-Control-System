@@ -1,6 +1,6 @@
 //*****************************************************************************
 //
-// ADCdemo1.c - Simple interrupt driven program which samples with AIN0
+// ADC.c - Simple interrupt driven program which samples with AIN0
 //
 // Author:  P.J. Bones  UCECE
 // Last modified:   8.2.2018
@@ -74,6 +74,7 @@ ADCIntHandler(void)
     //
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
+
     //
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
@@ -107,7 +108,9 @@ initADC (void)
     //
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-    
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0))
+    {
+    }
     // Enable sample sequence 3 with a processor signal trigger.  Sequence 3
     // will do a single sample when the processor sends a signal to start the
     // conversion.
@@ -138,3 +141,15 @@ initADC (void)
     ADCIntEnable(ADC0_BASE, 3);
 }
 
+//*****************************************************************************
+//
+// The code for calculating the ADC value
+//
+//*****************************************************************************
+int32_t
+get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
+{
+    int32_t sum = 0;
+    sum = sum_CircBuf_vals (sum, buffer, buf_size);
+    return (2 * sum + buf_size) / 2 / buf_size;
+}

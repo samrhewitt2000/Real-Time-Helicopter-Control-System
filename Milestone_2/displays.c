@@ -2,7 +2,8 @@
 //
 // displays.c - LED display logic for the Tiva board
 //
-// Author:  Caleb Westbury & Sam
+// Author:  Caleb Westbury & Sam Hewitt
+// Author:  Caleb Westbury & Sam Hewitt
 // Last modified:   22/03/2024
 //
 //*****************************************************************************
@@ -27,6 +28,8 @@
 #include "ADC.h"
 #include "buttons5.h"
 #include "displays.h"
+#include "yaw.h"
+#include "yaw.h"
 
 
 //*****************************************************************************
@@ -52,7 +55,7 @@ displayNothing(void)
 }
 
 void
-displayADCVal(int32_t ADC_val)
+displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];  // 16 characters across the display
@@ -61,12 +64,12 @@ displayADCVal(int32_t ADC_val)
     //  number field ensures it is displayed right justified.
     usnprintf (string, sizeof(string), "Mean ADC: %3d", ADC_val);
     // Update line on display.
-    OLEDStringDraw (string, 0, 1);
+    OLEDStringDraw (string, display_col, display_row);
 }
 
 
 void
-displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val)
+displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];
@@ -75,5 +78,22 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val)
 
     altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
     usnprintf (string, sizeof(string), "Alt: %2d      ", altitude_percent);
-    OLEDStringDraw(string, 0, 1);
+    OLEDStringDraw (string, display_col, display_row);
+}
+
+void
+displayYaw(uint32_t display_col, uint32_t display_row)
+{
+
+    char string[17];
+
+    yaw_angle_decimal = abs(((360 * yaw_ticks) % 448 * 10) / 448);
+
+    int32_t yaw_angle_int = 360 * yaw_ticks / 448;
+
+    OLEDStringDraw("                ", display_col, display_row);
+    usnprintf (string, sizeof(string), "Yaw: %d.%d  ", yaw_angle_int, yaw_angle_decimal);
+    OLEDStringDraw (string, display_col, display_row);
+
+    
 }

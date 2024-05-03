@@ -1,5 +1,5 @@
 //*****************************************************************************
-//
+//THIS IS MILESTONE 2
 // main.c - main logic for the Tiva board
 //
 // Author:  Caleb Westbury & Sam
@@ -26,9 +26,15 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+#include "yaw.h"
 #include "displays.h"
 #include "ADC.h"
 #include "buttons5.h"
+
+
+
+
+#include "inc/hw_ints.h"
 
 
 //*****************************************************************************
@@ -45,26 +51,40 @@ typedef enum {
 
 int
 main(void)
-{
-    int32_t sum = 0;
+ {
     int32_t initial_ADC_val = 0;    // initialize first value
+    int32_t current_ADC_val = 0;    // initialize first value
+    
+    // Enable interrupts to the processor.
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
+    {
+    }
     initButtons();
-
     initClock ();
     initADC ();
     initDisplay ();
+    initYaw ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
+    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+//    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
+//    GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_DIR_MODE_OUT);
+
+
     // calculate exactly how long this needs to be
-    SysCtlDelay (SysCtlClockGet() / 6);
-    sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-    current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
-    initial_ADC_val = current_ADC_val;
+    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
+    //prev_phase = get_current_phase();
 
     display_state_t current_state;
     current_state = STATE_PERC; //initialize display state
     //
-    // Enable interrupts to the processor.
+
+
+
+
     IntMasterEnable();
 
     while (1)
@@ -72,9 +92,7 @@ main(void)
         //
         // Background task: calculate the (approximate) mean of the values in the
         // circular buffer and display it, together with the sample number.
-        sum = 0;
-        sum = loopCircBuf (sum, &g_inBuffer, BUF_SIZE);
-        current_ADC_val = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
+        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
         if (checkButton(LEFT) == PUSHED) {
             initial_ADC_val = current_ADC_val;
@@ -83,17 +101,21 @@ main(void)
        switch(current_state)
        {
        case STATE_PERC:
-           displayAltitudePerc(current_ADC_val, initial_ADC_val);
+           displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+           //SysCtlDelay(SysCtlClockGet() / yaw_angle);
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
+           displayYaw(0, 2);
            break;
        case STATE_MEAN_ADC_VAL:
            // Calculate and display the rounded mean of the buffer contents
-           displayADCVal (current_ADC_val);
+           displayADCVal (current_ADC_val, 0, 1);
            break;
        case STATE_OFF:
            displayNothing();
            break;
        }
-       if (checkButton(UP) == PUSHED)
+       /*if (checkButton(UP) == PUSHED)
        {
            if (current_state != STATE_OFF) {
                current_state++;
@@ -101,10 +123,8 @@ main(void)
            else {
                current_state = STATE_PERC;
            }
-       }
-
-
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
+       }*/
+       SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
 
     }
 }

@@ -53,6 +53,6 @@ void
 freeCircBuf (circBuf_t *buffer);
 
 uint32_t
-loopCircBuf (uint32_t sum, circBuf_t *buffer, uint32_t buf_size);
+sum_CircBuf_vals (uint32_t sum, circBuf_t *buffer, uint32_t buf_size);
 
 #endif /*CIRCBUFT_H_*/
