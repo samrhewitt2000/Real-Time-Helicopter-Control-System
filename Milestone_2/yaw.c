@@ -22,7 +22,7 @@ volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle t
 volatile phase_t current_phase = PHASE_4;
 volatile phase_t prev_phase = PHASE_4;
 
-
+// initialise inityaw bruh
 void
 initYaw (void)
 {
@@ -123,19 +123,21 @@ void PB_IntHandler(void)
     {
         case PHASE_1:
             if (prev_phase == PHASE_4)
-                {
+            {
                 yaw_ticks++;
-            } else //if (prev_phase == PHASE_2)
-                {
+            }
+            else if (prev_phase == PHASE_2)
+            {
                 yaw_ticks--;
             }
             break;
         case PHASE_2:
             if (prev_phase == PHASE_1)
-                {
+            {
                 yaw_ticks++;
-            } else //if (prev_phase == PHASE_3)
-                {
+            }
+            else if (prev_phase == PHASE_3)
+            {
                 yaw_ticks--;
             }
             break;
@@ -143,21 +145,24 @@ void PB_IntHandler(void)
             if (prev_phase == PHASE_2)
             {
                 yaw_ticks++;
-            } else //if (prev_phase == PHASE_4)
-                {
+            }
+            else if (prev_phase == PHASE_4)
+            {
                 yaw_ticks--;
             }
             break;
-           case PHASE_4:
-               if (prev_phase == PHASE_3)
-               {
-                   yaw_ticks++;
-                   } else //if (prev_phase == PHASE_1)
-                   {
-                   yaw_ticks--;
-               }
-               break;
-           }
+        case PHASE_4:
+            if (prev_phase == PHASE_3)
+            {
+                yaw_ticks++;
+            }
+            else if (prev_phase == PHASE_1)
+            {
+                yaw_ticks--;
+            }
+            break;
+    }
+
     prev_phase = current_phase;
 
     if (yaw_ticks > 224)
@@ -170,7 +175,6 @@ void PB_IntHandler(void)
     }
 
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
-    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
 
