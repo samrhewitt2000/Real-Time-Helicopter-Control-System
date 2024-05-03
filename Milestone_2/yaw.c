@@ -125,7 +125,7 @@ void PB_IntHandler(void)
             if (prev_phase == PHASE_4)
                 {
                 yaw_ticks++;
-            } else if (prev_phase == PHASE_2)
+            } else //if (prev_phase == PHASE_2)
                 {
                 yaw_ticks--;
             }
@@ -134,7 +134,7 @@ void PB_IntHandler(void)
             if (prev_phase == PHASE_1)
                 {
                 yaw_ticks++;
-            } else if (prev_phase == PHASE_3)
+            } else //if (prev_phase == PHASE_3)
                 {
                 yaw_ticks--;
             }
@@ -143,7 +143,7 @@ void PB_IntHandler(void)
             if (prev_phase == PHASE_2)
             {
                 yaw_ticks++;
-            } else if (prev_phase == PHASE_4)
+            } else //if (prev_phase == PHASE_4)
                 {
                 yaw_ticks--;
             }
@@ -152,7 +152,7 @@ void PB_IntHandler(void)
                if (prev_phase == PHASE_3)
                {
                    yaw_ticks++;
-                   } else if (prev_phase == PHASE_1)
+                   } else //if (prev_phase == PHASE_1)
                    {
                    yaw_ticks--;
                }
