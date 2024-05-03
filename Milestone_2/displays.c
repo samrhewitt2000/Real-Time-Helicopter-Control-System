@@ -89,10 +89,14 @@ displayYaw(uint32_t display_col, uint32_t display_row)
 
     yaw_angle_decimal = abs(((360 * yaw_ticks) % 448 * 10) / 448);
 
-    int32_t yaw_angle_int = 360 * yaw_ticks / 448;
+    int32_t yaw_angle_int = abs(360 * yaw_ticks / 448);
 
-    usnprintf (string, sizeof(string), "Yaw: %d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
+    if (yaw_ticks < 0) {
+        usnprintf (string, sizeof(string), "Yaw: -%d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
+    }
+    else {
+        usnprintf (string, sizeof(string), "Yaw:  %d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
+    }
+
     OLEDStringDraw (string, display_col, display_row);
-
-    
 }

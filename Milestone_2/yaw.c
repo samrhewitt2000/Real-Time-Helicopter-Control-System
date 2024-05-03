@@ -167,9 +167,9 @@ void PB_IntHandler(void)
 
     if (yaw_ticks > 224)
     {
-        yaw_ticks = -224;
+        yaw_ticks = -220;
     }
-    else if (yaw_ticks < -224)
+    else if (yaw_ticks < -220)
     {
         yaw_ticks = 224;
     }
