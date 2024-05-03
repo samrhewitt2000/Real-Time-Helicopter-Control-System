@@ -77,7 +77,7 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t d
     int32_t altitude_percent;
 
     altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
-    usnprintf (string, sizeof(string), "Alt: %2d      ", altitude_percent);
+    usnprintf (string, sizeof(string), "Alt: %2d %%  ", altitude_percent);
     OLEDStringDraw (string, display_col, display_row);
 }
 
@@ -91,8 +91,7 @@ displayYaw(uint32_t display_col, uint32_t display_row)
 
     int32_t yaw_angle_int = 360 * yaw_ticks / 448;
 
-    OLEDStringDraw("                ", display_col, display_row);
-    usnprintf (string, sizeof(string), "Yaw: %d.%d  ", yaw_angle_int, yaw_angle_decimal);
+    usnprintf (string, sizeof(string), "Yaw: %d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
     OLEDStringDraw (string, display_col, display_row);
 
     
