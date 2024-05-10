@@ -1,16 +1,13 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-
 //*****************************************************************************
 //
-// ADC.h - ADC logic for the Tiva board
+// ADC.h -
 //
-// Author:  Caleb Westbury & Sam
-// Last modified:   22/03/2024
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
 //
-//*****************************************************************************
-// Based on the 'convert' series from 2016
 //*****************************************************************************
 
 #include "circBuffer.h"
