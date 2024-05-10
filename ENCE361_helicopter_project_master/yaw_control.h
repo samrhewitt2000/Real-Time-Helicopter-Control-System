@@ -1,5 +1,5 @@
-#ifndef YAW_H_
-#define YAW_H_
+#ifndef YAW_CONTROL_H_
+#define YAW_CONTROL_H_
 
 //*****************************************************************************
 // 
@@ -18,6 +18,12 @@
 //
 //*****************************************************************************
 
+#include "quad_enc.h"
 
+volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 
-#endif /* YAW_H_ */
+int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks);
+
+int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks);
+
+#endif /* YAW_CONTROL_H_ */
