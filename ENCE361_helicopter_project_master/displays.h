@@ -21,14 +21,14 @@
 // *******************************************************
 // initDisplay: Initialise the display
 // *******************************************************
-void initDisplay (void);
+void init_display (void);
 
-void displayNothing(void);
+void display_nothing(void);
 
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
 
-void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
+void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t display_row);
 
-void displayYaw(uint32_t display_col, uint32_t display_row);
+void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal);
 
 #endif /*DISPLAYS_H_*/

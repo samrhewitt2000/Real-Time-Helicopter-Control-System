@@ -18,19 +18,12 @@
 
 extern circBuf_t g_inBuffer;
 
-void
-SysTickIntHandler(void);
+void SysTickIntHandler(void);
 
-void
-ADCIntHandler(void);
+void ADCIntHandler(void);
 
-void
-initClock (void);
+void initClock (void);
 
-void
-initADC (void);
-
-int32_t
-get_ADC_val(circBuf_t *buffer, uint32_t buf_size);
+void initADC (void);
 
 #endif /*ADC_H_*/
