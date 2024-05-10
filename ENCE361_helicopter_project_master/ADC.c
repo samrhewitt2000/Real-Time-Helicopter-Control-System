@@ -1,12 +1,18 @@
 //*****************************************************************************
 //
-// ADC.c - Simple interrupt driven program which samples with AIN0
+//      ADC.c
 //
-// Author:  P.J. Bones  UCECE
-// Last modified:   8.2.2018
+// What does this function do? (Replace)
+//
+// *****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Based on P.J. Bones' ADCdemo1.c code from 2018
+//
 //*****************************************************************************
 
 #include <stdint.h>
@@ -139,17 +145,4 @@ initADC (void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
-}
-
-//*****************************************************************************
-//
-// The code for calculating the ADC value
-//
-//*****************************************************************************
-int32_t
-get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
-{
-    int32_t sum = 0;
-    sum = sum_CircBuf_vals (sum, buffer, buf_size);
-    return (2 * sum + buf_size) / 2 / buf_size;
 }

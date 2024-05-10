@@ -2,31 +2,33 @@
 #define DISPLAYS_H_
 
 //*****************************************************************************
+// 
+//      displays.h
 //
-// displays.c - LED display logic for the Tiva board
-//
-// Author:  Caleb Westbury & Sam
-// Last modified:   22/03/2024
+// What does this function do? (Replace)
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
 //*****************************************************************************
 
 // *******************************************************
 // initDisplay: Initialise the display
-void
-initDisplay (void);
+// *******************************************************
+void init_display (void);
 
-void
-displayNothing(void);
+void display_nothing(void);
 
-void
-displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
+void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
 
-void
-displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
+void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t display_row);
 
-void
-displayYaw(uint32_t display_col, uint32_t display_row);
+void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal);
 
 #endif /*DISPLAYS_H_*/

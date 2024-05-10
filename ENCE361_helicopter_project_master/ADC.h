@@ -1,35 +1,29 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-
 //*****************************************************************************
 //
-// ADC.h - ADC logic for the Tiva board
+//      ADC.h
 //
-// Author:  Caleb Westbury & Sam
-// Last modified:   22/03/2024
+// What does this function do? (Replace)
 //
-//*****************************************************************************
-// Based on the 'convert' series from 2016
+// *****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
 //*****************************************************************************
 
 #include "circBuffer.h"
 
 extern circBuf_t g_inBuffer;
 
-void
-SysTickIntHandler(void);
+void SysTickIntHandler(void);
 
-void
-ADCIntHandler(void);
+void ADCIntHandler(void);
 
-void
-initClock (void);
+void initClock (void);
 
-void
-initADC (void);
-
-int32_t
-get_ADC_val(circBuf_t *buffer, uint32_t buf_size);
+void initADC (void);
 
 #endif /*ADC_H_*/
