@@ -1,10 +1,16 @@
 //*****************************************************************************
+// 
+//      kernal.c
 //
-// main.c - main logic for the Tiva board
-//
-// Author:  Caleb Westbury & Sam
-// Last modified:   10/5/2024
+// What does this function do? (Replace)
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
 //*****************************************************************************

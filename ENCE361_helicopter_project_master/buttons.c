@@ -1,6 +1,6 @@
-// *******************************************************
+//*****************************************************************************
 // 
-// buttons4.c
+//      buttons.c
 //
 // Support for a set of FOUR specific buttons on the Tiva/Orbit.
 // ENCE361 sample code.
@@ -8,12 +8,18 @@
 // LEFT and RIGHT on the Tiva.
 //
 // Note that pin PF0 (the pin for the RIGHT pushbutton - SW2 on
-//  the Tiva board) needs special treatment - See PhilsNotesOnTiva.rtf.
+// the Tiva board) needs special treatment - See PhilsNotesOnTiva.rtf.
 //
-// P.J. Bones UCECE
-// Last modified:  7.2.2018
-// 
-// *******************************************************
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based P.J. Bones' buttons4.c code from 2018
+//
+//*****************************************************************************
 
 #include "buttons5.h"
 

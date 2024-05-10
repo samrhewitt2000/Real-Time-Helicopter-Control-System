@@ -1,13 +1,22 @@
-/*
- * yaw.h
- *
- *  Created on: 1/05/2024
- *      Authors: Sam Hewitt and Caleb Westbury
- *      Authors: Sam Hewitt and Caleb Westbury
- */
-
 #ifndef YAW_H_
 #define YAW_H_
+
+//*****************************************************************************
+// 
+//      yaw_control.c
+//
+// What does this function do? (Replace)
+//
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
+//*****************************************************************************
 
 typedef enum {
 
