@@ -1,12 +1,18 @@
 //*****************************************************************************
 //
-// ADC.c - Simple interrupt driven program which samples with AIN0
+//      ADC.c
 //
-// Author:  P.J. Bones  UCECE
-// Last modified:   8.2.2018
+// What does this function do? (Replace)
+//
+// *****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Based on P.J. Bones' ADCdemo1.c code from 2018
+//
 //*****************************************************************************
 
 #include <stdint.h>

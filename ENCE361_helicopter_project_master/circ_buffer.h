@@ -1,16 +1,28 @@
 #ifndef CIRCBUFT_H_
 #define CIRCBUFT_H_
 
-// *******************************************************
+//*****************************************************************************
 // 
-// circBufT.h
+//      circ_buffer.h
 //
 // Support for a circular buffer of uint32_t values on the 
-//  Tiva processor.
-// P.J. Bones UCECE
-// Last modified:  7.3.2017
-// 
-// *******************************************************
+// Tiva processor.
+//
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based P.J. Bones' circBufT.h code from 2017
+//
+//*****************************************************************************
+
+// Support for a set of FOUR specific buttons on the Tiva/Orbit.
+// ENCE361 sample code.
+// The buttons are:  UP and DOWN (on the Orbit daughterboard) plus
+// LEFT and RIGHT on the Tiva.
 #include <stdint.h>
 
 // *******************************************************

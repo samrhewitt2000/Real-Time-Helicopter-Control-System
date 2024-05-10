@@ -3,11 +3,29 @@
 // circBufT.c
 //
 // Support for a circular buffer of uint32_t values on the 
-//  Tiva processor.
+// Tiva processor.
 // P.J. Bones UCECE
 // Last modified:  8.3.2017
 // 
 // *******************************************************
+
+//*****************************************************************************
+// 
+//      circ_buffer.c
+//
+// Support for a circular buffer of uint32_t values on the 
+// Tiva processor.
+//
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based P.J. Bones' circBufT.c code from 2017
+//
+//*****************************************************************************
 
 #include "circBuffer.h"
 

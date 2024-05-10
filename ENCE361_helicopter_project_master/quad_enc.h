@@ -1,9 +1,9 @@
-#ifndef DISPLAYS_H_
-#define DISPLAYS_H_
+#ifndef QUAD_ENC_H_
+#define QUAD_ENC_H_
 
 //*****************************************************************************
 // 
-//      displays.h
+//      quad_enc.h
 //
 // What does this function do? (Replace)
 //
@@ -18,21 +18,29 @@
 //
 //*****************************************************************************
 
-// *******************************************************
-// initDisplay: Initialise the display
-void
-initDisplay (void);
+typedef enum {
+
+    PHASE_1,     // 00
+    PHASE_2,     // 01
+    PHASE_3,     // 11
+    PHASE_4      // 10
+
+} phase_t;
+
+extern volatile int32_t yaw_ticks;  // Global variable to store quadrature angle ticks
+
+extern volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
+
+extern volatile phase_t current_phase;
+
+extern volatile phase_t prev_phase;
+
+//phase_t get_current_phase(void);
 
 void
-displayNothing(void);
+PB_IntHandler(void);
 
 void
-displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
+initYaw (void);
 
-void
-displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
-
-void
-displayYaw(uint32_t display_col, uint32_t display_row);
-
-#endif /*DISPLAYS_H_*/
+#endif /* QUAD_ENC_H_ */

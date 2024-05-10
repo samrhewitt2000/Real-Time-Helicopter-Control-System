@@ -1,12 +1,18 @@
 //*****************************************************************************
+// 
+//      PWM.c
 //
-// motor_control.c - Motor control module using PWM signals
-//
-// Author:  Caleb Westbury
-// Last modified:   03/05/2023
+// What does this function do? (Replace)
 //
 //*****************************************************************************
-// Based on the pwmGen.c file from ENCE361 week 3 lab
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on P.J. Bones' pwmGen.c code from 2018
+//
 //*****************************************************************************
 
 #include <stdint.h>
