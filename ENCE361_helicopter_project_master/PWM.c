@@ -88,7 +88,7 @@ void setPWM (uint32_t u32Duty);
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor
  * M1PWM5 (J3-10, PF1) is used for the tail rotor motor
  *********************************************************/
-void initialisePWM (void)
+void initialise_PWM (void)
 {
 
 
@@ -131,7 +131,7 @@ void initialisePWM (void)
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7
  ********************************************************/
-void setMainPWM (uint32_t ui32Duty)
+void set_main_PWM (uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
@@ -142,7 +142,7 @@ void setMainPWM (uint32_t ui32Duty)
         ui32Period * ui32Duty / 100);
 }
 
-void setTailPWM (uint32_t ui32Duty)
+void set_tail_PWM (uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
