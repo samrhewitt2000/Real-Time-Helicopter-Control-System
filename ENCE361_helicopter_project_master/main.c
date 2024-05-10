@@ -1,14 +1,19 @@
 //*****************************************************************************
-//THIS IS MILESTONE 2
-// main.c - main logic for the Tiva board
+// 
+//      main.c
 //
-// Author:  Caleb Westbury & Sam
-// Last modified:   22/03/2024
+// What does this module do? (Replace)
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
 //*****************************************************************************
-
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
+//*****************************************************************************
 
 #include "circBuffer.h"
 
