@@ -20,16 +20,16 @@
 
 #include "quad_enc.h"
 
-volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
+extern volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
+extern volatile int32_t yaw_angle_int;
 
-//*****************************************************************************
-//
-//*****************************************************************************
 int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks);
 
-//*****************************************************************************
-//
-//*****************************************************************************
 int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks);
+
+int32_t yaw_angle_to_ticks(int32_t angle);
+
+void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM);
+
 
 #endif /* YAW_CONTROL_H_ */

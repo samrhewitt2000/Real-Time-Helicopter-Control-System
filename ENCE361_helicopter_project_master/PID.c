@@ -14,8 +14,8 @@
 // Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
 //
 //*****************************************************************************
-
-#include "circBuffer.h"
+#include "PWM.h"
+#include "circ_buffer.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -29,47 +29,53 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-#include "yaw.h"
+#include "yaw_control.h"
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
 #include "inc/hw_ints.h"
 #include "PID.H"
 
-#define MAX_CONTROL_OUTPUT 98
-#define MIN_CONTROL_OUPUT 2
+
+#define MAX_OUTPUT 980
+#define MIN_OUTPUT 20
 
 
 
-//*****************************************************************************
-// NOTE: change the variable name of sensor_reading (not always a sensor reading)
-//*****************************************************************************
-int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor)
+int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset)
 {
+    //avoid floating point maths multiply everything by 1000
+
+    //account for gravity ~33% duty cycle
+    int32_t Kg = 333 * main_rotor_duty / 100;
+
+    int32_t delta_t = 48 * SysCtlClockGet();
     static int32_t I = 0;
     static int32_t prev_sensor_reading = 0;
-    int32_t error = setpoint - sensor_reading;
+    int32_t error = (setpoint - sensor_reading);
     int32_t P = (Kp * error);
-    int32_t dI = Ki * error * delta_t ///delta_t = 1/systick?
+    int32_t dI = (Ki * error * delta_t); ///delta_t = 1/systick?
     int32_t D = Kd * (prev_sensor_reading - sensor_reading) / delta_t;
 
-    int32_t control_action = (P + (I + dI) + D + offset) / float_coversion_factor;
+
+    //no coupling if using main rotor but must account for gravity
+    int32_t control = P + (I + dI) + D + offset; //account for motor coupling
 
     //check for integral saturation
-    if (control > MAX_CONTROL_OUTPUT)
+    if (control > MAX_OUTPUT)
     {
-        control = MAX_CONTROL_OUTPUT;
-    } 
-    else if (control < MIN_CONTROL_OUPUT)
+        control = MAX_OUTPUT;
+    } else if (control < MIN_OUTPUT)
     {
-        control = MIN_CONTROL_OUPUT;
-    }
-    else 
-    {
+        control = MIN_OUTPUT;
+    }else {
         I = (I + dI);
     }
 
     prev_sensor_reading = sensor_reading;
 
-    return control
+
+    return control; //control signal * 1000
+
+
 }
