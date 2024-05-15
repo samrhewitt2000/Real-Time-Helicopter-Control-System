@@ -20,6 +20,8 @@
 #include "stdlib.h"
 #include "circBuffer.h"
 
+
+
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
 // the start of the buffer.  Dynamically allocate and clear the the 
@@ -35,7 +37,8 @@ uint32_t * initCircBuf (circBuf_t *buffer, uint32_t size)
         (uint32_t *) calloc (size, sizeof(uint32_t));
     return buffer->data;
 }
-   // Note use of calloc() to clear contents.
+
+
 
 // *******************************************************
 // writeCircBuf: insert entry at the current windex location,
@@ -48,6 +51,8 @@ void writeCircBuf (circBuf_t *buffer, uint32_t entry)
     if (buffer->windex >= buffer->size)
        buffer->windex = 0;
 }
+
+
 
 // *******************************************************
 // readCircBuf: return entry at the current rindex location,
@@ -64,6 +69,8 @@ uint32_t readCircBuf (circBuf_t *buffer)
        buffer->rindex = 0;
     return entry;
 }
+
+
 
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,

@@ -50,6 +50,12 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define RIGHT_BUT_PIN  GPIO_PIN_0
 #define RIGHT_BUT_NORMAL  true
 
+//switch
+#define SWITCH_PERIPH SYSCTL_PERIPH_GPIOA
+#define SWITCH_PORT_BASE  GPIO_PORTA_BASE
+#define SWITCH_PIN  GPIO_PIN_7
+#define SWITCH_NORMAL  true
+
 #define NUM_BUT_POLLS_RELEASED 4
 #define NUM_BUT_POLLS_PUSHED 1
 
@@ -61,23 +67,23 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants above.
-void
-initButtons (void);
+// *******************************************************
+void initButtons (void);
 
 // *******************************************************
 // updateButtons: Function designed to be called regularly. It polls all
 // buttons once and updates variables associated with the buttons if
 // necessary.  It is efficient enough to be part of an ISR, e.g. from
 // a SysTick interrupt.
-void
-updateButtons (void);
+// *******************************************************
+void updateButtons (void);
 
 // *******************************************************
 // checkButton: Function returns the new button state if the button state
 // (PUSHED or RELEASED) has changed since the last call, otherwise returns
 // NO_CHANGE.  The argument butName should be one of constants in the
 // enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
-uint8_t
-checkButton (uint8_t butName);
+// *******************************************************
+uint8_t checkButton (uint8_t butName);
 
 #endif /*BUTTONS_H_*/

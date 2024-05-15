@@ -1,3 +1,6 @@
+#ifndef PWM_H_
+#define PWM_H_
+
 //*****************************************************************************
 // 
 //      PWM.h
@@ -12,8 +15,10 @@
 //*****************************************************************************
 
 
-void initialisePWM (void);
+void initialise_PWM (void);
 
+void set_rotor_PWM (uint32_t ui32Duty);
 
-void setMainPWM (uint32_t ui32Duty);
-void setTailPWM (uint32_t ui32Duty);
+void set_tail_PWM (uint32_t ui32Duty);
+
+#endif /*PWM_H_*/

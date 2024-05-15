@@ -29,25 +29,27 @@
 #include "utils/ustdlib.h"
 #include "circBuffer.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-
 #include "ADC.h"
-#include "buttons5.h"
+#include "buttons.h"
 #include "displays.h"
 #include "yaw_control.h"
 
 
-//*****************************************************************************
-//
-// Function to display the mean ADC value (10-bit value, note) and sample count.
-//
-//*****************************************************************************
 
+//*****************************************************************************
+//
+//*****************************************************************************
 void init_display (void)
 {
     // intialise the Orbit OLED display
     OLEDInitialise ();
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void display_nothing(void)
 {
     OLEDStringDraw("                ", 0, 0);
@@ -56,6 +58,11 @@ void display_nothing(void)
     OLEDStringDraw("                ", 0, 3);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
     char string[17];  // 16 characters across the display
@@ -68,6 +75,10 @@ void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 }
 
 
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t display_row)
 {
     char string[17];
@@ -77,6 +88,11 @@ void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t dis
     OLEDStringDraw (string, display_col, display_row);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal)
 {
     char string[17];

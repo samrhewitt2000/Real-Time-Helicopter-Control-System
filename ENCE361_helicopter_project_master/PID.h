@@ -1,3 +1,6 @@
+#ifndef PID_H_
+#define PID_H_
+
 //*****************************************************************************
 // 
 //      PID.h
@@ -14,3 +17,7 @@
 // Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
 //
 //*****************************************************************************
+
+int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor);
+
+#endif /*PID_H_*/

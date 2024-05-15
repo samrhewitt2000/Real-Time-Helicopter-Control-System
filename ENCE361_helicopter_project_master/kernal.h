@@ -1,3 +1,6 @@
+#ifndef KERNAL_H_
+#define KERNAL_H_
+
 //*****************************************************************************
 // 
 //      kernal.h
@@ -14,3 +17,5 @@
 // Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
 //
 //*****************************************************************************
+
+#endif /*KERNAL_H_*/
