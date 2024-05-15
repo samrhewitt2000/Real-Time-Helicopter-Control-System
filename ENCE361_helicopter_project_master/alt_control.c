@@ -15,7 +15,16 @@
 //
 //*****************************************************************************
 
-#define "alt_control.h"
+#include "alt_control.h"
+#include "circ_buffer.h"
+#include "PID.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "driverlib/PWM.h"
+#include "ADC.h"
+#include "buttons.h"
+
+
 
 //*****************************************************************************************************
 // get_ADC_val: returns the average ADC value from the values stored in the circular buffer structure
@@ -32,7 +41,69 @@ int32_t get_alt_val(circBuf_t *buffer, uint32_t buf_size)
     return (2 * sum + buf_size) / 2 / buf_size;
 }
 
+
+
 int32_t alt_vals_to_percent(int32_t initial_alt_val, int32_t current_alt_val)
 {
     return (330 * (initial_alt_val - current_alt_val)) / 4095; // replace these vals with names
 }
+
+
+
+
+
+
+void increase_altitude(alt_percent)
+{
+    //set K values
+    int Kp = 100;
+    int Ki = 100;
+    int Kd = 100;
+    int Kc = 0;
+
+    //get altitude
+    int32_t current_alt_val = get_alt_val(*buffer, buf_size);
+    int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);
+
+    int32_t setpoint = (current alt _percent + 10);
+    if setpoint > 100 //check not greater than 100
+    {
+        setpoint = 100;
+    }
+
+    //calculate control
+    control = controller (setpoint, int32_t sensor_reading, Kp, Ki, Kd, Kc);
+
+    //send to motors
+    set_main_PWM (control/10);//control is divided by 100 within PWM function so divide by 10
+
+}
+
+void decrease_altitude(alt_percent)
+{
+    //set K values
+    int Kp = 100;
+    int Ki = 100;
+    int Kd = 100;
+    int Kc = 0;
+
+    //get altitude
+    int32_t current_alt_val = get_alt_val(*buffer, buf_size);
+    int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);
+
+    int32_t setpoint = (current alt _percent - 10);
+    if setpoint < 0
+    {
+        setpoint = 0;
+    }
+
+    //calculate control
+    control = controller (setpoint, int32_t sensor_reading, Kp, Ki, Kd, Kc);
+
+    //send to PWM and motors
+    set_main_PWM (control / 10); //control is divided by 100 within PWM function so divide by 10
+}
+
+
+
+
