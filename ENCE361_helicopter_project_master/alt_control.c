@@ -76,7 +76,8 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     if (desired_alt_percent > 100) //check not greater than 100
     {
         desired_alt_percent = 100;
-    } else if (desired_alt_percent < 0)
+    }
+    else if (desired_alt_percent < 0)
     {
         desired_alt_percent = 0;
     }
