@@ -133,7 +133,7 @@ void initialise_PWM (void)
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7
  ********************************************************/
-void set_main_PWM (uint32_t ui32Duty)
+void set_rotor_PWM (uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =

@@ -18,7 +18,7 @@
 #include "quad_enc.h"
 #include "yaw_control.h"
 
-#define FLOAT_CONVERSION_FACTOR 100
+#define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
@@ -48,48 +48,29 @@ int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 
 
 
-//*****************************************************************************
-//
-//*****************************************************************************
-void increase_yaw(int32_t yaw_angle)
+//*****************************************************************************************************
+// converts yaw angle back into yaw encoder ticks - check with big sam or tutor
+//*****************************************************************************************************
+int32_t yaw_angle_to_ticks(int32_t angle)
 {
-    //get altitude
-    int32_t current_alt_val = get_alt_val(*buffer, buf_size);
-    int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);
-
-    int32_t setpoint = (current alt _percent + 1500); //change 15 degrees
-    if setpoint > 100 //check not greater than 100
-    {
-        setpoint = 100;
-    }
-
-    //calculate control
-    control = controller (setpoint, int32_t sensor_reading, Kp, Ki, Kd, Kc);
-
-    //send to motors
-    set_main_PWM (control/10);//control is divided by 100 within PWM function so divide by 10
+    return (angle * 448 / 360);
 }
 
 
 
-//*****************************************************************************
-//
-//*****************************************************************************
-void decrease_yaw(int32_t yaw_angle)
+//*****************************************************************************************************
+// change yaw angle by specified amount
+//*****************************************************************************************************
+void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
 {
-    //get altitude
-    int32_t current_alt_val = get_alt_val(*buffer, buf_size);
-    int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);
+    int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
 
-    int32_t setpoint = (current alt _percent - 1500); // change 15 degrees
-    if setpoint < 0
-    {
-        setpoint = 0;
-    }
+    //account for coupling on main rotor
+    offset = Kc * rotor_PWM;
 
     //calculate control
-    control = controller (setpoint, int32_t sensor_reading, Kp, Ki, Kd, Kc);
+    control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR);
 
     //send to PWM and motors
-    set_main_PWM (control / 10); //control is divided by 100 within PWM function so divide by 10
+    set_yaw_PWM (control_action);
 }

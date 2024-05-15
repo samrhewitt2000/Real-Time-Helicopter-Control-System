@@ -31,6 +31,8 @@
 #define Kg 33.3 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
 
+volatile int32_t rotor_PWM = 0;
+
 
 
 //*****************************************************************************************************
@@ -65,21 +67,18 @@ int32_t alt_val_to_percent(int32_t initial_alt_val, int32_t current_alt_val)
 //*****************************************************************************
 void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
 {
-    //account for gravity ~33% duty cycle
-    int32_t offset = 333;
-
     int32_t desired_alt_percent = current_alt_percent + alt_percent_change;
 
-    if desired_alt > 100 //check not greater than 100
+    if desired_alt_percent > 100 //check not greater than 100
     {
-        desired_alt = 100;
+        desired_alt_percent = 100;
     }
     else if (desired_alt_percent < 0)
     {
         desired_alt_percent = 0
     }
 
-    controller_action = controller (desired_alt_percent, Kp, Ki, Kd, Kg, FLOAT_CONVERSION_FACTOR);
+    rotor_PWM = controller (desired_alt_percent, Kp, Ki, Kd, Kg, FLOAT_CONVERSION_FACTOR);
 
-    set_main_PWM (controller_action);
+    set_main_PWM (rotor_PWM);
 }

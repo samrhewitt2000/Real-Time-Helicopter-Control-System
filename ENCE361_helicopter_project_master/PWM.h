@@ -17,7 +17,7 @@
 
 void initialise_PWM (void);
 
-void set_main_PWM (uint32_t ui32Duty);
+void set_rotor_PWM (uint32_t ui32Duty);
 
 void set_tail_PWM (uint32_t ui32Duty);
 

@@ -25,7 +25,7 @@
 #include "quad_enc.h"
 
 #define MAX_ENC_TICKS 224
-#define MIN_ENC_TICKS -220
+#define MIN_ENC_TICKS -223
 
 volatile int32_t quad_enc_ticks = 0;  // Global variable to store yaw angle ticks
 
