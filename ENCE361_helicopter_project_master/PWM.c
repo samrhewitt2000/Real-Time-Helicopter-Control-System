@@ -72,6 +72,9 @@
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
 
+
+
+
 /*******************************************
  *      Local prototypes
  *******************************************/
@@ -140,7 +143,11 @@ void set_main_PWM (uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
+    uint32_t ui32main_duty_cycle = (ui32Period * ui32Duty / 100);
 }
+
+
+
 
 void set_tail_PWM (uint32_t ui32Duty)
 {

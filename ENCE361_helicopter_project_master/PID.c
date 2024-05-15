@@ -45,7 +45,7 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     //avoid floating point maths multiply everything by 1000
 
     //account for gravity ~33% duty cycle
-    int32_t Kg = 333
+    int32_t Kg = 333 * main_duty_cycle / 100;
 
     static int32_t I = 0;
     static int32_t prev_sensor_reading = 0;
@@ -60,7 +60,7 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     {
         int32_t control = P + (I + dI) + D + Kg;
     } else {
-        int32_t control = P + (I + dI) + D + Kc; //account for motor coupling
+        int32_t control = P + (I + dI) + D + Kc * ; //account for motor coupling
     }
 
 
@@ -68,11 +68,17 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     if (control > MAX_OUTPUT)
     {
         control = MAX_OUTPUT;
+    } else if (control < MIN_OUTPUT)
+    {
+        control = MIN_OUTPUT;
     }else {
         I = (I + dI);
     }
 
-    return control //must divide by 1000 before use
+    prev_sensor_reading = sensor_reading;
+
+
+    return control //control signal * 1000
 
 
 }
