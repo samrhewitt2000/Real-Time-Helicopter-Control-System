@@ -28,8 +28,12 @@
 #define MIN_ENC_TICKS -220
 
 volatile int32_t quad_enc_ticks = 0;  // Global variable to store yaw angle ticks
+
 volatile phase_t current_phase = PHASE_4;
+
 volatile phase_t prev_phase = PHASE_4;
+
+
 
 // *******************************************************
 // init_quad_enc: Initialise the quadrature encoder
@@ -62,6 +66,8 @@ void init_quad_enc (void)
     // Enable Master Interrupts
     IntMasterEnable();
 }
+
+
 
 // **************************************************************************************************************
 // quad_enc_int_handler: Initialise the interrrupt handler for the quardature encoder

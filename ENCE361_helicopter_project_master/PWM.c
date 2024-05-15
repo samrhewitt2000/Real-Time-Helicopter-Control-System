@@ -59,7 +59,6 @@
 #define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
-
 //PWM tail rotor M1PWM5
 #define PWM_TAIL_BASE       PWM1_BASE
 #define PWM_TAIL_GEN         PWM_GEN_2
@@ -70,8 +69,6 @@
 #define PWM_TAIL_GPIO_BASE   GPIO_PORTF_BASE
 #define PWM_TAIL_GPIO_CONFIG GPIO_PC5_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
-
-
 
 
 
@@ -131,6 +128,8 @@ void initialise_PWM (void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
 }
 
+
+
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7
  ********************************************************/
@@ -148,7 +147,9 @@ void set_main_PWM (uint32_t ui32Duty)
 
 
 
-
+//*****************************************************************************
+//
+//*****************************************************************************
 void set_tail_PWM (uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
@@ -159,6 +160,3 @@ void set_tail_PWM (uint32_t ui32Duty)
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM,
         ui32Period * ui32Duty / 100);
 }
-
-
-

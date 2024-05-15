@@ -1,3 +1,6 @@
+#ifndef COMMUNICATIONS_H_
+#define COMMUNICATIONS_H_
+
 //*****************************************************************************
 // 
 //      communications.h
@@ -14,3 +17,5 @@
 // Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
 //
 //*****************************************************************************
+
+#endif /*COMMUNICATIONS_H_*/

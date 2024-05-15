@@ -1,3 +1,6 @@
+#ifndef PWM_H_
+#define PWM_H_
+
 //*****************************************************************************
 // 
 //      PWM.h
@@ -14,6 +17,8 @@
 
 void initialise_PWM (void);
 
-
 void set_main_PWM (uint32_t ui32Duty);
+
 void set_tail_PWM (uint32_t ui32Duty);
+
+#endif /*PWM_H_*/

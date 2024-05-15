@@ -32,7 +32,7 @@
 #include "yaw.h"
 #include "displays.h"
 #include "ADC.h"
-#include "buttons5.h"
+#include "buttons.h"
 #include "inc/hw_ints.h"
 
 typedef enum
@@ -45,6 +45,11 @@ typedef enum
 
 } helicopter_state_t;
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void init_system(void);
 {
     // Enable interrupts to the processor.
@@ -60,6 +65,11 @@ void init_system(void);
     initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 int main(void)
  {
     int32_t initial_ADC_val = 0;    // initialize first value
@@ -94,4 +104,3 @@ int main(void)
         SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
     }
 }
-

@@ -18,22 +18,29 @@
 #include "quad_enc.h"
 #include "yaw_control.h"
 
-//k values need changing
-#define Kp 100
-#define Ki 100
-#define Kd 100
-#define Kc 333
-
-
-
+#define FLOAT_CONVERSION_FACTOR 100
+#define Kp 1.0 * FLOAT_CONVERSION_FACTOR
+#define Ki 1.0 * FLOAT_CONVERSION_FACTOR
+#define Kd 1.0 * FLOAT_CONVERSION_FACTOR
+#define Kc 0.8 * FLOAT_CONVERSION_FACTOR
 
 volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 {
     return abs(((360 * quad_enc_ticks) % 448 * 10) / 448);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 {
     return (360 * yaw_ticks / 448);
@@ -41,11 +48,11 @@ int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 
 
 
-
-
+//*****************************************************************************
+//
+//*****************************************************************************
 void increase_yaw(int32_t yaw_angle)
 {
-
     //get altitude
     int32_t current_alt_val = get_alt_val(*buffer, buf_size);
     int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);
@@ -61,13 +68,15 @@ void increase_yaw(int32_t yaw_angle)
 
     //send to motors
     set_main_PWM (control/10);//control is divided by 100 within PWM function so divide by 10
-
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void decrease_yaw(int32_t yaw_angle)
 {
-
-
     //get altitude
     int32_t current_alt_val = get_alt_val(*buffer, buf_size);
     int32_t current_alt_percent = alt_vals_to_percent(current_alt_val);

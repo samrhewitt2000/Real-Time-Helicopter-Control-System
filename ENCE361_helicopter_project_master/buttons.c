@@ -21,8 +21,7 @@
 //
 //*****************************************************************************
 
-#include "buttons5.h"
-
+#include "buttons.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -32,20 +31,17 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 
-
-// *******************************************************
-// Globals to module
-// *******************************************************
-
-
 static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 
+
+
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
+// *******************************************************
 void initButtons (void)
 {
     int i;
@@ -90,6 +86,9 @@ void initButtons (void)
     }
 }
 
+
+
+
 // *******************************************************
 // updateButtons: Function designed to be called regularly. It polls all
 // buttons once and updates variables associated with the buttons if
@@ -99,6 +98,7 @@ void initButtons (void)
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
 // read the pin in the opposite condition, before the state changes and
 // a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
+// *******************************************************
 void updateButtons (void)
 {
     bool but_value[NUM_BUTS];
@@ -135,12 +135,13 @@ void updateButtons (void)
 
 
 
+
 // *******************************************************
 // checkButton: Function returns the new button logical state if the button
 // logical state (PUSHED or RELEASED) has changed since the last call,
 // otherwise returns NO_CHANGE.
-uint8_t
-checkButton (uint8_t butName)
+// *******************************************************
+uint8_t checkButton (uint8_t butName)
 {
     if (but_flag[butName])
     {
@@ -152,5 +153,3 @@ checkButton (uint8_t butName)
     }
     return NO_CHANGE;
 }
-
-
