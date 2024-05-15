@@ -12,8 +12,8 @@
 //*****************************************************************************
 
 
-void initialisePWM (void);
+void initialise_PWM (void);
 
 
-void setMainPWM (uint32_t ui32Duty);
-void setTailPWM (uint32_t ui32Duty);
+void set_main_PWM (uint32_t ui32Duty);
+void set_tail_PWM (uint32_t ui32Duty);

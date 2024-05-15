@@ -65,6 +65,11 @@ uint32_t readCircBuf (circBuf_t *buffer)
     return entry;
 }
 
+
+
+
+
+
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
 // sets pointer to NULL and other fields to 0. The buffer can

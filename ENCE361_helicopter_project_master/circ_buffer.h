@@ -43,11 +43,13 @@ typedef struct {
 // *******************************************************
 uint32_t * initCircBuf (circBuf_t *buffer, uint32_t size);
 
+
 // *******************************************************
 // writeCircBuf: insert entry at the current windex location,
 // advance windex, modulo (buffer size).
 // *******************************************************
 void writeCircBuf (circBuf_t *buffer, uint32_t entry);
+
 
 // *******************************************************
 // readCircBuf: return entry at the current rindex location,
@@ -56,11 +58,17 @@ void writeCircBuf (circBuf_t *buffer, uint32_t entry);
 // *******************************************************
 uint32_t readCircBuf (circBuf_t *buffer);
 
+
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
 // sets pointer to NULL and other fields to 0. The buffer can
 // re initialised by another call to initCircBuf().
 // *******************************************************
 void freeCircBuf (circBuf_t *buffer);
+
+
+//sets data in buffer->data to 0
+void reset_buffer(circBuf_t *buffer);
+
 
 #endif /*CIRCBUFT_H_*/

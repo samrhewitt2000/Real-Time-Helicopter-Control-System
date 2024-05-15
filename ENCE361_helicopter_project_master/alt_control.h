@@ -1,5 +1,5 @@
-#ifndef ALT_CONTROL_
-#define ALT_CONTROL_
+#ifndef ALT_CONTROL_H
+#define ALT_CONTROL_H
 //*****************************************************************************
 // 
 //      alt_control.h
@@ -19,6 +19,11 @@
 
 int32_t get_alt_val(circBuf_t *buffer);
 
-int32_t alt_vals_to_percent(int32_t initial_alt_val, int32_t current_alt_val)
+int32_t alt_vals_to_percent(int32_t initial_alt_val, int32_t current_alt_val);
 
-#endif /*ALT_CONTROL_*/
+
+void decrease_altitude(int32_t alt_percent);
+void increase_altitude(int32_t alt_percent);
+
+
+#endif /*ALT_CONTROL_H*/
