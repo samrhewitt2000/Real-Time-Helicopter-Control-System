@@ -32,7 +32,7 @@
 volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 
 //*****************************************************************************************************
-//converts yaw angle ticks into its decimal part for display
+// converts yaw angle ticks into its decimal part for display
 //*****************************************************************************************************
 int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 {
@@ -42,7 +42,7 @@ int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 
 
 //*****************************************************************************************************
-//converts yaw angle ticks into its integer format
+// converts yaw angle ticks into its integer format
 //*****************************************************************************************************
 int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 {
@@ -52,7 +52,7 @@ int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 
 
 //*****************************************************************************************************
-//converts yaw angle back into yaw encoder ticks
+// converts yaw angle back into yaw encoder ticks
 //*****************************************************************************************************
 int32_t yaw_angle_to_ticks(int32_t angle)
 {
@@ -62,20 +62,20 @@ int32_t yaw_angle_to_ticks(int32_t angle)
 
 
 //*****************************************************************************************************
-//change yaw angle by specified amount
+// change yaw angle by specified amount
 //*****************************************************************************************************
-void change_yaw_angle(int32_t current_yaw_ticks, int32_t yaw_angle_change, FLOAT_CONVERSION_FACTOR)
+void change_yaw_angle(int32_t current_yaw_ticks, int32_t yaw_angle_change)
 {
     //get yaw ticks from yaw angle
-    int32_t yaw_angle_change_ticks = (angle * 448 / 360);
+    int32_t yaw_angle_change_ticks = (angle_change * 448 / 360);
 
-    int32_t setpoint = (current_yaw_ticks + yaw_angle_change_ticks);
+    int32_t yaw_setpoint = (current_yaw_ticks + yaw_angle_change_ticks);
 
     //account for coupling on main rotor
     offset = main_duty_cycle * KC_TAIL;
 
     //calculate control
-    control = controller (setpoint, int32_t sensor_reading, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR;
+    control = controller (yaw_setpoint, int32_t sensor_reading, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR;
 
     //send to PWM and motors
     set_main_PWM (control); //control is out of 100 within PWM function so divide by 10
