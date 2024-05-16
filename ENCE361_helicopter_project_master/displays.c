@@ -27,7 +27,7 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-#include "circBuffer.h"
+#include "circ_buffer.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "ADC.h"
 #include "buttons.h"
@@ -107,4 +107,28 @@ void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_i
     }
 
     OLEDStringDraw (string, display_col, display_row);
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row)
+{
+    char string[7];
+    usnprintf(string, sizeof(string), "Main duty Cycle: %2d %%  ", duty_cycle);
+    OLEDStringDraw(string, display_col, display_row);
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row)
+{
+    char string[7];
+    usnprintf(string, sizeof(string), "Tail duty Cycle: %2d %% ", tail_duty_cycle);
+    OLEDStringDraw(string, display_col, display_row);
 }

@@ -18,4 +18,18 @@
 //
 //*****************************************************************************
 
+typedef enum
+{
+    LANDED,
+    LANDING,
+    TAKEOFF,
+    FLYING
+} helicopter_state_t;
+
+void initialise_USB_UART(void);
+
+void UART_send(char *pucBuffer);
+
+void UART_transmit_info(int32_t yaw_setpoint, int32_t yaw_actual, int32_t alt_setpoint, int32_t alt_actual, int32_t tail_duty, int32_t main_duty, helicopter_state_t mode);
+
 #endif /*COMMUNICATIONS_H_*/

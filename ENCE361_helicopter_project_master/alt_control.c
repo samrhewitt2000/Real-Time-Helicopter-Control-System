@@ -16,13 +16,6 @@
 //*****************************************************************************
 
 #include "alt_control.h"
-#include "circ_buffer.h"
-#include "PID.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "driverlib/PWM.h"
-#include "ADC.h"
-#include "buttons.h"
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
@@ -30,8 +23,6 @@
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kg 33.3 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
-
-volatile int32_t rotor_PWM = 0;
 
 
 

@@ -67,7 +67,7 @@
 #define PWM_TAIL_PERIPH_PWM  SYSCTL_PERIPH_PWM1
 #define PWM_TAIL_PERIPH_GPIO SYSCTL_PERIPH_GPIOF
 #define PWM_TAIL_GPIO_BASE   GPIO_PORTF_BASE
-#define PWM_TAIL_GPIO_CONFIG GPIO_PC5_M1PWM5
+#define PWM_TAIL_GPIO_CONFIG GPIO_PC1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
 
@@ -142,7 +142,7 @@ void set_rotor_PWM (uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
-    uint32_t ui32main_duty_cycle = (ui32Period * ui32Duty / 100);
+    main_rotor_duty = (ui32Period * ui32Duty / 100);
 }
 
 
@@ -159,4 +159,5 @@ void set_tail_PWM (uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM,
         ui32Period * ui32Duty / 100);
+    tail_rotor_duty = (ui32Period * ui32Duty / 100);
 }

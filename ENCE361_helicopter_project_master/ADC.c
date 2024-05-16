@@ -31,7 +31,7 @@
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
-#include "circBuffer.h"
+#include "circ_buffer.h"
 
 #define SAMPLE_RATE_HZ 100
 
