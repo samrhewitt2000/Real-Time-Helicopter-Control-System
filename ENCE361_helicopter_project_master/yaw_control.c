@@ -80,6 +80,6 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
 
     //calculate control
     //send to PWM and motors
-    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);
+    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);//divide control action by conversion factor
 }
 

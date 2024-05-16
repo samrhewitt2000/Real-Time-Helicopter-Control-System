@@ -36,14 +36,11 @@
 #include "buttons.h"
 #include "inc/hw_ints.h"
 #include "communications.h"
-
-
+#include "alt_control.h"
+#include "PID.h"
+#include "quad_enc.h"
 
 #define BUF_SIZE 10
-
-
-
-
 
 
 
@@ -61,7 +58,6 @@ void init_system(void)
     initClock ();
     initADC ();
     init_display();
-//    initYaw ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 
@@ -72,37 +68,30 @@ void init_system(void)
 //*****************************************************************************
 int main(void)
  {
-    int32_t initial_ADC_val = 0;    // initialize first value
-    int32_t current_ADC_val = 0;    // initialize first value
+
     int32_t current_alt_percent;
-    init_system();
+
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
-    initial_ADC_val = get_alt_val(&g_inBuffer);
+    int32_t initial_ADC_val = get_alt_val(&g_inBuffer);
+    int32_t current_ADC_val = initial_ADC_val;
     helicopter_state_t current_heli_state = LANDED;
 
     IntMasterEnable();
 
-    int i = 0;
+
 
     while (1)
     {
         current_ADC_val = get_alt_val(&g_inBuffer);
         current_alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
 
-        //display_main_duty_cycle(main_rotor_duty, 0, 0);
-        displayADCVal(current_ADC_val, 0, 0);
+        display_main_duty_cycle(main_rotor_duty, 0, 0);
         display_tail_duty_cycle(tail_rotor_duty, 0, 1);
 
         display_alt_percent(current_alt_percent, 0, 2);
         display_yaw(0, 3, yaw_angle_int, yaw_angle_decimal);
-
-        if (i > 100)
-        {
-            i = 0;
-        }
-
 
         updateButtons();
 
@@ -140,6 +129,8 @@ int main(void)
                 break;
         }
 
-        //SysCtlDelay (SysCtlClockGet() / 48);  // Update at ~ 4 Hz        ~ 2 Hz = / 24
+        SysCtlDelay (SysCtlClockGet() / 48);  // Update at ~ 4 Hz            ~ 2 Hz = / 24
     }
 }
+
+

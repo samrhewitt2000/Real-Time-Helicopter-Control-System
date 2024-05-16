@@ -28,7 +28,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 
-
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
  * PC5 (M0PWM7).  This is the same PWM output as the
@@ -82,6 +81,7 @@ void initSysTick (void);
 void initialisePWM (void);
 void setPWM (uint32_t u32Duty);
 
+//initilize externs
 int32_t main_rotor_duty;
 int32_t tail_rotor_duty;
 

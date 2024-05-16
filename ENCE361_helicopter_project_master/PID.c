@@ -45,10 +45,7 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
 {
     //avoid floating point maths multiply everything by 1000
 
-    //account for gravity ~33% duty cycle
-    int32_t Kg = (333 * main_rotor_duty / 100);
-
-    int32_t delta_t = 48 * SysCtlClockGet();
+    int32_t delta_t = 48 * SysCtlClockGet(); //  1/frequency
     static int32_t I = 0;
     static int32_t prev_sensor_reading = 0;
     int32_t error = (setpoint - sensor_reading);
@@ -56,7 +53,7 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     int32_t dI = (Ki * error * delta_t); ///delta_t = 1/systick?
     int32_t D = Kd * (prev_sensor_reading - sensor_reading) / delta_t;
 
-    //no coupling if using main rotor but must account for gravity
+    //no coupling if using main rotor but must account for gravity (included in offset)
     int32_t control = P + (I + dI) + D + offset; //account for motor coupling
 
     //check for integral saturation

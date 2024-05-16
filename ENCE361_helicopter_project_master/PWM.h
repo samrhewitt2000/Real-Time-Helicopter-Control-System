@@ -19,7 +19,6 @@
 extern int32_t main_rotor_duty;
 extern int32_t tail_rotor_duty;
 
-
 void initialise_PWM (void);
 
 void set_rotor_PWM (uint32_t ui32Duty);
