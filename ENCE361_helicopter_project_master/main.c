@@ -15,9 +15,8 @@
 //
 //*****************************************************************************
 
-#include "circBuffer.h"
-
-
+#include "PWM.h"
+#include "circ_buffer.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -31,35 +30,28 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-#include "yaw.h"
+#include "yaw_control.h"
 #include "displays.h"
 #include "ADC.h"
-#include "buttons5.h"
-
-
-
-
+#include "buttons.h"
 #include "inc/hw_ints.h"
+#include "communications.h"
 
 
-//*****************************************************************************
-// Constants
-//*****************************************************************************
+
 #define BUF_SIZE 10
 
-typedef enum {
 
-    STATE_PERC,             // display altitude percentages state
-    STATE_MEAN_ADC_VAL,     // display mean adc values state
-    STATE_OFF,              // screen off state
-} display_state_t;
 
-int
-main(void)
- {
-    int32_t initial_ADC_val = 0;    // initialize first value
-    int32_t current_ADC_val = 0;    // initialize first value
-    
+
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void init_system(void)
+{
     // Enable interrupts to the processor.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
@@ -71,66 +63,87 @@ main(void)
     initDisplay ();
     initYaw ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
+}
 
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-//    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-//    GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_DIR_MODE_OUT);
 
+
+//*****************************************************************************
+//
+//*****************************************************************************
+int main(void)
+ {
+    int32_t initial_ADC_val = 0;    // initialize first value
+    int32_t current_ADC_val = 0;    // initialize first value
+    int32_t current_alt_percent;
+    init_system();
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-
-    //prev_phase = get_current_phase();
-
-    display_state_t current_state;
-    current_state = STATE_PERC; //initialize display state
-    //
-
-
-
+    initial_ADC_val = get_alt_val(&g_inBuffer);
+    helicopter_state_t current_heli_state = LANDED;
 
     IntMasterEnable();
 
+    int i = 0;
+
     while (1)
     {
-        //
-        // Background task: calculate the (approximate) mean of the values in the
-        // circular buffer and display it, together with the sample number.
-        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+        current_ADC_val = get_alt_val(&g_inBuffer);
+        current_alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
 
-        if (checkButton(LEFT) == PUSHED) {
-            initial_ADC_val = current_ADC_val;
+
+        if ((i % 2) == 0)
+        {
+
+            display_main_duty_cycle(main_rotor_duty, 0, 0);
+            display_tail_duty_cycle(tail_rotor_duty, 0, 1);
+
+            display_alt_percent(current_alt_percent, 0, 2);
+            display_yaw(0, 3, yaw_angle_int, yaw_angle_decimal);
+            i++;
+        }
+        if (i > 100)
+        {
+            i = 0;
         }
 
-       switch(current_state)
-       {
-       case STATE_PERC:
-           displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
-           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-           //SysCtlDelay(SysCtlClockGet() / yaw_angle);
-           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
-           displayYaw(0, 2);
-           break;
-       case STATE_MEAN_ADC_VAL:
-           // Calculate and display the rounded mean of the buffer contents
-           displayADCVal (current_ADC_val, 0, 1);
-           break;
-       case STATE_OFF:
-           displayNothing();
-           break;
-       }
-       /*if (checkButton(UP) == PUSHED)
-       {
-           if (current_state != STATE_OFF) {
-               current_state++;
-           }
-           else {
-               current_state = STATE_PERC;
-           }
-       }*/
-       SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
 
+        updateButtons();
+
+        switch(current_heli_state)
+        {
+            case LANDED:
+                set_rotor_PWM(0);
+                if (checkButton(SWITCH) == PUSHED)
+                {
+                    current_heli_state = TAKEOFF;
+                }
+                break;
+            case LANDING:
+                change_altitude(current_alt_percent, -100);
+                if (current_alt_percent == 0)
+                {
+                    current_heli_state = LANDED;
+                }
+                break;
+            case TAKEOFF:
+                change_altitude(current_alt_percent, 1);
+                break;
+            case FLYING:
+                if (checkButton(SWITCH) == RELEASED)
+                {
+                    current_heli_state = LANDING;
+                } else if (checkButton(UP) == PUSHED)
+                {
+                    change_altitude(current_alt_percent, 10);
+
+                } else if (checkButton(DOWN) == PUSHED)
+                {
+                    change_altitude(current_alt_percent, -10);
+                }
+                break;
+        }
+
+        SysCtlDelay (SysCtlClockGet() / 48);  // Update display at ~ 2 Hz = / 24
     }
 }
-

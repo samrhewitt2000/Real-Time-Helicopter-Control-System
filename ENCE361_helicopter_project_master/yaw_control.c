@@ -15,25 +15,33 @@
 //
 //*****************************************************************************
 
-
 #include <stdint.h>
 #include <stdbool.h>
-#include "PID.h"
 #include "quad_enc.h"
 #include "yaw_control.h"
+#include "PWM.h"
+#include "alt_control.h"
+#include "circ_buffer.h"
+#include "PID.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "driverlib/PWM.h"
 #include "ADC.h"
+#include "buttons.h"
 
-#define KP_TAIL 0.5 * FLOAT_CONVERSION_FACTOR //k values need changing
-#define KI_TAIL 0.5 * FLOAT_CONVERSION_FACTOR
-#define KD_TAIL 0.5 * FLOAT_CONVERSION_FACTOR
-#define KC_TAIL 0.8 * FLOAT_CONVERSION_FACTOR
 #define FLOAT_CONVERSION_FACTOR 10
+#define Kp 1.0 * FLOAT_CONVERSION_FACTOR
+#define Ki 1.0 * FLOAT_CONVERSION_FACTOR
+#define Kd 1.0 * FLOAT_CONVERSION_FACTOR
+#define Kc 0.8 * FLOAT_CONVERSION_FACTOR
 
-volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
+//volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
+volatile int32_t yaw_angle_int = 0;
 
-//*****************************************************************************************************
-// converts yaw angle ticks into its decimal part for display
-//*****************************************************************************************************
+
+//*****************************************************************************
+//
+//*****************************************************************************
 int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 {
     return abs(((360 * quad_enc_ticks) % 448 * 10) / 448);
@@ -46,13 +54,13 @@ int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 //*****************************************************************************************************
 int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 {
-    return (360 * yaw_ticks / 448);
+    return (360 * quad_enc_ticks / 448);
 }
 
 
 
 //*****************************************************************************************************
-// converts yaw angle back into yaw encoder ticks
+// converts yaw angle back into yaw encoder ticks - check with big sam or tutor
 //*****************************************************************************************************
 int32_t yaw_angle_to_ticks(int32_t angle)
 {
@@ -64,20 +72,15 @@ int32_t yaw_angle_to_ticks(int32_t angle)
 //*****************************************************************************************************
 // change yaw angle by specified amount
 //*****************************************************************************************************
-void change_yaw_angle(int32_t current_yaw_ticks, int32_t yaw_angle_change)
+void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
 {
-    //get yaw ticks from yaw angle
-    int32_t yaw_angle_change_ticks = (angle_change * 448 / 360);
-
-    int32_t yaw_setpoint = (current_yaw_ticks + yaw_angle_change_ticks);
-
+    int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
+    int32_t offset;
     //account for coupling on main rotor
-    offset = main_duty_cycle * KC_TAIL;
+    offset = Kc * rotor_PWM;
 
     //calculate control
-    control = controller (yaw_setpoint, int32_t sensor_reading, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR;
-
     //send to PWM and motors
-    set_main_PWM (control); //control is out of 100 within PWM function so divide by 10
+    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset));
 }
 

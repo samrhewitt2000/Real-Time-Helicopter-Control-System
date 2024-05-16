@@ -67,8 +67,8 @@ uint32_t readCircBuf (circBuf_t *buffer);
 void freeCircBuf (circBuf_t *buffer);
 
 
+
 //sets data in buffer->data to 0
 void reset_buffer(circBuf_t *buffer);
-
 
 #endif /*CIRCBUFT_H_*/

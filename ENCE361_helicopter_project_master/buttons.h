@@ -27,7 +27,7 @@
 //*****************************************************************************
 // Constants
 //*****************************************************************************
-enum butNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BUTS};
+enum butNames {UP = 0, DOWN, LEFT, RIGHT, SWITCH, NUM_BUTS};
 enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 // UP button
 #define UP_BUT_PERIPH  SYSCTL_PERIPH_GPIOE
@@ -54,7 +54,9 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define SWITCH_PERIPH SYSCTL_PERIPH_GPIOA
 #define SWITCH_PORT_BASE  GPIO_PORTA_BASE
 #define SWITCH_PIN  GPIO_PIN_7
-#define SWITCH_NORMAL  true
+#define SWITCH_NORMAL true
+
+
 
 #define NUM_BUT_POLLS_RELEASED 4
 #define NUM_BUT_POLLS_PUSHED 1

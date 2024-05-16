@@ -13,8 +13,9 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
+#include "circ_buffer.h"
 
-#include "circBuffer.h"
+
 
 extern circBuf_t g_inBuffer;
 
