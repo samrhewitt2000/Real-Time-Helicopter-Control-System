@@ -38,8 +38,8 @@
 #include "buttons.h"
 #include "inc/hw_ints.h"
 
-#define MAX_OUTPUT 980
-#define MIN_OUTPUT 20
+#define MAX_OUTPUT 980   //max output * FLOAT_CONVERSION_FACTOR
+#define MIN_OUTPUT 20   //min output * FLOAT_CONVERSION_FACTOR
 
 int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset)
 {

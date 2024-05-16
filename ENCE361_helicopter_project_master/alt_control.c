@@ -28,11 +28,11 @@
 #include "PWM.h"
 
 
-#define FLOAT_CONVERSION_FACTOR 10
+#define FLOAT_CONVERSION_FACTOR 1000
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
-#define Kg 33.3 * FLOAT_CONVERSION_FACTOR
+#define Kg 0.333 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
 
 //volatile int32_t main_rotor_PWM = 0;
@@ -81,7 +81,7 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     {
         desired_alt_percent = 0;
     }
-    int32_t offset = 33;
+    int32_t offset = Kg;
     //set pwm to control action
-    set_rotor_PWM (controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset));
+    set_rotor_PWM (controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);
 }

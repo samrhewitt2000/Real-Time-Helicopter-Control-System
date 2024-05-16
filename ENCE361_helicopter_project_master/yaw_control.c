@@ -29,7 +29,7 @@
 #include "ADC.h"
 #include "buttons.h"
 
-#define FLOAT_CONVERSION_FACTOR 10
+#define FLOAT_CONVERSION_FACTOR 1000
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
@@ -76,10 +76,10 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
     int32_t offset;
     //account for coupling on main rotor
-    offset = Kc * rotor_PWM;
+    offset = Kc * rotor_PWM * FLOAT_CONVERSION_FACTOR;
 
     //calculate control
     //send to PWM and motors
-    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset));
+    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);
 }
 
