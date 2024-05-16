@@ -35,9 +35,8 @@
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kc 0.8 * FLOAT_CONVERSION_FACTOR
 
-//volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
-volatile int32_t yaw_angle_int = 0;
-
+volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
+volatile int32_t yaw_angle_int;
 
 //*****************************************************************************
 //

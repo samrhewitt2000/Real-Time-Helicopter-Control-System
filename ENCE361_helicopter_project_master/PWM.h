@@ -16,8 +16,8 @@
 
 #include <stdint.h>
 
-extern volatile int32_t main_rotor_duty = 0;
-extern volatile int32_t tail_rotor_duty = 0;
+extern int32_t main_rotor_duty;
+extern int32_t tail_rotor_duty;
 
 
 void initialise_PWM (void);

@@ -60,8 +60,8 @@ void init_system(void)
     initButtons();
     initClock ();
     initADC ();
-    initDisplay ();
-    initYaw ();
+    init_display();
+//    initYaw ();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 

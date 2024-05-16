@@ -15,7 +15,6 @@
 //
 //*****************************************************************************
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -31,21 +30,29 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "displays.h"
 #include "ADC.h"
+
 #include "buttons.h"
 #include "circ_buffer.h"
 
+
+
 #define SAMPLE_RATE_HZ 100
+//*****************************************************************************
+// Global variables
+//*****************************************************************************
+//static circBuf_t *g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
+//moved this to ADC.h as extern
 
 circBuf_t g_inBuffer;
-
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
-
-
 //*****************************************************************************
+//
 // The interrupt handler for the for SysTick interrupt.
+//
 //*****************************************************************************
-void SysTickIntHandler(void)
+void
+SysTickIntHandler(void)
 {
     //
     // Initiate a conversion
@@ -55,13 +62,14 @@ void SysTickIntHandler(void)
     g_ulSampCnt++;
 }
 
-
-
 //*****************************************************************************
+//
 // The handler for the ADC conversion complete interrupt.
 // Writes to the circular buffer.
+//
 //*****************************************************************************
-void ADCIntHandler(void)
+void
+ADCIntHandler(void)
 {
     uint32_t ulValue;
 
@@ -78,12 +86,11 @@ void ADCIntHandler(void)
     ADCIntClear(ADC0_BASE, 3);
 }
 
-
-
 //*****************************************************************************
 // Initialisation functions for the clock (incl. SysTick), ADC, display
 //*****************************************************************************
-void initClock (void)
+void
+initClock (void)
 {
     // Set the clock rate to 20 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
@@ -101,12 +108,8 @@ void initClock (void)
     SysTickEnable();
 }
 
-
-
-//*****************************************************************************
-//
-//*****************************************************************************
-void initADC (void)
+void
+initADC (void)
 {
     //
     // The ADC0 peripheral must be enabled for configuration and use.

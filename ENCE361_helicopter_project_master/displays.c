@@ -35,7 +35,6 @@
 #include "yaw_control.h"
 
 
-
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -121,7 +120,12 @@ void display_main_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t 
     OLEDStringDraw(string, display_col, display_row);
 }
 
-display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row)
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row)
 {
     char string[7];
     usnprintf(string, sizeof(string), "Tail duty Cycle: %2d %% ", tail_duty_cycle);

@@ -31,6 +31,8 @@ void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t dis
 
 void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal);
 
-void display_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
+void display_main_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
+
+void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
 
 #endif /*DISPLAYS_H_*/

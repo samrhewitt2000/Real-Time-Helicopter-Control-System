@@ -15,6 +15,7 @@
 //
 //*****************************************************************************
 
+#include "PWM.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -81,8 +82,8 @@ void initSysTick (void);
 void initialisePWM (void);
 void setPWM (uint32_t u32Duty);
 
-volatile int32_t main_rotor_duty = 0;
-volatile int32_t tail_rotor_duty = 0;
+int32_t main_rotor_duty;
+int32_t tail_rotor_duty;
 
 /*********************************************************
  * initialisePWM
@@ -127,6 +128,8 @@ void initialise_PWM (void)
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
+    int32_t main_rotor_duty = 0;
+    int32_t tail_rotor_duty = 0;
 }
 
 
@@ -162,3 +165,4 @@ void set_tail_PWM (uint32_t ui32Duty)
         ui32Period * ui32Duty / 100);
     tail_rotor_duty = (ui32Period * ui32Duty / 100);
 }
+
