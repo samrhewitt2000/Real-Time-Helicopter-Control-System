@@ -49,9 +49,9 @@ int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks)
 
 
 
-//*****************************************************************************
-//
-//*****************************************************************************
+//*****************************************************************************************************
+// converts yaw angle ticks into its integer format
+//*****************************************************************************************************
 int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks)
 {
     return (360 * quad_enc_ticks / 448);
@@ -83,3 +83,4 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     //send to PWM and motors
     set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset));
 }
+
