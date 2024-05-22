@@ -28,9 +28,9 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+
 #include "displays.h"
 #include "ADC.h"
-
 #include "buttons.h"
 
 //*****************************************************************************

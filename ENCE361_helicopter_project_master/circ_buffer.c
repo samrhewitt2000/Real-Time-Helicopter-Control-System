@@ -16,7 +16,7 @@
 //
 //*****************************************************************************
 
-#include "circBuffer.h"
+#include "circ_buffer.h"
 
 #include <stdint.h>
 #include "stdlib.h"

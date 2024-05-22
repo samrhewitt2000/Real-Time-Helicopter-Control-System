@@ -15,9 +15,6 @@
 //
 //*****************************************************************************
 
-
-#include "circBuffer.h"
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -31,12 +28,14 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+
+#include "inc/hw_ints.h"
+
+#include "circ_buffer.h"
 #include "quad_enc.h"
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
-
-#include "inc/hw_ints.h"
 
 //*****************************************************************************
 // Constants

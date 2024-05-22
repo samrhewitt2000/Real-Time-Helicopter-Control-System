@@ -14,7 +14,7 @@
 //
 //*****************************************************************************
 
-#include "circBuffer.h"
+#include "circ_buffer.h"
 
 extern circBuf_t g_inBuffer;
 

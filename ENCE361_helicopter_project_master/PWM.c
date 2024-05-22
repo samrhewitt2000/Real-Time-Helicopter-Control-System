@@ -1,12 +1,18 @@
 //*****************************************************************************
+// 
+//      PWM.c
 //
-// motor_control.c - Motor control module using PWM signals
-//
-// Author:  Caleb Westbury
-// Last modified:   03/05/2023
+// What does this function do? (Replace)
 //
 //*****************************************************************************
-// Based on the pwmGen.c file from ENCE361 week 3 lab
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on P.J. Bones' pwmGen.c code from 2018
+//
 //*****************************************************************************
 
 #include <stdint.h>
@@ -20,7 +26,9 @@
 #include "driverlib/systick.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
+
 #include "buttons.h"
+#include "PWM.h"
 
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
@@ -159,6 +167,11 @@ setPWM (uint32_t ui32Freq, uint32_t ui32Duty)
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
 }
+
+
+
+
+
 
 
 //int

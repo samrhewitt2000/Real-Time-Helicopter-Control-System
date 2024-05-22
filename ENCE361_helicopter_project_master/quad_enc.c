@@ -22,6 +22,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
+
 #include "quad_enc.h"
 
 #define MAX_ENC_TICKS 224

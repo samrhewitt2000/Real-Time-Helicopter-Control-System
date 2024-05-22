@@ -27,9 +27,9 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-#include "circBuffer.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
+#include "circ_buffer.h"
 #include "ADC.h"
 #include "buttons.h"
 #include "displays.h"
