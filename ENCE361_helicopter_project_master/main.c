@@ -52,7 +52,15 @@ typedef enum {
     STATE_OFF,              // screen off state
 } display_state_t;
 
-
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+typedef enum {
+    LANDED,
+    LANDING,
+    TAKEOFF,
+    FLYING
+} helicopter_state_t;
 
 int main(void)
  {
@@ -91,12 +99,8 @@ int main(void)
 
     //prev_phase = get_current_phase();
 
-    display_state_t current_state;
-    current_state = STATE_PERC; //initialize display state
-    //
-
-
-
+    display_state_t current_state = STATE_PERC; //initialize display state
+    helicopter_state_t current_heli_state = LANDING; //initialize display state
 
     IntMasterEnable();
 
@@ -136,12 +140,18 @@ int main(void)
         switch(current_state)
         {
         case STATE_PERC:
-            displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 1);
+            displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 0);
             //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
             //SysCtlDelay(SysCtlClockGet() / yaw_angle);
             //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
-            displayYaw(0, 2);
-            display_rotor_PWM(0, 3, ui32TailDuty); // using for debugging
+            displayYaw(0, 1);
+            display_rotor_PWM(0, 2, ui32TailDuty); // using for debugging
+
+            // using for debugging
+            char string[17];
+            usnprintf (string, sizeof(string), "state: %2d %%  ", current_heli_state);
+            OLEDStringDraw (string, 0, 4);
+
             break;
         case STATE_MEAN_ADC_VAL:
             // Calculate and display the rounded mean of the buffer contents
