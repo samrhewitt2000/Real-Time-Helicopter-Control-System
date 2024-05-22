@@ -73,6 +73,7 @@ int main(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     initSysTick ();
     uint32_t ui32Freq = PWM_START_RATE_HZ;
+    uint32_t ui32Duty = PWM_FIXED_DUTY;
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
