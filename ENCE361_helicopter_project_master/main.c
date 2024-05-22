@@ -34,7 +34,7 @@
 #include "quad_enc.h"
 #include "displays.h"
 #include "ADC.h"
-#include "buttons5.h"
+#include "buttons.h"
 
 #include "inc/hw_ints.h"
 

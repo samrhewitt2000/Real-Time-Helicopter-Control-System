@@ -31,7 +31,7 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 #include "ADC.h"
-#include "buttons5.h"
+#include "buttons.h"
 #include "displays.h"
 #include "quad_enc.h"
 

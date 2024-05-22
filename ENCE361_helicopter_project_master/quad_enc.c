@@ -144,7 +144,7 @@ void PB_IntHandler(void)
 
     prev_phase = current_phase;
 
-    if (yaw_ticks MAX_ENC_TICKS)
+    if (yaw_ticks > MAX_ENC_TICKS)
     {
         yaw_ticks = MIN_ENC_TICKS;
     }
