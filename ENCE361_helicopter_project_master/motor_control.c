@@ -20,7 +20,7 @@
 #include "driverlib/systick.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
-#include "buttons4.h"
+#include "buttons.h"
 
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
@@ -68,15 +68,15 @@ void setPWM (uint32_t u32Freq, uint32_t u32Duty);
 /***********************************************************
  * ISR for the SysTick interrupt (used for button debouncing).
  ***********************************************************/
-void
-SysTickIntHandler (void)
-{
-    //
-    // Poll the buttons
-    updateButtons();
-    //
-    // It is not necessary to clear the SysTick interrupt.
-}
+//void
+//SysTickIntHandler (void)
+//{
+//    //
+//    // Poll the buttons
+//    updateButtons();
+//    //
+//    // It is not necessary to clear the SysTick interrupt.
+//}
 
 /***********************************************************
  * Initialisation functions: clock, SysTick, PWM
@@ -153,46 +153,46 @@ setPWM (uint32_t ui32Freq, uint32_t ui32Duty)
 }
 
 
-int
-main (void)
-{
-    uint32_t ui32Freq = PWM_START_RATE_HZ;
-
-    initClocks ();
-
-    // As a precaution, make sure that the peripherals used are reset
-    SysCtlPeripheralReset (PWM_MAIN_PERIPH_GPIO); // Used for PWM output
-    SysCtlPeripheralReset (PWM_MAIN_PERIPH_PWM);  // Main Rotor PWM
-    SysCtlPeripheralReset (UP_BUT_PERIPH);        // UP button GPIO
-    SysCtlPeripheralReset (DOWN_BUT_PERIPH);      // DOWN button GPIO
-
-    initButtons ();  // Initialises 4 pushbuttons (UP, DOWN, LEFT, RIGHT)
-    initialisePWM ();
-    initSysTick ();
-
-    // Initialisation is complete, so turn on the output.
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-
-    //
-    // Enable interrupts to the processor.
-    IntMasterEnable ();
-
-    //
-    // Loop forever, controlling the PWM frequency and
-    // maintaining the the PWM duty cycle.
-    while (1)
-    {
-        // Background task: Check for button pushes and control
-        // the PWM frequency within a fixed range.
-        if ((checkButton (UP) == PUSHED) && (ui32Freq < PWM_RATE_MAX_HZ))
-        {
-            ui32Freq += PWM_RATE_STEP_HZ;
-            setPWM (ui32Freq, PWM_FIXED_DUTY);
-        }
-        if ((checkButton (DOWN) == PUSHED) && (ui32Freq > PWM_RATE_MIN_HZ))
-        {
-            ui32Freq -= PWM_RATE_STEP_HZ;
-            setPWM (ui32Freq, PWM_FIXED_DUTY);
-        }
-    }
-}
+//int
+//main (void)
+//{
+//    uint32_t ui32Freq = PWM_START_RATE_HZ;
+//
+//    initClocks ();
+//
+//    // As a precaution, make sure that the peripherals used are reset
+//    SysCtlPeripheralReset (PWM_MAIN_PERIPH_GPIO); // Used for PWM output
+//    SysCtlPeripheralReset (PWM_MAIN_PERIPH_PWM);  // Main Rotor PWM
+//    SysCtlPeripheralReset (UP_BUT_PERIPH);        // UP button GPIO
+//    SysCtlPeripheralReset (DOWN_BUT_PERIPH);      // DOWN button GPIO
+//
+//    initButtons ();  // Initialises 4 pushbuttons (UP, DOWN, LEFT, RIGHT)
+//    initialisePWM ();
+//    initSysTick ();
+//
+//    // Initialisation is complete, so turn on the output.
+//    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
+//
+//    //
+//    // Enable interrupts to the processor.
+//    IntMasterEnable ();
+//
+//    //
+//    // Loop forever, controlling the PWM frequency and
+//    // maintaining the the PWM duty cycle.
+//    while (1)
+//    {
+//        // Background task: Check for button pushes and control
+//        // the PWM frequency within a fixed range.
+//        if ((checkButton (UP) == PUSHED) && (ui32Freq < PWM_RATE_MAX_HZ))
+//        {
+//            ui32Freq += PWM_RATE_STEP_HZ;
+//            setPWM (ui32Freq, PWM_FIXED_DUTY);
+//        }
+//        if ((checkButton (DOWN) == PUSHED) && (ui32Freq > PWM_RATE_MIN_HZ))
+//        {
+//            ui32Freq -= PWM_RATE_STEP_HZ;
+//            setPWM (ui32Freq, PWM_FIXED_DUTY);
+//        }
+//    }
+//}
