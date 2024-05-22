@@ -121,12 +121,12 @@ int main(void)
             set_rotor_PWM (ui32RotorFreq, ui32RotorDuty);
         }
 
-        if ((checkButton (LEFT) == PUSHED) && (ui32TailDuty < PWM_MAX_DUTY ))
+        if ((checkButton (RIGHT) == PUSHED) && (ui32TailDuty < PWM_MAX_DUTY ))
         {
             ui32TailDuty += 10;
             set_tail_PWM (ui32TailFreq, ui32TailDuty);
         }
-        if ((checkButton (RIGHT) == PUSHED) && (ui32TailDuty > PWM_MIN_DUTY ))
+        if ((checkButton (LEFT) == PUSHED) && (ui32TailDuty > PWM_MIN_DUTY ))
         {
             ui32TailDuty -= 10;
             set_tail_PWM (ui32TailFreq, ui32TailDuty);
@@ -140,7 +140,7 @@ int main(void)
             //SysCtlDelay(SysCtlClockGet() / yaw_angle);
             //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
             displayYaw(0, 2);
-            display_rotor_PWM(0, 3, ui32RotorFreq);
+            display_rotor_PWM(0, 3, ui32TailDuty); // using for debugging
             break;
         case STATE_MEAN_ADC_VAL:
             // Calculate and display the rounded mean of the buffer contents
