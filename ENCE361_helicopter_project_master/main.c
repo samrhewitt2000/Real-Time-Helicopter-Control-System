@@ -101,6 +101,8 @@ int main(void)
 
     display_state_t current_state = STATE_PERC; //initialize display state
     helicopter_state_t current_heli_state = LANDING; //initialize display state
+    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    int32_t current_switch_state;
 
     IntMasterEnable();
 
@@ -135,6 +137,14 @@ int main(void)
         {
             ui32TailDuty -= 10;
             set_tail_PWM (ui32TailFreq, ui32TailDuty);
+        }
+
+        current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+        // Increment current_heli_state when the switch goes down (low)
+        if (current_switch_state != prev_switch_state)
+        {
+            current_heli_state++;
+            prev_switch_state = current_switch_state;
         }
 
         switch(current_state)
