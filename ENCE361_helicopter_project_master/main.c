@@ -62,8 +62,25 @@ typedef enum {
     LANDING
 } helicopter_state_t;
 
+
+/********************************************************
+ * Function to set the freq, duty cycle of M1PWM5 (tail motor)
+ ********************************************************/
+void kill_motors(helicopter_state_t *current_heli_state)
+{
+    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
+    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
+
+    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+
+    *current_heli_state = LANDED;
+}
+
+
+
 int main(void)
- {
+{
     int32_t initial_ADC_val = 0;    // initialize first value
     int32_t current_ADC_val = 0;    // initialize first value
     
@@ -104,7 +121,7 @@ int main(void)
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
     int32_t current_switch_state;
 
-    void kill_motors(void);
+    kill_motors(&current_heli_state);
 
     IntMasterEnable();
 
