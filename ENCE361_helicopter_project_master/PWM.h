@@ -79,8 +79,8 @@ void initialise_rotor_PWM (void);
 
 void initialise_tail_PWM (void);
 
-void set_rotor_PWM (uint32_t u32Freq, uint32_t u32Duty);
+void set_rotor_PWM (uint32_t ui32RotorFreq, uint32_t ui32RotorDuty);
 
-void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty);
+void set_tail_PWM(uint32_t ui32TailFreq, uint32_t ui32TailDuty);
 
 #endif /*PWM_H_*/

@@ -107,9 +107,9 @@ int main(void)
         // circular buffer and display it, together with the sample number.
         current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
-        if (checkButton(LEFT) == PUSHED) {
-            initial_ADC_val = current_ADC_val;
-        }
+//        if (checkButton(LEFT) == PUSHED) {
+//            initial_ADC_val = current_ADC_val;
+//        }
 
         if ((checkButton (UP) == PUSHED) && (ui32RotorDuty < PWM_MAX_DUTY ))
         {
