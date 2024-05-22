@@ -36,6 +36,7 @@
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
+#include "PWM.h"
 
 //*****************************************************************************
 // Constants
@@ -71,6 +72,7 @@ int main(void)
     initialisePWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     initSysTick ();
+    uint32_t ui32Freq = PWM_START_RATE_HZ;
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -122,7 +124,7 @@ int main(void)
             //SysCtlDelay(SysCtlClockGet() / yaw_angle);
             //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
             displayYaw(0, 2);
-            void display_rotor_PWM(0, 3, ui32Freq)
+            display_rotor_PWM(0, 3, ui32Freq);
             break;
         case STATE_MEAN_ADC_VAL:
             // Calculate and display the rounded mean of the buffer contents
