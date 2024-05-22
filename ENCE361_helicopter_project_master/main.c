@@ -69,7 +69,8 @@ int main(void)
     initADC ();
     initDisplay ();
     initYaw ();
-    initialisePWM ();
+    initialise_rotor_PWM ();
+    initialise_tail_PWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     initSysTick ();
     uint32_t ui32RotorFreq = PWM_START_RATE_HZ;

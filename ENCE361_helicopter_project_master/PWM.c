@@ -89,10 +89,10 @@ void initSysTick (void)
 
 
 /*********************************************************
- * initialisePWM
+ * initialise_rotor_PWM
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor
  *********************************************************/
-void initialisePWM (void)
+void initialise_rotor_PWM (void)
 {
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
@@ -112,6 +112,35 @@ void initialisePWM (void)
 }
 
 
+
+/*********************************************************
+ * initialise_tail_PWM
+ * M1PWM5 (J3-10, PF1) is used for the tail rotor motor
+ *********************************************************/
+void initialise_tail_PWM(void)
+{
+    // Enable PWM peripheral and GPIO peripheral for tail rotor
+    SysCtlPeripheralEnable(PWM_TAIL_PERIPH_PWM);
+    SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO);
+
+    // Configure pin for PWM output
+    GPIOPinConfigure(PWM_TAIL_GPIO_CONFIG);
+    GPIOPinTypePWM(PWM_TAIL_GPIO_BASE, PWM_TAIL_GPIO_PIN);
+
+    // Configure PWM generator for tail rotor
+    PWMGenConfigure(PWM_TAIL_BASE, PWM_TAIL_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+
+    // Set the initial PWM parameters for tail rotor
+    set_tail_PWM(PWM_START_RATE_HZ, PWM_FIXED_DUTY);
+
+    // Enable PWM generator for tail rotor
+    PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);
+
+    // Disable the output initially, can be enabled later
+    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
+}
+
+// ^fix terminology? rotor/motor?^
 
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7 (main motor)

@@ -75,8 +75,12 @@ void initClocks (void);
 
 void initSysTick (void);
 
-void initialisePWM (void);
+void initialise_rotor_PWM (void);
+
+void initialise_tail_PWM (void);
 
 void set_rotor_PWM (uint32_t u32Freq, uint32_t u32Duty);
+
+void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty);
 
 #endif /*PWM_H_*/
