@@ -42,10 +42,7 @@ int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks);
 //*****************************************************************************************************
 // converts yaw angle back into yaw encoder ticks - check with big sam or tutor
 //*****************************************************************************************************
-int32_t yaw_angle_to_ticks(int32_t angle)
-{
-    return (angle * 448 / 360);
-}
+int32_t yaw_angle_to_ticks(int32_t angle);
 
 
 //*****************************************************************************

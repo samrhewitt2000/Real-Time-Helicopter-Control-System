@@ -90,7 +90,7 @@ void UART_send(char *pucBuffer)
 //*****************************************************************************************************
 void UART_transmit_info(int32_t yaw_setpoint, int32_t yaw_actual, int32_t alt_setpoint, int32_t alt_actual, int32_t tail_duty, int32_t main_duty, helicopter_state_t mode)
 {
-    yaw_setpoint = yaw_angle_ticks_to_int();
+    yaw_setpoint = yaw_angle_ticks_to_int(quad_enc_ticks);
 
     sprintf(statusStr,
             "desired yaw:  %2d\n actual yaw: %2d\n desired alt: %2d\n actual alt: %2d\n tail duty: %2d\n main duty: %2d\n mode: %c\n",

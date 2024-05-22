@@ -50,10 +50,10 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     static int32_t prev_sensor_reading = 0;
     int32_t error = setpoint - sensor_reading;
     int32_t P = Kp * error;
-    int32_t dI = Ki * error * delta_t ///delta_t = 1/systick?
+    int32_t dI = Ki * error * delta_t; ///delta_t = 1/systick?
     int32_t D = Kd * (prev_sensor_reading - sensor_reading) / delta_t;
 
-    int32_t control_action = (P + (I + dI) + D + offset) / float_coversion_factor;
+    int32_t control_action = (P + (I + dI) + D + offset) / float_conversion_factor;
 
     //check for integral saturation
     if (control_action > MAX_CONTROL_OUTPUT)
@@ -71,5 +71,5 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
 
     prev_sensor_reading = sensor_reading;
 
-    return control_action
+    return control_action;
 }

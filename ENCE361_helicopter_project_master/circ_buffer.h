@@ -1,5 +1,5 @@
-#ifndef CIRCBUFT_H_
-#define CIRCBUFT_H_
+#ifndef CIRCBUFFER_H_
+#define CIRCBUFFER_H_
 
 //*****************************************************************************
 // 
@@ -69,6 +69,6 @@ void freeCircBuf (circBuf_t *buffer);
 
 
 //sets data in buffer->data to 0
-void reset_buffer(circBuf_t *buffer);
+//void reset_buffer(circBuf_t *buffer);
 
-#endif /*CIRCBUFT_H_*/
+#endif /*CIRCBUFFER_H_*/

@@ -82,5 +82,5 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR);
 
     //send to PWM and motors
-    set_yaw_PWM (control_action);
+    //set_yaw_PWM (control_action);
 }

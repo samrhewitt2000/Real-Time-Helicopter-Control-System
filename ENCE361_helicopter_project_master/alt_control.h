@@ -25,7 +25,7 @@
 #include "driverlib/PWM.h"
 #include "ADC.h"
 #include "buttons.h"
-#include "PWM"
+#include "PWM.h"
 #include <stdint.h>
 
 volatile int32_t rotor_PWM = 0;

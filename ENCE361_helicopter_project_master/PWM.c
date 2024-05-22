@@ -26,6 +26,7 @@
 #include "driverlib/systick.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
+#include "PWM.h"
 
 
 /**********************************************************
@@ -67,7 +68,7 @@
 #define PWM_TAIL_PERIPH_PWM  SYSCTL_PERIPH_PWM1
 #define PWM_TAIL_PERIPH_GPIO SYSCTL_PERIPH_GPIOF
 #define PWM_TAIL_GPIO_BASE   GPIO_PORTF_BASE
-#define PWM_TAIL_GPIO_CONFIG GPIO_PC1_M1PWM5
+#define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
 
@@ -98,7 +99,7 @@ void initialise_PWM (void)
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
     //tail rotor init
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_PWM);
-    SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO)
+    SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO);
 
     //main gpio config
     GPIOPinConfigure(PWM_MAIN_GPIO_CONFIG);

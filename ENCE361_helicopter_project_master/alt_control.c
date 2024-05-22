@@ -32,6 +32,7 @@
 int32_t get_alt_val(circBuf_t *buffer)
 {
     int32_t sum = 0;
+    int32_t i = 0;
 
     for (i = 0; i < BUF_SIZE; i++)
     {
@@ -60,16 +61,16 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
 {
     int32_t desired_alt_percent = current_alt_percent + alt_percent_change;
 
-    if desired_alt_percent > 100 //check not greater than 100
+    if (desired_alt_percent > 100) //check not greater than 100
     {
         desired_alt_percent = 100;
     }
     else if (desired_alt_percent < 0)
     {
-        desired_alt_percent = 0
+        desired_alt_percent = 0;
     }
 
-    rotor_PWM = controller (desired_alt_percent, Kp, Ki, Kd, Kg, FLOAT_CONVERSION_FACTOR);
+    rotor_PWM = controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, Kg, FLOAT_CONVERSION_FACTOR);
 
-    set_main_PWM (rotor_PWM);
+    //set_main_PWM (rotor_PWM);
 }

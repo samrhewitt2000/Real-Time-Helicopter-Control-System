@@ -15,6 +15,7 @@
 //
 //*****************************************************************************
 
+#include "inc/hw_ints.h"
 #include "PWM.h"
 #include "circ_buffer.h"
 #include <stdint.h>
@@ -34,7 +35,6 @@
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
-#include "inc/hw_ints.h"
 #include "communications.h"
 #include "alt_control.h"
 #include "PID.h"
@@ -57,7 +57,7 @@ typedef enum
 //*****************************************************************************
 //
 //*****************************************************************************
-void init_system(void);
+void init_system(void)
 {
     // Enable interrupts to the processor.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -65,9 +65,9 @@ void init_system(void);
     {
     }
     initButtons();
-    initClock ();
-    initADC ();
-    initDisplay ();
+    initClock();
+    initADC();
+    initDisplay();
     initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 
@@ -78,7 +78,6 @@ void init_system(void);
 //*****************************************************************************
 int main(void)
  {
-    int32_t current_ADC_val = 0;    // initialize first value
     
     init_system();
 

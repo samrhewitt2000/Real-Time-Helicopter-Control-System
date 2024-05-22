@@ -18,14 +18,6 @@
 //
 //*****************************************************************************
 
-typedef enum
-{
-    LANDED,
-    LANDING,
-    TAKEOFF,
-    FLYING
-} helicopter_state_t;
-
 void initialise_USB_UART(void);
 
 void UART_send(char *pucBuffer);
