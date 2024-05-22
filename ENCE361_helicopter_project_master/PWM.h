@@ -47,6 +47,18 @@
 #define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
+//  PWM Hardware Details M1PWM5 (gen 2???)
+//  ---Main Rotor PWM: PF1, J3-10
+#define PWM_TAIL_BASE        PWM1_BASE
+#define PWM_TAIL_GEN         PWM_GEN_2
+#define PWM_TAIL_OUTNUM      PWM_OUT_5
+#define PWM_TAIL_OUTBIT      PWM_OUT_5_BIT
+#define PWM_TAIL_PERIPH_PWM  SYSCTL_PERIPH_PWM1
+#define PWM_TAIL_PERIPH_GPIO SYSCTL_PERIPH_GPIOF
+#define PWM_TAIL_GPIO_BASE   GPIO_PORTF_BASE
+#define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
+#define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
+
 // extern volatile int32_t main_rotor_duty = 0;
 
 // extern volatile int32_t tail_rotor_duty = 0;

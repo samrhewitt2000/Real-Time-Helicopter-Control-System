@@ -72,8 +72,10 @@ int main(void)
     initialisePWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     initSysTick ();
-    uint32_t ui32Freq = PWM_START_RATE_HZ;
-    uint32_t ui32Duty = PWM_FIXED_DUTY;
+    uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
+    uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
+    uint32_t ui32TailFreq = PWM_START_RATE_HZ;
+    uint32_t ui32TailDuty = PWM_FIXED_DUTY;
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
     //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -107,16 +109,28 @@ int main(void)
             initial_ADC_val = current_ADC_val;
         }
 
-        if ((checkButton (UP) == PUSHED) && (ui32Duty < PWM_MAX_DUTY ))
+        if ((checkButton (UP) == PUSHED) && (ui32RotorDuty < PWM_MAX_DUTY ))
         {
-            ui32Duty += 10;
-            set_rotor_PWM (ui32Freq, ui32Duty);
+            ui32RotorDuty += 10;
+            set_rotor_PWM (ui32RotorFreq, ui32RotorDuty);
         }
-        if ((checkButton (DOWN) == PUSHED) && (ui32Duty > PWM_MIN_DUTY ))
+        if ((checkButton (DOWN) == PUSHED) && (ui32RotorDuty > PWM_MIN_DUTY ))
         {
-            ui32Duty -= 10;
-            set_rotor_PWM (ui32Freq, ui32Duty);
+            ui32RotorDuty -= 10;
+            set_rotor_PWM (ui32RotorFreq, ui32RotorDuty);
         }
+
+        if ((checkButton (LEFT) == PUSHED) && (ui32TailDuty < PWM_MAX_DUTY ))
+        {
+            ui32TailDuty += 10;
+            set_tail_PWM (ui32TailFreq, ui32TailDuty);
+        }
+        if ((checkButton (RIGHT) == PUSHED) && (ui32TailDuty > PWM_MIN_DUTY ))
+        {
+            ui32TailDuty -= 10;
+            set_tail_PWM (ui32TailFreq, ui32TailDuty);
+        }
+
         switch(current_state)
         {
         case STATE_PERC:
@@ -125,7 +139,7 @@ int main(void)
             //SysCtlDelay(SysCtlClockGet() / yaw_angle);
             //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
             displayYaw(0, 2);
-            display_rotor_PWM(0, 3, ui32Freq);
+            display_rotor_PWM(0, 3, ui32RotorFreq);
             break;
         case STATE_MEAN_ADC_VAL:
             // Calculate and display the rounded mean of the buffer contents

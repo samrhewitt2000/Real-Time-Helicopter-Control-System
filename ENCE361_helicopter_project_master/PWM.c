@@ -114,7 +114,7 @@ void initialisePWM (void)
 
 
 /********************************************************
- * Function to set the freq, duty cycle of M0PWM7 (main rotor)
+ * Function to set the freq, duty cycle of M0PWM7 (main motor)
  ********************************************************/
 void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
 {
@@ -129,6 +129,18 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
 
 
 
+/********************************************************
+ * Function to set the freq, duty cycle of M1PWM5 (tail motor)
+ ********************************************************/
+void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
+{
+    // Calculate the PWM period corresponding to the freq.
+    uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / ui32Freq;
+
+    // Configure the PWM period and duty cycle
+    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
+    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+}
 
 
 
