@@ -172,7 +172,17 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 }
 
 
+/********************************************************
+ * Function to set the freq, duty cycle of M1PWM5 (tail motor)
+ ********************************************************/
+void kill_motors(void)
+{
+    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
+    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
 
+    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+}
 
 //int
 //main (void)

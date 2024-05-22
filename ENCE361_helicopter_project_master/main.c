@@ -57,9 +57,9 @@ typedef enum {
 // *******************************************************
 typedef enum {
     LANDED,
-    LANDING,
     TAKEOFF,
-    FLYING
+    FLYING,
+    LANDING
 } helicopter_state_t;
 
 int main(void)
@@ -100,9 +100,11 @@ int main(void)
     //prev_phase = get_current_phase();
 
     display_state_t current_state = STATE_PERC; //initialize display state
-    helicopter_state_t current_heli_state = LANDING; //initialize display state
+    helicopter_state_t current_heli_state = FLYING; //initialize display state
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
     int32_t current_switch_state;
+
+    void kill_motors(void);
 
     IntMasterEnable();
 
@@ -143,7 +145,14 @@ int main(void)
         // Increment current_heli_state when the switch goes down (low)
         if (current_switch_state != prev_switch_state)
         {
-            current_heli_state++;
+            if (current_heli_state == LANDED && current_switch_state == SWITCH_NORMAL)
+            {
+                current_heli_state = TAKEOFF;
+            }
+            else if (current_heli_state == FLYING && current_switch_state != SWITCH_NORMAL)
+            {
+                current_heli_state = LANDING;
+            }
             prev_switch_state = current_switch_state;
         }
 
