@@ -1,13 +1,18 @@
 //*****************************************************************************
+// 
+//      displays.c
 //
-// displays.c - LED display logic for the Tiva board
-//
-// Author:  Caleb Westbury & Sam Hewitt
-// Author:  Caleb Westbury & Sam Hewitt
-// Last modified:   22/03/2024
+// What does this function do? (Replace)
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
 //*****************************************************************************
 
 #include <stdint.h>
@@ -28,23 +33,22 @@
 #include "ADC.h"
 #include "buttons5.h"
 #include "displays.h"
-#include "yaw.h"
-#include "yaw.h"
-
+#include "quad_enc.h"
 
 //*****************************************************************************
 //
-// Function to display the mean ADC value (10-bit value, note) and sample count.
-//
 //*****************************************************************************
-
-void
-initDisplay (void)
+void initDisplay (void)
 {
     // intialise the Orbit OLED display
     OLEDInitialise ();
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void
 displayNothing(void)
 {
@@ -54,6 +58,11 @@ displayNothing(void)
     OLEDStringDraw("                ", 0, 3);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void
 displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
@@ -68,6 +77,10 @@ displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 }
 
 
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void
 displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
 {
@@ -81,6 +94,11 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t d
     OLEDStringDraw (string, display_col, display_row);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 void
 displayYaw(uint32_t display_col, uint32_t display_row)
 {

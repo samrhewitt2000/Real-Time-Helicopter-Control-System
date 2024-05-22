@@ -1,6 +1,6 @@
-// *******************************************************
+//*****************************************************************************
 // 
-// buttons4.c
+//      buttons.c
 //
 // Support for a set of FOUR specific buttons on the Tiva/Orbit.
 // ENCE361 sample code.
@@ -8,12 +8,18 @@
 // LEFT and RIGHT on the Tiva.
 //
 // Note that pin PF0 (the pin for the RIGHT pushbutton - SW2 on
-//  the Tiva board) needs special treatment - See PhilsNotesOnTiva.rtf.
+// the Tiva board) needs special treatment - See PhilsNotesOnTiva.rtf.
 //
-// P.J. Bones UCECE
-// Last modified:  7.2.2018
-// 
-// *******************************************************
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based P.J. Bones' buttons4.c code from 2018
+//
+//*****************************************************************************
 
 #include "buttons.h"
 
@@ -26,11 +32,9 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 
-
 // *******************************************************
 // Globals to module
 // *******************************************************
-
 
 static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
@@ -40,8 +44,8 @@ static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
-void
-initButtons (void)
+// *******************************************************
+void initButtons (void)
 {
     int i;
 
@@ -85,6 +89,8 @@ initButtons (void)
     }
 }
 
+
+
 // *******************************************************
 // updateButtons: Function designed to be called regularly. It polls all
 // buttons once and updates variables associated with the buttons if
@@ -94,8 +100,8 @@ initButtons (void)
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
 // read the pin in the opposite condition, before the state changes and
 // a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
-void
-updateButtons (void)
+// *******************************************************
+void updateButtons (void)
 {
     bool but_value[NUM_BUTS];
     int i;
@@ -135,8 +141,8 @@ updateButtons (void)
 // checkButton: Function returns the new button logical state if the button
 // logical state (PUSHED or RELEASED) has changed since the last call,
 // otherwise returns NO_CHANGE.
-uint8_t
-checkButton (uint8_t butName)
+// *******************************************************
+uint8_t checkButton (uint8_t butName)
 {
     if (but_flag[butName])
     {
@@ -148,5 +154,3 @@ checkButton (uint8_t butName)
     }
     return NO_CHANGE;
 }
-
-

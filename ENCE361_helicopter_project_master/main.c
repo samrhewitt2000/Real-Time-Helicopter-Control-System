@@ -1,17 +1,22 @@
 //*****************************************************************************
-//THIS IS MILESTONE 2
-// main.c - main logic for the Tiva board
+// 
+//      main.c
 //
-// Author:  Caleb Westbury & Sam
-// Last modified:   22/03/2024
+// What does this module do? (Replace)
 //
 //*****************************************************************************
-// Based on the 'convert' series from 2016
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
 //*****************************************************************************
 
 
 #include "circBuffer.h"
-
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -26,31 +31,30 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-#include "yaw.h"
+#include "quad_enc.h"
 #include "displays.h"
 #include "ADC.h"
 #include "buttons5.h"
 
-
-
-
 #include "inc/hw_ints.h"
-
 
 //*****************************************************************************
 // Constants
 //*****************************************************************************
 #define BUF_SIZE 10
 
+// *******************************************************
+// Display state enum
+// *******************************************************
 typedef enum {
-
     STATE_PERC,             // display altitude percentages state
     STATE_MEAN_ADC_VAL,     // display mean adc values state
     STATE_OFF,              // screen off state
 } display_state_t;
 
-int
-main(void)
+
+
+int main(void)
  {
     int32_t initial_ADC_val = 0;    // initialize first value
     int32_t current_ADC_val = 0;    // initialize first value

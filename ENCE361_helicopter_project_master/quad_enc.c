@@ -1,11 +1,19 @@
-/*
- * quadrature.c
- *
- *  Created on: 1/05/2024
- *      Author: Sam Hewitt and Caleb Westbury
- *      Author: Sam Hewitt and Caleb Westbury
- */
-
+//*****************************************************************************
+// 
+//      quad_enc.c
+//
+// What does this function do? (Replace)
+//
+//*****************************************************************************
+//
+// Author:          Caleb Westbury & Sam Hewitt
+// Last modified:   May 2024
+//
+//*****************************************************************************
+//
+// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
+//
+//*****************************************************************************
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -14,17 +22,20 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
-#include "yaw.h"
+#include "quad_enc.h"
 
+#define MAX_ENC_TICKS 224
+#define MIN_ENC_TICKS -223
 
 volatile int32_t yaw_ticks = 0;  // Global variable to store yaw angle ticks
 volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 volatile phase_t current_phase = PHASE_4;
 volatile phase_t prev_phase = PHASE_4;
 
-// initialise inityaw bruh
-void
-initYaw (void)
+// *******************************************************
+// init_quad_enc: Initialise the quadrature encoder
+// *******************************************************
+void initYaw (void)
 {
 //    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 //    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
@@ -55,41 +66,9 @@ initYaw (void)
 
 
 
-
-
-
-//phase_t get_current_phase(void)
-//{
-//
-//    phase_t current_phase;
-//
-////    uint8_t channel_a_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0);
-////    uint8_t channel_b_state = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1);
-//
-//    if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //Sensor A high
-//    {
-//        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_1))//sensor B high
-//        {
-//            current_phase = PHASE_3; // 11
-//        }
-//        else {  // sensor b low
-//            current_phase = PHASE_4; //10
-//        }
-//    }
-//    else //sensor A low
-//    {
-//        if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0)) //sensor B high
-//        {
-//            current_phase = PHASE_2;//01
-//        }
-//        else {  //sensor b low
-//            current_phase = PHASE_1;// 00
-//        }
-//    }
-//    return current_phase;
-//}
-//
-
+// **************************************************************************************************************
+// quad_enc_int_handler: Initialise the interrrupt handler for the quardature encoder
+// **************************************************************************************************************
 void PB_IntHandler(void)
 {
     GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
@@ -165,13 +144,13 @@ void PB_IntHandler(void)
 
     prev_phase = current_phase;
 
-    if (yaw_ticks > 224)
+    if (yaw_ticks MAX_ENC_TICKS)
     {
-        yaw_ticks = -220;
+        yaw_ticks = MIN_ENC_TICKS;
     }
-    else if (yaw_ticks < -220)
+    else if (yaw_ticks < MIN_ENC_TICKS)
     {
-        yaw_ticks = 224;
+        yaw_ticks = MAX_ENC_TICKS;
     }
 
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);

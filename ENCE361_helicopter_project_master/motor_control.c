@@ -78,6 +78,8 @@ void setPWM (uint32_t u32Freq, uint32_t u32Duty);
 //    // It is not necessary to clear the SysTick interrupt.
 //}
 
+
+
 /***********************************************************
  * Initialisation functions: clock, SysTick, PWM
  ***********************************************************
@@ -93,6 +95,8 @@ initClocks (void)
     // Set the PWM clock rate (using the prescaler)
     SysCtlPWMClockSet(PWM_DIVIDER_CODE);
 }
+
+
 
 /*************************************************************
  * SysTick interrupt
@@ -112,6 +116,8 @@ initSysTick (void)
     SysTickIntEnable ();
     SysTickEnable ();
 }
+
+
 
 /*********************************************************
  * initialisePWM
@@ -136,6 +142,8 @@ initialisePWM (void)
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
 }
+
+
 
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7
