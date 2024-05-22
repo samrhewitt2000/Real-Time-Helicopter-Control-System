@@ -72,6 +72,7 @@ int main(void)
     initialise_rotor_PWM ();
     initialise_tail_PWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
+    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
     uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
     uint32_t ui32RotorDuty = PWM_FIXED_DUTY;

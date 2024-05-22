@@ -29,7 +29,7 @@
 #define PWM_RATE_STEP_HZ   50
 #define PWM_RATE_MIN_HZ    50
 #define PWM_RATE_MAX_HZ    400
-#define PWM_FIXED_DUTY     60 // increase to about 70 for faster rate
+#define PWM_FIXED_DUTY     60 // increase to about 70 for faster start rate
 #define PWM_MAX_DUTY       98
 #define PWM_MIN_DUTY       2
 #define PWM_DIVIDER_CODE   SYSCTL_PWMDIV_4
@@ -48,7 +48,7 @@
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
 //  PWM Hardware Details M1PWM5 (gen 2???)
-//  ---Main Rotor PWM: PF1, J3-10
+//  ---Tail Rotor PWM: PF1, J3-10
 #define PWM_TAIL_BASE        PWM1_BASE
 #define PWM_TAIL_GEN         PWM_GEN_2
 #define PWM_TAIL_OUTNUM      PWM_OUT_5
