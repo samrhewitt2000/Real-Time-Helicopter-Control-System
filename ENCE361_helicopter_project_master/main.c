@@ -106,15 +106,15 @@ int main(void)
             initial_ADC_val = current_ADC_val;
         }
 
-        if ((checkButton (UP) == PUSHED) && (ui32Freq < PWM_RATE_MAX_HZ))
+        if ((checkButton (UP) == PUSHED) && (ui32Duty < PWM_MAX_DUTY ))
         {
-            ui32Freq += PWM_RATE_STEP_HZ;
-            set_rotor_PWM (ui32Freq, PWM_FIXED_DUTY);
+            ui32Duty += 10;
+            set_rotor_PWM (ui32Freq, ui32Duty);
         }
-        if ((checkButton (DOWN) == PUSHED) && (ui32Freq > PWM_RATE_MIN_HZ))
+        if ((checkButton (DOWN) == PUSHED) && (ui32Duty > PWM_MIN_DUTY ))
         {
-            ui32Freq -= PWM_RATE_STEP_HZ;
-            set_rotor_PWM (ui32Freq, PWM_FIXED_DUTY);
+            ui32Duty -= 10;
+            set_rotor_PWM (ui32Freq, ui32Duty);
         }
         switch(current_state)
         {
