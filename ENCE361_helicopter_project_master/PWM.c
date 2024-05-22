@@ -63,16 +63,6 @@
 #define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
 
-/*******************************************
- *      Local prototypes
- *******************************************/
-void SysTickIntHandler (void);
-void initClocks (void);
-void initSysTick (void);
-void initialisePWM (void);
-void setPWM (uint32_t u32Freq, uint32_t u32Duty);
-
-
 /***********************************************************
  * ISR for the SysTick interrupt (used for button debouncing).
  ***********************************************************/
@@ -93,8 +83,7 @@ void setPWM (uint32_t u32Freq, uint32_t u32Duty);
  ***********************************************************
  * Clock
  ***********************************************************/
-void
-initClocks (void)
+void initClocks (void)
 {
     // Set the clock rate to 20 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
@@ -109,8 +98,7 @@ initClocks (void)
 /*************************************************************
  * SysTick interrupt
  ************************************************************/
-void
-initSysTick (void)
+void initSysTick (void)
 {
     //
     // Set up the period for the SysTick timer.  The SysTick
@@ -131,8 +119,7 @@ initSysTick (void)
  * initialisePWM
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor
  *********************************************************/
-void
-initialisePWM (void)
+void initialisePWM (void)
 {
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
@@ -154,10 +141,9 @@ initialisePWM (void)
 
 
 /********************************************************
- * Function to set the freq, duty cycle of M0PWM7
+ * Function to set the freq, duty cycle of M0PWM7 (main rotor)
  ********************************************************/
-void
-setPWM (uint32_t ui32Freq, uint32_t ui32Duty)
+void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =

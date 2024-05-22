@@ -49,8 +49,7 @@ void initDisplay (void)
 //*****************************************************************************
 //
 //*****************************************************************************
-void
-displayNothing(void)
+void displayNothing(void)
 {
     OLEDStringDraw("                ", 0, 0);
     OLEDStringDraw("                ", 0, 1);
@@ -63,8 +62,7 @@ displayNothing(void)
 //*****************************************************************************
 //
 //*****************************************************************************
-void
-displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
+void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
     char string[17];  // 16 characters across the display
@@ -81,10 +79,8 @@ displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 //*****************************************************************************
 //
 //*****************************************************************************
-void
-displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
+void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
 {
-
     char string[17];
 
     int32_t altitude_percent;
@@ -99,10 +95,8 @@ displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t d
 //*****************************************************************************
 //
 //*****************************************************************************
-void
-displayYaw(uint32_t display_col, uint32_t display_row)
+void displayYaw(uint32_t display_col, uint32_t display_row)
 {
-
     char string[17];
 
     yaw_angle_decimal = abs(((360 * yaw_ticks) % 448 * 10) / 448);
@@ -116,5 +110,18 @@ displayYaw(uint32_t display_col, uint32_t display_row)
         usnprintf (string, sizeof(string), "Yaw:  %d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
     }
 
+    OLEDStringDraw (string, display_col, display_row);
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq)
+{
+    char string[17];
+
+    usnprintf (string, sizeof(string), "R_PWM: %2d %%  ", ui32Freq);
     OLEDStringDraw (string, display_col, display_row);
 }

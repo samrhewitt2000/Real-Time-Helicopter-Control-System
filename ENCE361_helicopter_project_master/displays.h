@@ -31,4 +31,6 @@ void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint3
 
 void displayYaw(uint32_t display_col, uint32_t display_row);
 
+void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq);
+
 #endif /*DISPLAYS_H_*/

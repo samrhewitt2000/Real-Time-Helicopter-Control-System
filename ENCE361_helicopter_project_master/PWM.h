@@ -16,14 +16,24 @@
 
 #include <stdint.h>
 
-extern volatile int32_t main_rotor_duty = 0;
+// extern volatile int32_t main_rotor_duty = 0;
 
-extern volatile int32_t tail_rotor_duty = 0;
+// extern volatile int32_t tail_rotor_duty = 0;
 
-void initialise_PWM (void);
+// void initialise_PWM (void);
 
-void set_rotor_PWM (uint32_t ui32Duty);
+// void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty);
 
-void set_tail_PWM (uint32_t ui32Duty);
+// void set_tail_PWM (uint32_t ui32Freq, uint32_t ui32Duty);
+
+void SysTickIntHandler (void);
+
+void initClocks (void);
+
+void initSysTick (void);
+
+void initialisePWM (void);
+
+void set_rotor_PWM (uint32_t u32Freq, uint32_t u32Duty);
 
 #endif /*PWM_H_*/
