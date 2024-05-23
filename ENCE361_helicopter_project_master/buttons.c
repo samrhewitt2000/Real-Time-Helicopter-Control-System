@@ -40,6 +40,12 @@ void initButtons (void)
 {
     int i;
 
+    // SWITCH (active HIGH)
+    SysCtlPeripheralEnable (SWITCH_PERIPH);
+    GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
+    GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
+    but_normal[SWITCH] = SWITCH_NORMAL;
+
     // UP button (active HIGH)
     SysCtlPeripheralEnable (UP_BUT_PERIPH);
     GPIOPinTypeGPIOInput (UP_BUT_PORT_BASE, UP_BUT_PIN);

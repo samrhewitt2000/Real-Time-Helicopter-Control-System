@@ -16,6 +16,16 @@
 //*****************************************************************************
 
 #include "yaw_control.h"
+#include "PWM.h"
+#include "alt_control.h"
+#include "circ_buffer.h"
+#include "PID.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "driverlib/PWM.h"
+#include "ADC.h"
+#include "buttons.h"
+
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
