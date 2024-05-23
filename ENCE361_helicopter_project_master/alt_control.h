@@ -2,7 +2,7 @@
 #define ALT_CONTROL_H_
 
 //*****************************************************************************
-// 
+//
 //      alt_control.h
 //
 // What does this function do? (Replace)
@@ -18,10 +18,10 @@
 //
 //*****************************************************************************
 
-#include "circ_buffer.h"
 #include <stdint.h>
-
-
+#include "circ_buffer.h"
+#include "PWM.h"
+#include "PID.h"
 
 int32_t get_alt_val(circBuf_t *buffer);
 

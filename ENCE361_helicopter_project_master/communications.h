@@ -2,7 +2,7 @@
 #define COMMUNICATIONS_H_
 
 //*****************************************************************************
-// 
+//
 //      communications.h
 //
 // What does this function do? (Replace)
@@ -18,6 +18,16 @@
 //
 //*****************************************************************************
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include "inc/hw_memmap.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+#include "driverlib/uart.h"
+
+#include "yaw_control.h"
+
 typedef enum
 {
 
@@ -27,6 +37,10 @@ typedef enum
     FLYING
 } helicopter_state_t;
 
+#define MAX_STR_LEN 16
+
+char statusStr[MAX_STR_LEN + 1];
+
 void initialise_USB_UART(void);
 
 void UART_send(char *pucBuffer);
@@ -35,3 +49,4 @@ void UART_transmit_info(int32_t yaw_setpoint, int32_t yaw_actual, int32_t alt_se
 
 
 #endif /*COMMUNICATIONS_H_*/
+

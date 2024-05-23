@@ -1,5 +1,5 @@
-#ifndef CIRCBUFT_H_
-#define CIRCBUFT_H_
+#ifndef CIRCBUFFER_H_
+#define CIRCBUFFER_H_
 
 //*****************************************************************************
 // 
@@ -19,10 +19,6 @@
 //
 //*****************************************************************************
 
-// Support for a set of FOUR specific buttons on the Tiva/Orbit.
-// ENCE361 sample code.
-// The buttons are:  UP and DOWN (on the Orbit daughterboard) plus
-// LEFT and RIGHT on the Tiva.
 #include <stdint.h>
 
 // *******************************************************
@@ -43,13 +39,11 @@ typedef struct {
 // *******************************************************
 uint32_t * initCircBuf (circBuf_t *buffer, uint32_t size);
 
-
 // *******************************************************
 // writeCircBuf: insert entry at the current windex location,
 // advance windex, modulo (buffer size).
 // *******************************************************
 void writeCircBuf (circBuf_t *buffer, uint32_t entry);
-
 
 // *******************************************************
 // readCircBuf: return entry at the current rindex location,
@@ -58,7 +52,6 @@ void writeCircBuf (circBuf_t *buffer, uint32_t entry);
 // *******************************************************
 uint32_t readCircBuf (circBuf_t *buffer);
 
-
 // *******************************************************
 // freeCircBuf: Releases the memory allocated to the buffer data,
 // sets pointer to NULL and other fields to 0. The buffer can
@@ -66,9 +59,9 @@ uint32_t readCircBuf (circBuf_t *buffer);
 // *******************************************************
 void freeCircBuf (circBuf_t *buffer);
 
-
-
-//sets data in buffer->data to 0
-void reset_buffer(circBuf_t *buffer);
+//*****************************************************************************
+//
+//*****************************************************************************
+uint32_t sum_CircBuf_vals (uint32_t sum, circBuf_t *buffer, uint32_t buf_size);
 
 #endif /*CIRCBUFT_H_*/
