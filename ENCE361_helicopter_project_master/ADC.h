@@ -13,9 +13,8 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
+
 #include "circ_buffer.h"
-
-
 
 extern circBuf_t g_inBuffer;
 
@@ -26,5 +25,7 @@ void ADCIntHandler(void);
 void initClock (void);
 
 void initADC (void);
+
+int32_t get_ADC_val(circBuf_t *buffer, uint32_t buf_size);
 
 #endif /*ADC_H_*/

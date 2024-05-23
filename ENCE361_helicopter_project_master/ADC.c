@@ -28,22 +28,19 @@
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+
 #include "displays.h"
 #include "ADC.h"
-
 #include "buttons.h"
-#include "circ_buffer.h"
 
-
-
-#define SAMPLE_RATE_HZ 100
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
-//static circBuf_t *g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-//moved this to ADC.h as extern
+
+#define SAMPLE_RATE_HZ 100
 
 circBuf_t g_inBuffer;
+
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
 //*****************************************************************************
@@ -51,8 +48,7 @@ static uint32_t g_ulSampCnt;    // Counter for the interrupts
 // The interrupt handler for the for SysTick interrupt.
 //
 //*****************************************************************************
-void
-SysTickIntHandler(void)
+void SysTickIntHandler(void)
 {
     //
     // Initiate a conversion
@@ -62,14 +58,13 @@ SysTickIntHandler(void)
     g_ulSampCnt++;
 }
 
+
+
 //*****************************************************************************
-//
 // The handler for the ADC conversion complete interrupt.
 // Writes to the circular buffer.
-//
 //*****************************************************************************
-void
-ADCIntHandler(void)
+void ADCIntHandler(void)
 {
     uint32_t ulValue;
 
@@ -86,11 +81,12 @@ ADCIntHandler(void)
     ADCIntClear(ADC0_BASE, 3);
 }
 
+
+
 //*****************************************************************************
 // Initialisation functions for the clock (incl. SysTick), ADC, display
 //*****************************************************************************
-void
-initClock (void)
+void initClock (void)
 {
     // Set the clock rate to 20 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
@@ -108,8 +104,12 @@ initClock (void)
     SysTickEnable();
 }
 
-void
-initADC (void)
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void initADC (void)
 {
     //
     // The ADC0 peripheral must be enabled for configuration and use.
@@ -145,4 +145,16 @@ initADC (void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
+}
+
+
+
+//*****************************************************************************
+// The code for calculating the ADC value
+//*****************************************************************************
+int32_t get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
+{
+    int32_t sum = 0;
+    sum = sum_CircBuf_vals (sum, buffer, buf_size);
+    return (2 * sum + buf_size) / 2 / buf_size;
 }

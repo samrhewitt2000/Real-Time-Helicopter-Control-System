@@ -22,17 +22,23 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
+
 #include "quad_enc.h"
 
 #define MAX_ENC_TICKS 224
 #define MIN_ENC_TICKS -223
 
-volatile int32_t quad_enc_ticks = 0;  // Global variable to store yaw angle ticks
-
 volatile phase_t current_phase = PHASE_4;
 
 volatile phase_t prev_phase = PHASE_4;
 
+// *******************************************************
+// init_quad_enc: Initialise the quadrature encoder
+// *******************************************************
+void initYaw (void)
+{
+//    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+//    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 
 
 // *******************************************************
@@ -72,7 +78,7 @@ void init_quad_enc (void)
 // **************************************************************************************************************
 // quad_enc_int_handler: Initialise the interrrupt handler for the quardature encoder
 // **************************************************************************************************************
-void quad_enc_int_handler(void)
+void PB_IntHandler(void)
 {
     GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 
@@ -147,13 +153,13 @@ void quad_enc_int_handler(void)
 
     prev_phase = current_phase;
 
-    if (quad_enc_ticks > MAX_ENC_TICKS)
+    if (yaw_ticks > MAX_ENC_TICKS)
     {
-        quad_enc_ticks = MAX_ENC_TICKS;
+        yaw_ticks = MIN_ENC_TICKS;
     }
-    else if (quad_enc_ticks < MAX_ENC_TICKS)
+    else if (yaw_ticks < MIN_ENC_TICKS)
     {
-        quad_enc_ticks = MAX_ENC_TICKS;
+        yaw_ticks = MAX_ENC_TICKS;
     }
 
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);

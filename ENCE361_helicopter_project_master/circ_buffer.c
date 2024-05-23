@@ -16,6 +16,8 @@
 //
 //*****************************************************************************
 
+#include "circ_buffer.h"
+
 #include <stdint.h>
 #include "stdlib.h"
 #include "circ_buffer.h"
@@ -84,4 +86,18 @@ void freeCircBuf (circBuf_t * buffer)
     buffer->size = 0;
     free (buffer->data);
     buffer->data = NULL;
+}
+
+
+
+// *******************************************************
+// sum_CircBuf_vals:
+// *******************************************************
+uint32_t sum_CircBuf_vals (uint32_t sum, circBuf_t *buffer, uint32_t buf_size)
+{
+    uint16_t i;
+    for (i = 0; i < buf_size; i++) {
+        sum = sum + readCircBuf (buffer);
+    }
+    return sum;
 }

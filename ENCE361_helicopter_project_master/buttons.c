@@ -22,6 +22,8 @@
 //*****************************************************************************
 
 #include "buttons.h"
+
+#include "buttons.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -30,14 +32,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
-
-
-static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
-static uint8_t but_count[NUM_BUTS];
-static bool but_flag[NUM_BUTS];
-static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
-
-
 
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
@@ -89,6 +83,12 @@ void initButtons (void)
        GPIO_PIN_TYPE_STD_WPU);
     but_normal[RIGHT] = RIGHT_BUT_NORMAL;
 
+    // SWITCH (active HIGH)
+    SysCtlPeripheralEnable (SWITCH_PERIPH);
+    GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
+    GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
+    but_normal[SWITCH] = SWITCH_NORMAL;
+
     for (i = 0; i < NUM_BUTS; i++)
     {
         but_state[i] = but_normal[i];
@@ -96,7 +96,6 @@ void initButtons (void)
         but_flag[i] = false;
     }
 }
-
 
 
 
@@ -121,6 +120,7 @@ void updateButtons (void)
     but_value[LEFT] = (GPIOPinRead (LEFT_BUT_PORT_BASE, LEFT_BUT_PIN) == LEFT_BUT_PIN);
     but_value[RIGHT] = (GPIOPinRead (RIGHT_BUT_PORT_BASE, RIGHT_BUT_PIN) == RIGHT_BUT_PIN);
     but_value[SWITCH] = (GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN);
+
     // Iterate through the buttons, updating button variables as required
     for (i = 0; i < NUM_BUTS; i++)
     {
@@ -142,7 +142,6 @@ void updateButtons (void)
             but_count[i] = 0;
         }
     }
-
 }
 
 
@@ -165,15 +164,3 @@ uint8_t checkButton (uint8_t butName)
     }
     return NO_CHANGE;
 }
-
-
-
-
-
-
-
-
-
-
-
-

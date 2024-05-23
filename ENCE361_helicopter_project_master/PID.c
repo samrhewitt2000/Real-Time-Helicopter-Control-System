@@ -15,62 +15,37 @@
 //
 //*****************************************************************************
 
+#include "PID.H"
 
-//#include "PWM.h"
-#include "PID.h"
-#include "circ_buffer.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/adc.h"
-#include "driverlib/pwm.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/debug.h"
-#include "utils/ustdlib.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
-#include "yaw_control.h"
-#include "displays.h"
-#include "ADC.h"
-#include "buttons.h"
-#include "inc/hw_ints.h"
-
-#define MAX_OUTPUT 980   //max output * FLOAT_CONVERSION_FACTOR
-#define MIN_OUTPUT 20   //min output * FLOAT_CONVERSION_FACTOR
-
-int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset)
+//*****************************************************************************
+// NOTE: change the variable name of sensor_reading (not always a sensor reading)
+//*****************************************************************************
+int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor)
 {
-    //avoid floating point maths multiply everything by 1000
-
-    int32_t delta_t = 48 * SysCtlClockGet(); //  1/frequency
     static int32_t I = 0;
     static int32_t prev_sensor_reading = 0;
-    int32_t error = (setpoint - sensor_reading);
-    int32_t P = (Kp * error);
-    int32_t dI = (Ki * error * delta_t); ///delta_t = 1/systick?
+    int32_t error = setpoint - sensor_reading;
+    int32_t P = Kp * error;
+    int32_t dI = Ki * error * delta_t; ///delta_t = 1/systick?
     int32_t D = Kd * (prev_sensor_reading - sensor_reading) / delta_t;
 
-    //no coupling if using main rotor but must account for gravity (included in offset)
-    uint32_t control = P + (I + dI) + D + offset; //account for motor coupling
+    int32_t control_action = (P + (I + dI) + D + offset) / float_conversion_factor;
 
     //check for integral saturation
-    if (control > MAX_OUTPUT)
+    if (control_action > MAX_CONTROL_OUTPUT)
     {
-        control = MAX_OUTPUT;
-    } else if (control < MIN_OUTPUT)
+        control_action = MAX_CONTROL_OUTPUT;
+    } 
+    else if (control_action < MIN_CONTROL_OUPUT)
     {
-        control = MIN_OUTPUT;
-    }else {
+        control_action = MIN_CONTROL_OUPUT;
+    }
+    else 
+    {
         I = (I + dI);
     }
 
     prev_sensor_reading = sensor_reading;
 
-
-    return control; //control signal * 1000
-
-
+    return control_action;
 }

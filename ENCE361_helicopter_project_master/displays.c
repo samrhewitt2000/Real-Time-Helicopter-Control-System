@@ -27,17 +27,18 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-#include "circ_buffer.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+
+#include "circ_buffer.h"
 #include "ADC.h"
 #include "buttons.h"
 #include "displays.h"
-#include "yaw_control.h"
+#include "quad_enc.h"
 
 //*****************************************************************************
 //
 //*****************************************************************************
-void init_display (void)
+void initDisplay (void)
 {
     // intialise the Orbit OLED display
     OLEDInitialise ();
@@ -48,7 +49,7 @@ void init_display (void)
 //*****************************************************************************
 //
 //*****************************************************************************
-void display_nothing(void)
+void displayNothing(void)
 {
     OLEDStringDraw("                ", 0, 0);
     OLEDStringDraw("                ", 0, 1);
@@ -56,6 +57,13 @@ void display_nothing(void)
     OLEDStringDraw("                ", 0, 3);
 }
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
+{
 
 
 //*****************************************************************************
@@ -77,7 +85,7 @@ void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 //*****************************************************************************
 //
 //*****************************************************************************
-void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t display_row)
+void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row)
 {
     char string[17];
 
@@ -91,7 +99,7 @@ void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t dis
 //*****************************************************************************
 //
 //*****************************************************************************
-void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal)
+void displayYaw(uint32_t display_col, uint32_t display_row)
 {
     char string[17];
 
@@ -112,21 +120,10 @@ void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_i
 //*****************************************************************************
 //
 //*****************************************************************************
-void display_main_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row)
+void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq)
 {
-    char string[7];
-    usnprintf(string, sizeof(string), "%2d %%     ", duty_cycle);
-    OLEDStringDraw(string, display_col, display_row);
-}
+    char string[17];
 
-
-
-//*****************************************************************************
-//
-//*****************************************************************************
-void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row)
-{
-    char string[7];
-    usnprintf(string, sizeof(string), "%2d %%     ", tail_duty_cycle);
-    OLEDStringDraw(string, display_col, display_row);
+    usnprintf (string, sizeof(string), "R_PWM: %2d %%  ", ui32Freq);
+    OLEDStringDraw (string, display_col, display_row);
 }
