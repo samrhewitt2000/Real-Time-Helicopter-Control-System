@@ -23,7 +23,7 @@
 #include "PWM.h"
 #include "PID.h"
 
-extern volatile int32_t yaw_angle_int = 0;
+//extern volatile int32_t yaw_angle_int = 0;
 
 //*****************************************************************************
 //
