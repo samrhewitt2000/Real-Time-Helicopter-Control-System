@@ -22,11 +22,19 @@
 
 #define MAX_TASKS 10
 
+//*****************************************************************************
+//
+//******************************************************************************
 typedef enum {
     READY,
     BLOCKED
 } task_state_t;
 
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
 typedef struct {
     void (*taskEnter)(void);
     unsigned char priority;
@@ -36,10 +44,25 @@ typedef struct {
 static task_t tasks[MAX_TASKS];
 static unsigned char numTasks = 0;
 static unsigned long g_tickPeriod = 0;
+static unsigned char currentTaskId = 0; // Initialize to the first task
 
+//*****************************************************************************
+//
+//*****************************************************************************
 void SysTickHandler(void)
 {
     // Implement round-robin scheduling here
+    // Find the next ready task
+    unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+    while (tasks[nextTaskId].state != READY) {
+        nextTaskId = (nextTaskId + 1) % numTasks;
+    }
+    currentTaskId = nextTaskId;
+
+    // Execute the current task
+    if (tasks[currentTaskId].taskEnter) {
+        tasks[currentTaskId].taskEnter();
+    }
 }
 
 
@@ -140,4 +163,12 @@ int pK_task_state(unsigned char taskId)
         return tasks[taskId].state;
     }
     return -1; // Error: Task ID out of range
+}
+
+//*****************************************************************************
+// pK_get_current_task_id: Returns the current task ID.
+//*****************************************************************************
+unsigned char pK_get_current_task_id(void)
+{
+    return currentTaskId;
 }

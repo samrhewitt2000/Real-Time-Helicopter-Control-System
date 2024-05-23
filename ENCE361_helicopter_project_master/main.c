@@ -38,6 +38,8 @@
 #include "buttons.h"
 #include "PWM.h"
 #include "kernel.h"
+#include "alt_control.h"
+#include "yaw_control.h"
 
 //*****************************************************************************
 // Constants
@@ -80,7 +82,6 @@ uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t current_state = STATE_PERC; //initialize display state
 helicopter_state_t current_heli_state = FLYING; //initialize display state
-int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 int32_t current_switch_state;
 
 

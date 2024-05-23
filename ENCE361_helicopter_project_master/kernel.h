@@ -18,6 +18,10 @@
 //
 //*****************************************************************************
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
 // Sets period of SysTick interrupt
