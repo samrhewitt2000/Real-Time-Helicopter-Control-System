@@ -18,6 +18,8 @@
 //
 //*****************************************************************************
 
-int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor);
+#include <stdint.h>
+
+int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output);
 
 #endif /*PID_H_*/

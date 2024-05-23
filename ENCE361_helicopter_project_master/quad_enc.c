@@ -28,7 +28,7 @@
 #define MAX_ENC_TICKS 224
 #define MIN_ENC_TICKS -223
 
-volatile int32_t yaw_ticks = 0;  // Global variable to store yaw angle ticks
+volatile int32_t quad_enc_ticks = 0;  // Global variable to store yaw angle ticks
 volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 volatile phase_t current_phase = PHASE_4;
 volatile phase_t prev_phase = PHASE_4;
@@ -104,54 +104,54 @@ void PB_IntHandler(void)
         case PHASE_1:
             if (prev_phase == PHASE_4)
             {
-                yaw_ticks++;
+                quad_enc_ticks++;
             }
             else if (prev_phase == PHASE_2)
             {
-                yaw_ticks--;
+                quad_enc_ticks--;
             }
             break;
         case PHASE_2:
             if (prev_phase == PHASE_1)
             {
-                yaw_ticks++;
+                quad_enc_ticks++;
             }
             else if (prev_phase == PHASE_3)
             {
-                yaw_ticks--;
+                quad_enc_ticks--;
             }
             break;
         case PHASE_3:
             if (prev_phase == PHASE_2)
             {
-                yaw_ticks++;
+                quad_enc_ticks++;
             }
             else if (prev_phase == PHASE_4)
             {
-                yaw_ticks--;
+                quad_enc_ticks--;
             }
             break;
         case PHASE_4:
             if (prev_phase == PHASE_3)
             {
-                yaw_ticks++;
+                quad_enc_ticks++;
             }
             else if (prev_phase == PHASE_1)
             {
-                yaw_ticks--;
+                quad_enc_ticks--;
             }
             break;
     }
 
     prev_phase = current_phase;
 
-    if (yaw_ticks > MAX_ENC_TICKS)
+    if (quad_enc_ticks > MAX_ENC_TICKS)
     {
-        yaw_ticks = MIN_ENC_TICKS;
+        quad_enc_ticks = MIN_ENC_TICKS;
     }
-    else if (yaw_ticks < MIN_ENC_TICKS)
+    else if (quad_enc_ticks < MIN_ENC_TICKS)
     {
-        yaw_ticks = MAX_ENC_TICKS;
+        quad_enc_ticks = MAX_ENC_TICKS;
     }
 
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);

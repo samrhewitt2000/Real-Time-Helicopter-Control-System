@@ -29,7 +29,7 @@ typedef enum {
     PHASE_4      // 10
 } phase_t;
 
-extern volatile int32_t yaw_ticks;  // Global variable to store yaw angle ticks
+extern volatile int32_t quad_enc_ticks;  // Global variable to store yaw angle ticks
 
 extern volatile int32_t yaw_angle_decimal;  // Global variable to store yaw angle ticks
 
