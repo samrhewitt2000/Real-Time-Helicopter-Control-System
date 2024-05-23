@@ -16,10 +16,6 @@
 //*****************************************************************************
 
 #include "kernel.h"
-#include "inc/hw_types.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include <stdint.h>
 
 //*****************************************************************************
 //

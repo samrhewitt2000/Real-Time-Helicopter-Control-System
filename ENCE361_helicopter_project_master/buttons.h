@@ -92,4 +92,14 @@ void updateButtons (void);
 // enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
 uint8_t checkButton (uint8_t butName);
 
+
+
+
+void switch_task(void);
+
+
+
+
+void pushbuttons_task(void);
+
 #endif /*BUTTONS_H_*/

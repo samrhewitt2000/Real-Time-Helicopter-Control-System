@@ -164,3 +164,36 @@ uint8_t checkButton (uint8_t butName)
 }
 
 
+//*****************************************************************************
+//
+//*****************************************************************************
+void switch_task(void)
+{
+    if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
+    {
+        current_heli_state = TAKEOFF;
+    }
+    else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
+    {
+        current_heli_state = LANDING;
+    }
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void pushbuttons_task(void)
+{
+    if (checkButton(UP) == PUSHED && heli_state == FLYING)
+    {
+        //increase altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), 10);
+    }
+    else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+    {
+        //decrease altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), -10);
+    }
+}
