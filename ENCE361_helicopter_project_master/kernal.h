@@ -1,9 +1,9 @@
-#ifndef KERNAL_H_
-#define KERNAL_H_
+#ifndef KERNEL_H_
+#define KERNEL_H_
 
 //*****************************************************************************
 //
-//      kernal.h
+//      kernel.h
 //
 // What does this function do? (Replace)
 //
@@ -64,4 +64,4 @@ void pK_block_task (unsigned char taskId);
 //*****************************************************************************
 int pK_task_state (unsigned char taskId);
 
-#endif /*KERNAL_H_*/
+#endif /*KERNEL_H_*/

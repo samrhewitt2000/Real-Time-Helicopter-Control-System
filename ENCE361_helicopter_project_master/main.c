@@ -124,8 +124,11 @@ void initialise_program(void)
 }
 
 
+int main(void)
+{
+    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-initCircBuf (&g_inBuffer, BUF_SIZE);
+    initCircBuf (&g_inBuffer, BUF_SIZE);
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill

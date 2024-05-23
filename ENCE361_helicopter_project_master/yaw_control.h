@@ -52,6 +52,6 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM);
 //*****************************************************************************
 //
 //*****************************************************************************
-void yaw_control_task(void)
+void yaw_control_task(void);
 
 #endif /* YAW_CONTROL_H_ */
