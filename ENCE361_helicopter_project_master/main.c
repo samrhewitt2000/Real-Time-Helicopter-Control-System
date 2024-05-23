@@ -72,9 +72,11 @@ typedef enum {
  ********************************************************/
 void kill_motors(helicopter_state_t *current_heli_state)
 {
+    //set main motor PWM signal to zero
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
 
+    //set tail motor PWM signal to zero
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
 

@@ -5,7 +5,7 @@
 // 
 //      PWM.h
 //
-// What does this function do? (Replace)
+// Header file for initializing and generating PWM signals to both main and tail rotors
 //
 //*****************************************************************************
 //

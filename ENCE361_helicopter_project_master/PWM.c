@@ -2,7 +2,7 @@
 // 
 //      PWM.c
 //
-// What does this function do? (Replace)
+// Initializes and generates PWM signals to both main and tail rotors
 //
 //*****************************************************************************
 //
@@ -59,8 +59,7 @@
 void initClocks (void)
 {
     // Set the clock rate to 20 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-                   SYSCTL_XTAL_16MHZ);
+    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // Set the PWM clock rate (using the prescaler)
     SysCtlPWMClockSet(PWM_DIVIDER_CODE);
@@ -90,21 +89,25 @@ void initSysTick (void)
 
 /*********************************************************
  * initialise_rotor_PWM
- * M0PWM7 (J4-05, PC5) is used for the main rotor motor
+ * M0PWM7 (J4-05, PC5) is used for the main rotor
  *********************************************************/
 void initialise_rotor_PWM (void)
 {
+    //enable PWM peripheral and gpio peripheral of tail motor
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
 
+    //configure main motor gpio pins for PWM output
     GPIOPinConfigure(PWM_MAIN_GPIO_CONFIG);
     GPIOPinTypePWM(PWM_MAIN_GPIO_BASE, PWM_MAIN_GPIO_PIN);
 
-    PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN,
-                    PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+    //configure PWM outpus for main motor
+    PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+
     // Set the initial PWM parameters
     set_rotor_PWM (PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
+    //enable PWM generator for main motor
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
 
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
@@ -115,25 +118,25 @@ void initialise_rotor_PWM (void)
 
 /*********************************************************
  * initialise_tail_PWM
- * M1PWM5 (J3-10, PF1) is used for the tail rotor motor
+ * M1PWM5 (J3-10, PF1) is used for the tail motor
  *********************************************************/
 void initialise_tail_PWM(void)
 {
-    // Enable PWM peripheral and GPIO peripheral for tail rotor
+    // Enable PWM peripheral and GPIO peripheral for tail motor
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_PWM);
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO);
 
-    // Configure pin for PWM output
+    // Configure tail motor gpio pins for PWM output
     GPIOPinConfigure(PWM_TAIL_GPIO_CONFIG);
     GPIOPinTypePWM(PWM_TAIL_GPIO_BASE, PWM_TAIL_GPIO_PIN);
 
-    // Configure PWM generator for tail rotor
+    // Configure PWM generator for tail motor
     PWMGenConfigure(PWM_TAIL_BASE, PWM_TAIL_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
-    // Set the initial PWM parameters for tail rotor
+    // Set the initial PWM parameters for tail motor
     set_tail_PWM(PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
-    // Enable PWM generator for tail rotor
+    // Enable PWM generator for tail motor
     PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);
 
     // Disable the output initially, can be enabled later

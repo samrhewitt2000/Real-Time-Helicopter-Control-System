@@ -80,6 +80,7 @@ void init_quad_enc (void)
 // **************************************************************************************************************
 void PB_IntHandler(void)
 {
+    //disable interrupts, no preemption
     GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 
     phase_t current_phase;
@@ -109,16 +110,18 @@ void PB_IntHandler(void)
     //increment yaw based on current value
     switch(current_phase)
     {
+        // AB = 00
         case PHASE_1:
             if (prev_phase == PHASE_4)
             {
                 quad_enc_ticks++;
             }
-            else if (prev_phase == PHASE_2)
+            else if (prev_phase == PHASE_2
             {
                 quad_enc_ticks--;
             }
             break;
+        // AB = 01
         case PHASE_2:
             if (prev_phase == PHASE_1)
             {
@@ -129,6 +132,7 @@ void PB_IntHandler(void)
                 quad_enc_ticks--;
             }
             break;
+        // AB = 11
         case PHASE_3:
             if (prev_phase == PHASE_2)
             {
@@ -139,6 +143,7 @@ void PB_IntHandler(void)
                 quad_enc_ticks--;
             }
             break;
+        // AB = 10
         case PHASE_4:
             if (prev_phase == PHASE_3)
             {
@@ -151,8 +156,10 @@ void PB_IntHandler(void)
             break;
     }
 
+    //set previous phase for next iteration
     prev_phase = current_phase;
 
+    //reset encoder ticks upon full rotation
     if (yaw_ticks > MAX_ENC_TICKS)
     {
         yaw_ticks = MIN_ENC_TICKS;
@@ -162,6 +169,7 @@ void PB_IntHandler(void)
         yaw_ticks = MAX_ENC_TICKS;
     }
 
+    //enable gpio pins for encoder and clear interrupts
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
