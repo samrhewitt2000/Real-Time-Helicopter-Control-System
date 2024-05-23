@@ -16,8 +16,6 @@
 
 #include "circ_buffer.h"
 
-extern circBuf_t g_inBuffer;
-
 void SysTickIntHandler(void);
 
 void ADCIntHandler(void);

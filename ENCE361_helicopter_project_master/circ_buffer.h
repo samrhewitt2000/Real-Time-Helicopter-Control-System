@@ -1,5 +1,5 @@
-#ifndef CIRCBUFFER_H_
-#define CIRCBUFFER_H_
+#ifndef CIRC_BUFFER_H_
+#define CIRC_BUFFER_H_
 
 //*****************************************************************************
 // 
@@ -30,6 +30,8 @@ typedef struct {
 	uint32_t rindex;	// index for reading, mod(size)
 	uint32_t *data;		// pointer to the data
 } circBuf_t;
+
+extern circBuf_t g_inBuffer;
 
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
@@ -64,4 +66,4 @@ void freeCircBuf (circBuf_t *buffer);
 //*****************************************************************************
 uint32_t sum_CircBuf_vals (uint32_t sum, circBuf_t *buffer, uint32_t buf_size);
 
-#endif /*CIRCBUFT_H_*/
+#endif /*CIRC_BUFFER_H_*/
