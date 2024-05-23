@@ -84,7 +84,7 @@ void ADCIntHandler(void)
 
 
 //*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, display
+// initClock: Initialisation functions for the clock (incl. SysTick), ADC, display
 //*****************************************************************************
 void initClock (void)
 {
@@ -107,7 +107,7 @@ void initClock (void)
 
 
 //*****************************************************************************
-//
+//initADC: Initializes ADC0 to take single samples from CH9 (pin PE4, AIN9)
 //*****************************************************************************
 void initADC (void)
 {
@@ -150,7 +150,7 @@ void initADC (void)
 
 
 //*****************************************************************************
-// The code for calculating the ADC value
+// get_ADC_val: The code for calculating the ADC value
 //*****************************************************************************
 int32_t get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
 {
