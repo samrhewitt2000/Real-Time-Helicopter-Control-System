@@ -89,6 +89,7 @@ void initButtons (void)
     GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
     but_normal[SWITCH] = SWITCH_NORMAL;
 
+    //initialize each button's status
     for (i = 0; i < NUM_BUTS; i++)
     {
         but_state[i] = but_normal[i];

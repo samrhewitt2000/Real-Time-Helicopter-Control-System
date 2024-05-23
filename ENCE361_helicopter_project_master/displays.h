@@ -23,14 +23,30 @@
 // *******************************************************
 void initDisplay (void);
 
+
+//*****************************************************************************
+//displayNothing: clears screen and displays nothing
+//*****************************************************************************
 void displayNothing(void);
 
+//*****************************************************************************
+//displayADCVal: Displays the current value of the ADC on the OLED display
+//*****************************************************************************
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
 
+//*****************************************************************************
+//displayAltitudePerc: Displays the current altitude on the OLED display
+//*****************************************************************************
 void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
 
+//*****************************************************************************
+//displayYaw: Displays the current yaw angle on the OLED display
+//*****************************************************************************
 void displayYaw(uint32_t display_col, uint32_t display_row);
 
+//*****************************************************************************
+//display_rotor_PWM: Displays the current PWM frequency                            CHANGE THIS
+//*****************************************************************************
 void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq);
 
 #endif /*DISPLAYS_H_*/
