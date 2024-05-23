@@ -28,10 +28,8 @@
 
 #include "yaw_control.h"
 
-typedef enum
-{
-
-    LANDED,
+typedef enum {
+    LANDED = 0,
     LANDING,
     TAKEOFF,
     FLYING

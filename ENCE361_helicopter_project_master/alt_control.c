@@ -16,6 +16,10 @@
 //*****************************************************************************
 
 #include "alt_control.h"
+#include "PWM.h"
+#include "circ_buffer.h"
+#include "PID.h"
+#include "kernel.h"
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
@@ -73,4 +77,18 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     int32_t offset = 33;
     //set pwm to control action
     set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
+}
+
+void alt_control_task(void)
+{
+    // Get current altitude value
+    int32_t current_altitude = get_alt_val(&g_inBuffer);
+
+    // Implement altitude control logic here
+
+    // Example: Change altitude by 10% upwards
+    change_altitude(current_altitude, 10);
+
+    // Indicate task completion
+    pK_block_task(pK_get_current_task_id());
 }
