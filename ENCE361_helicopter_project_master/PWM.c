@@ -178,20 +178,12 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 
 
 //********************************************************
-// Function to set the freq, duty cycle of M1PWM5 (tail motor)
-//********************************************************
-void stop_rotor(void)
+// Function to set the freq, duty cycle of both motors to zero
+// ********************************************************
+void kill_motors(helicopter_state_t *current_heli_state)
 {
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
-}
+    set_rotor_PWM (0, 0);
+    set_tail_PWM(0, 0);
 
-
-//********************************************************
-// Function to set the freq, duty cycle of M1PWM5 (tail motor)
-//********************************************************
-void stop_tail(void)
-{
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+    *current_heli_state = LANDED;
 }

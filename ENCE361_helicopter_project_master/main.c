@@ -74,33 +74,12 @@ typedef enum {
 // *******************************************************
 // Global Variables
 // *******************************************************
-int32_t initial_ADC_val = 0;    // initialize first value
-int32_t current_ADC_val = 0;    // initialize first value
 uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
 uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
-display_state_t current_state = STATE_PERC; //initialize display state
-helicopter_state_t current_heli_state = LANDED; //initialize display state
-int32_t current_switch_state;
-
-
-
-//********************************************************
-// Function to set the freq, duty cycle of M1PWM5 (tail motor)
-// ********************************************************
-void kill_motors(helicopter_state_t *current_heli_state)
-{
-    //set main motor PWM signal to zero
-    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
-    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
-
-    //set tail motor PWM signal to zero
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
-
-    *current_heli_state = LANDED;
-}
+display_state_t display_state = STATE_PERC; //initialize display state
+helicopter_state_t heli_state = LANDED; //initialize display state
 
 
 
@@ -123,67 +102,77 @@ void initialise_program(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
-    // System initialization (e.g., clock setup, peripherals)
-    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // Initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
-    // Register tasks with the kernel
-    //pK_register_task(Task1, 0); // Highest priority
-    //pK_register_task(Task2, 1); // Lower priority
+    // System initialization (e.g., clock setup, peripherals)
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+
+    initCircBuf (&g_inBuffer, BUF_SIZE);
+    // calculate exactly how long this needs to be
+    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void register_all_pk_tasks(void)
+{
+    unsigned char switch_task_ID = pK_register_task(switch_task, 0);
+    unsigned char pushbuttons_task_ID = pK_register_task(pushbuttons_task, 1);
+    unsigned char alt_control_task_ID = pK_register_task(alt_control_task, 2);
+    unsigned char yaw_control_task_ID = pK_register_task(yaw_control_task, 2);
 }
 
 
 
 int main(void)
 {
+    //Initialise peripherals etc
     initialise_program();
 
-    initCircBuf (&g_inBuffer, BUF_SIZE);
-    // calculate exactly how long this needs to be
-    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+    // Kill motors for software reset
+    kill_motors(&heli_state);
 
-    kill_motors(&current_heli_state);
+    // Perform the task registration for the protokernal
+    register_all_pk_tasks();
+
     IntMasterEnable();
 
+    // Read in relevant peripheral values
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     while (1)
     {
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
-        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-        switch(current_heli_state)
+        switch(heli_state)
         {
             case LANDED:
                 // set rotor and tail motors to zero
-                stop_rotor();
-                stop_tail();
-                if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
-                {
-                    current_heli_state = TAKEOFF;
-                }
+                switch_task();
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
+                found_yaw = find_yaw_ref();
 
                 break;
             case FLYING:
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
-                if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
-                {
-                    current_heli_state = LANDING;
-                }
+                switch_task();
+                pushbuttons_task();
+                alt_control_task();
+                yaw_control_task();
                 break;
             case LANDING:
-                // When helicopter is landing pressing buttons or switches do nothig
+                // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly
-                break;
-            default:
                 break;
         }
 

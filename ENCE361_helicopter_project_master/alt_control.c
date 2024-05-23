@@ -91,5 +91,5 @@ void alt_control_task(void)
     change_altitude(current_altitude, 10);
 
     // Indicate task completion
-    pK_block_task(pK_get_current_task_id());
+    //pK_block_task(pK_get_current_task_id());
 }
