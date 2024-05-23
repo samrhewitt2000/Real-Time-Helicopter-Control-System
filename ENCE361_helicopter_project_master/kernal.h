@@ -57,7 +57,7 @@ void pK_ready_task (unsigned char taskId);
 // pK_block_task: Switches the task with ID 'taskId' to
 // 'blocked' so that it will not be executed.
 //*****************************************************************************
-void pK_ready_task (unsigned char taskId);
+void pK_block_task (unsigned char taskId);
 
 //*****************************************************************************
 // pK_task_state: Returns the current state of the task.

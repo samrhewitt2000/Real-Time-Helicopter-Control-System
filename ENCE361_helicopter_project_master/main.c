@@ -43,6 +43,8 @@
 //*****************************************************************************
 #define BUF_SIZE 10
 
+
+
 // *******************************************************
 // Display state enum
 // *******************************************************
@@ -51,6 +53,8 @@ typedef enum {
     STATE_MEAN_ADC_VAL,     // display mean adc values state
     STATE_OFF,              // screen off state
 } display_state_t;
+
+
 
 // *******************************************************
 // Helicopter state enum
@@ -61,6 +65,23 @@ typedef enum {
     FLYING,
     LANDING
 } helicopter_state_t;
+
+
+
+// *******************************************************
+// Global Variables
+// *******************************************************
+int32_t initial_ADC_val = 0;    // initialize first value
+int32_t current_ADC_val = 0;    // initialize first value
+uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
+uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
+uint32_t ui32TailFreq = PWM_START_RATE_HZ;
+uint32_t ui32TailDuty = PWM_FIXED_DUTY;
+display_state_t current_state = STATE_PERC; //initialize display state
+helicopter_state_t current_heli_state = FLYING; //initialize display state
+int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+int32_t current_switch_state;
+
 
 
 //********************************************************
@@ -104,25 +125,11 @@ void initialise_program(void)
 
 
 
-int main(void)
-{
-    int32_t initial_ADC_val = 0;    // initialize first value
-    int32_t current_ADC_val = 0;    // initialize first value
-
-    uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
-    uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
-    uint32_t ui32TailFreq = PWM_START_RATE_HZ;
-    uint32_t ui32TailDuty = PWM_FIXED_DUTY;
-    initCircBuf (&g_inBuffer, BUF_SIZE);
+initCircBuf (&g_inBuffer, BUF_SIZE);
 
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-
-    display_state_t current_state = STATE_PERC; //initialize display state
-    helicopter_state_t current_heli_state = FLYING; //initialize display state
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
-    int32_t current_switch_state;
 
     kill_motors(&current_heli_state);
 
@@ -130,70 +137,40 @@ int main(void)
 
     while (1)
     {
-        //
-        // Background task: calculate the (approximate) mean of the values in the
-        // circular buffer and display it, together with the sample number.
+        // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
         current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-
-//        if (checkButton(LEFT) == PUSHED) {
-//            initial_ADC_val = current_ADC_val;
-//        }
-
-        if ((checkButton (UP) == PUSHED) && (ui32RotorDuty < PWM_MAX_DUTY ))
-        {
-            ui32RotorDuty += 10;
-            set_rotor_PWM (ui32RotorFreq, ui32RotorDuty);
-        }
-        if ((checkButton (DOWN) == PUSHED) && (ui32RotorDuty > PWM_MIN_DUTY ))
-        {
-            ui32RotorDuty -= 10;
-            set_rotor_PWM (ui32RotorFreq, ui32RotorDuty);
-        }
-
-        if ((checkButton (RIGHT) == PUSHED) && (ui32TailDuty < PWM_MAX_DUTY ))
-        {
-            ui32TailDuty += 10;
-            set_tail_PWM (ui32TailFreq, ui32TailDuty);
-        }
-        if ((checkButton (LEFT) == PUSHED) && (ui32TailDuty > PWM_MIN_DUTY ))
-        {
-            ui32TailDuty -= 10;
-            set_tail_PWM (ui32TailFreq, ui32TailDuty);
-        }
-
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
-        // Increment current_heli_state when the switch goes down (low)
-        if (current_switch_state != prev_switch_state)
-        {
-            if (current_heli_state == LANDED && current_switch_state == SWITCH_NORMAL)
-            {
-                current_heli_state = TAKEOFF;
-            }
-            else if (current_heli_state == FLYING && current_switch_state != SWITCH_NORMAL)
-            {
-                current_heli_state = LANDING;
-            }
-            prev_switch_state = current_switch_state;
-        }
 
         switch(current_heli_state)
         {
             case LANDED:
-                if (current_switch_state != prev_switch_state)
+                if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
                 {
-
+                    current_heli_state = TAKEOFF;
                 }
                 break;
             case TAKEOFF:
+                // Handle TAKEOFF state
                 break;
             case FLYING:
+                if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
+                {
+                    current_heli_state = LANDING;
+                }
                 break;
             case LANDING:
+                // Handle LANDING state
+                break;
+            default:
                 break;
         }
 
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
+        pK_ready_task(alt_control_task); // Make altitude control task ready
+        pK_ready_task(yaw_control_task); // Make yaw control task ready
 
+        prev_switch_state = current_switch_state;
+
+        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
     }
 }
 

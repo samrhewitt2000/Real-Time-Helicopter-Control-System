@@ -15,17 +15,17 @@
 //
 //*****************************************************************************
 
+#include <stdint.h>
+#include <stdbool.h>
 #include "yaw_control.h"
 #include "PWM.h"
 #include "alt_control.h"
 #include "circ_buffer.h"
 #include "PID.h"
-#include <stdint.h>
-#include <stdbool.h>
 #include "driverlib/PWM.h"
 #include "ADC.h"
 #include "buttons.h"
-
+#include "kernel.h"
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
@@ -80,4 +80,21 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
 
     //send to PWM and motors
     //set_yaw_PWM (control_action);
+}
+
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void yaw_control_task(void)
+{
+    // Implement yaw control logic here
+
+    // Example: Change yaw angle by 30 degrees clockwise
+    change_yaw_angle(30, 50); // Assuming 50 as rotor PWM value
+
+    // Indicate task completion
+    pK_block_task(pK_get_current_task_id());
 }
