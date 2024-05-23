@@ -30,8 +30,6 @@ typedef enum {
     BLOCKED
 } task_state_t;
 
-
-
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -51,21 +49,27 @@ static unsigned char currentTaskId = 0; // Initialize to the first task
 //*****************************************************************************
 void SysTickHandler(void)
 {
-    // Implement round-robin scheduling here
     // Find the next ready task
     unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+
+    // Loop through tasks to find the next one that is ready
     while (tasks[nextTaskId].state != READY) {
         nextTaskId = (nextTaskId + 1) % numTasks;
+
+        // Break the loop if we have checked all tasks to avoid infinite loop
+        if (nextTaskId == currentTaskId) {
+            return;
+        }
     }
+
+    // Update the current task ID to the next ready task
     currentTaskId = nextTaskId;
 
-    // Execute the current task
+    // Execute the current task if it has a valid function pointer
     if (tasks[currentTaskId].taskEnter) {
         tasks[currentTaskId].taskEnter();
     }
 }
-
-
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -79,8 +83,6 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
     SysTickEnable();
     SysTickIntEnable();
 }
-
-
 
 //*****************************************************************************
 // pK_register_task: Registers a task with the protoKernel;
@@ -102,15 +104,28 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
     return 0xFF; // Error: Task registration failed
 }
 
-
-
 //*****************************************************************************
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have
 // been registered and that are 'ready'.
 //*****************************************************************************
 void pK_start(void)
 {
-    // Start the round-robin scheduling
+    // Ensure that there is at least one task registered
+    if (numTasks == 0) {
+        return; // No tasks to schedule
+    }
+
+    // Set up the SysTick timer to generate periodic interrupts
+    SysTickPeriodSet(g_tickPeriod);
+    SysTickEnable();
+    SysTickIntEnable();
+
+    // Execute the first task immediately
+    if (tasks[currentTaskId].taskEnter) {
+        tasks[currentTaskId].taskEnter();
+    }
+
+    //to finish
 }
 
 //*****************************************************************************
