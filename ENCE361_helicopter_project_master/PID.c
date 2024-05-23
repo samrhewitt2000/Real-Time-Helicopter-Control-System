@@ -16,7 +16,7 @@
 //*****************************************************************************
 
 
-#include "PWM.h"
+//#include "PWM.h"
 #include "PID.h"
 #include "circ_buffer.h"
 #include <stdint.h>
@@ -54,7 +54,7 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     int32_t D = Kd * (prev_sensor_reading - sensor_reading) / delta_t;
 
     //no coupling if using main rotor but must account for gravity (included in offset)
-    int32_t control = P + (I + dI) + D + offset; //account for motor coupling
+    uint32_t control = P + (I + dI) + D + offset; //account for motor coupling
 
     //check for integral saturation
     if (control > MAX_OUTPUT)

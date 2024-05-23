@@ -15,6 +15,7 @@
 //
 //*****************************************************************************
 
+#include "PWM.h"
 #include "alt_control.h"
 #include "circ_buffer.h"
 #include "PID.h"
@@ -25,7 +26,6 @@
 #include "buttons.h"
 #include "quad_enc.h"
 #include "yaw_control.h"
-#include "PWM.h"
 
 
 #define FLOAT_CONVERSION_FACTOR 1000
@@ -83,5 +83,6 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     }
     int32_t offset = Kg;
     //set pwm to control action
-    set_rotor_PWM (controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR); //divide control action by factor
+    uint32_t *control_action = controller(desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR;
+    set_rotor_PWM (control_action); //divide control action by factor
 }

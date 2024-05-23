@@ -87,8 +87,8 @@ int main(void)
         current_ADC_val = get_alt_val(&g_inBuffer);
         current_alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
 
-        display_main_duty_cycle(main_rotor_duty, 0, 0);
-        display_tail_duty_cycle(tail_rotor_duty, 0, 1);
+        display_main_duty_cycle(*ptr_main_rotor_duty, 0, 0);
+        display_tail_duty_cycle(*ptr_tail_rotor_duty, 0, 1);
 
         display_alt_percent(current_alt_percent, 0, 2);
         display_yaw(0, 3, yaw_angle_int, yaw_angle_decimal);

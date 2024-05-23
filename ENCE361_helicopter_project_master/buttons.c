@@ -31,6 +31,7 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 
+
 static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];

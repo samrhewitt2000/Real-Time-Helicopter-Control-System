@@ -79,11 +79,14 @@ void SysTickIntHandler (void);
 void initClocks (void);
 void initSysTick (void);
 void initialisePWM (void);
-void setPWM (uint32_t u32Duty);
+void setPWM (uint8_t ui8Duty);
 
-//initilize externs
-int32_t main_rotor_duty;
-int32_t tail_rotor_duty;
+//initilize pointers
+
+uint32_t main_rotor_duty;
+uint32_t tail_rotor_duty;
+extern uint32_t* ptr_main_rotor_duty = &main_rotor_duty;
+extern uint32_t* ptr_tail_rotor_duty = &tail_rotor_duty;
 
 /*********************************************************
  * initialisePWM
@@ -128,8 +131,8 @@ void initialise_PWM (void)
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
-    int32_t main_rotor_duty = 0;
-    int32_t tail_rotor_duty = 0;
+    *ptr_main_rotor_duty = 0;
+    *ptr_tail_rotor_duty = 0;
 }
 
 
@@ -137,7 +140,7 @@ void initialise_PWM (void)
 /********************************************************
  * Function to set the freq, duty cycle of M0PWM7
  ********************************************************/
-void set_rotor_PWM (uint32_t ui32Duty)
+void set_rotor_PWM (uint32_t *ptr_ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
@@ -145,8 +148,9 @@ void set_rotor_PWM (uint32_t ui32Duty)
 
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
-        ui32Period * ui32Duty / 100);
-    main_rotor_duty = (ui32Period * ui32Duty / 100);
+        ui32Period * *ptr_ui32Duty / 100);
+
+    *ptr_main_rotor_duty = (ui32Period * *ptr_ui32Duty / 100);
 }
 
 
@@ -154,7 +158,7 @@ void set_rotor_PWM (uint32_t ui32Duty)
 //*****************************************************************************
 //
 //*****************************************************************************
-void set_tail_PWM (uint32_t ui32Duty)
+void set_tail_PWM (uint32_t *ptr_ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
@@ -162,7 +166,8 @@ void set_tail_PWM (uint32_t ui32Duty)
 
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM,
-        ui32Period * ui32Duty / 100);
-    tail_rotor_duty = (ui32Period * ui32Duty / 100);
+        ui32Period * *ptr_ui32Duty / 100);
+
+    *ptr_tail_rotor_duty = (ui32Period * *ptr_ui32Duty / 100);
 }
 

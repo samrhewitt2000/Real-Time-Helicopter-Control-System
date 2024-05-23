@@ -71,15 +71,16 @@ int32_t yaw_angle_to_ticks(int32_t angle)
 //*****************************************************************************************************
 // change yaw angle by specified amount
 //*****************************************************************************************************
-void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
+void change_yaw_angle(int32_t yaw_angle_change, int32_t *rotor_PWM)
 {
     int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
     int32_t offset;
     //account for coupling on main rotor
-    offset = Kc * rotor_PWM * FLOAT_CONVERSION_FACTOR;
+    offset = Kc * *rotor_PWM * FLOAT_CONVERSION_FACTOR;
 
     //calculate control
+    uint32_t *tail_control_action = (controller(setpoint, quad_enc_ticks, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);
     //send to PWM and motors
-    set_tail_PWM(controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR);//divide control action by conversion factor
+    set_tail_PWM(tail_control_action);//divide control action by conversion factor
 }
 

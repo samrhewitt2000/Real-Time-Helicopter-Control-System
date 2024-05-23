@@ -29,7 +29,7 @@ int32_t yaw_angle_ticks_to_int(int32_t quad_enc_ticks);
 
 int32_t yaw_angle_to_ticks(int32_t angle);
 
-void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM);
+void change_yaw_angle(int32_t yaw_angle_change, int32_t *rotor_PWM);
 
 
 #endif /* YAW_CONTROL_H_ */
