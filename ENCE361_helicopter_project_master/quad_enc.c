@@ -108,7 +108,7 @@ void PB_IntHandler(void)
             {
                 quad_enc_ticks++;
             }
-            else if (prev_phase == PHASE_2
+            else if (prev_phase == PHASE_2)
             {
                 quad_enc_ticks--;
             }
@@ -152,7 +152,7 @@ void PB_IntHandler(void)
     prev_phase = current_phase;
 
     //reset encoder ticks upon full rotation
-    if (yaw_ticks > MAX_ENC_TICKS)
+    if (quad_enc_ticks > MAX_ENC_TICKS)
     {
         quad_enc_ticks = MIN_ENC_TICKS;
     }
