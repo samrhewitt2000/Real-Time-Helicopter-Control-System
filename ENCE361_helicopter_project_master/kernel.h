@@ -25,7 +25,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
 
-#define MAX_TASKS 10
+#define MAX_TASKS 100
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks

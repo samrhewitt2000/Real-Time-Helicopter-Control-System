@@ -29,6 +29,10 @@ int32_t alt_val_to_percent(int32_t initial_alt_val, int32_t current_alt_val);
 
 void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change);
 
-void alt_control_task(void);
+//void alt_control_task(void);
+
+void increase_altitude_task(void);
+
+void decrease_altitude_task(void);
 
 #endif /*ALT_CONTROL_H_*/

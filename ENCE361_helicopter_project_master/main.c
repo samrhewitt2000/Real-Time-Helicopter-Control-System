@@ -103,6 +103,7 @@ void initialise_program(void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
 
+
     // Initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
@@ -127,6 +128,69 @@ void register_all_pk_tasks(void)
     unsigned char yaw_control_task_ID = pK_register_task(yaw_control_task, 2);
 }
 
+void get_ADC_task(void)
+{
+    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+}
+
+
+void buttons_task(void)
+{
+    *counter += 1;
+    if (checkButton(UP) == PUSHED && current_heli_state == FLYING)
+    {
+        //increase altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), 10);
+    }else if (checkButton(DOWN) == PUSHED && current_heli_state == FLYING)
+    {
+        //decrease altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), -10);
+    }else if (checkButton(SWITCH) == PUSHED && current_heli_state == LANDED)
+    {
+        current_heli_state = TAKEOFF;
+    }else if (checkButton(SWITCH) == RELEASED && current_heli_state == FLYING)
+    {
+        current_heli_state = LANDING;
+    }
+}
+
+
+void transition_task(void)
+{
+    switch(current_heli_state)
+    {
+        case TAKEOFF:
+            //lift off by 1% :)
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+            current_heli_state = FLYING;
+            break;
+        case LANDING:
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -100);
+            if (alt_val_to_percent(initial_ADC_val, current_ADC_val) == 0)
+            {
+                kill_motors(&current_heli_state);
+            }
+            break;
+        case FLYING:
+            break;
+        case LANDED:
+            break;
+    }
+}
+
+void print_task(void)
+{
+    if (but_state[4] == 1)
+    {
+        current_heli_state = FLYING;
+        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    }
+}
+//
+//void get_sensor_values_task(void)
+//{
+//    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+//}
 
 
 int main(void)
@@ -146,8 +210,30 @@ int main(void)
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
+    unsigned char increase_alt_task_ID = pK_register_task(increase_altitude_task, 0);
+    unsigned char decrease_alt_task_ID = pK_register_task(decrease_altitude_task, 0);
+
+    unsigned char buttons_task_ID = pK_register_task(buttons_task, 0);
+    unsigned char transition_task_ID = pK_register_task(transition_task, 0);
+    //unsigned char get_sensor_values_task_ID = pK_register_task(get_sensor_values_task, 0);
+    unsigned char print_task_ID = pK_register_task(print_task, 1);
+    unsigned char get_ADC_task_ID = pK_register_task(get_ADC_task, 0);
+
+
+    pK_ready_task(get_ADC_task_ID);
+    pK_ready_task(transition_task_ID);
+    pK_ready_task(decrease_alt_task_ID);
+    pK_ready_task(buttons_task_ID);
+    pK_ready_task(increase_alt_task_ID);
+    //pK_ready_task(get_sensor_values_task_ID);
+    pK_ready_task(print_task_ID);
+
+    pK_start();
+
     while (1)
     {
+
+
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
@@ -176,12 +262,8 @@ int main(void)
                 break;
         }
 
-        //pK_ready_task(alt_control_task); // Make altitude control task ready
-        //pK_ready_task(yaw_control_task); // Make yaw control task ready
 
-        prev_switch_state = current_switch_state;
 
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
     }
 }
 

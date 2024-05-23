@@ -35,15 +35,17 @@ typedef struct {
 } task_t;
 
 static task_t tasks[MAX_TASKS];
-static unsigned char numTasks = 0;
+static unsigned char numTasks = 6;
 static unsigned long g_tickPeriod = 0;
-static unsigned char currentTaskId = 0; // Initialize to the first task
+volatile unsigned char currentTaskId = 0; // Initialize to the first task
+volatile uint32_t systick_flag = 0;
 
 //*****************************************************************************
 //
 //*****************************************************************************
 void SysTickHandler(void)
 {
+    systick_flag = 1;
     // Find the next ready task
     unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
 
@@ -64,6 +66,7 @@ void SysTickHandler(void)
     if (tasks[currentTaskId].taskEnter) {
         tasks[currentTaskId].taskEnter();
     }
+
 }
 
 //*****************************************************************************
@@ -93,7 +96,7 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
     {
         tasks[numTasks].taskEnter = taskEnter;
         tasks[numTasks].priority = priority;
-        tasks[numTasks].state = READY;
+        tasks[numTasks].state = BLOCKED;
         return numTasks++;
     }
     return 0xFF; // Error: Task registration failed
@@ -103,20 +106,77 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have
 // been registered and that are 'ready'.
 //*****************************************************************************
+//void pK_start(void)
+//{
+//    // Ensure that there is at least one task registered
+//    if (numTasks == 0) {
+//        return; // No tasks to schedule
+//    }
+//
+//    // Execute the first task immediately
+//    if (tasks[currentTaskId].taskEnter) {
+//        tasks[currentTaskId].taskEnter();
+//    }
+//    while(1)
+//    {
+//        //wait for systick
+//        while (!systick_flag)
+//        {
+//
+//        systick_flag = 0;
+//
+//        //find next task thats ready
+//        unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+//
+//        //loop until ready task found
+//        while (tasks[nextTaskId].state != READY)
+//        {
+//            nextTaskId = (nextTaskId + 1) % numTasks;
+//
+//            //break if all tasks checked
+//            if (nextTaskId == currentTaskId)
+//            {
+//                break;
+//            }
+//        }
+//
+//        //set current to next ready task
+//        currentTaskId = nextTaskId;
+//
+//        //execute current task
+//        if (tasks[currentTaskId].taskEnter)
+//        {
+//            tasks[currentTaskId].taskEnter();
+//        }
+//        }
+//
+//    }
+//    //to finish
+//}
 void pK_start(void)
 {
-    // Ensure that there is at least one task registered
-    if (numTasks == 0) {
-        return; // No tasks to schedule
-    }
+  SysTickPeriodSet(g_tickPeriod);
+  SysTickEnable();
+  SysTickIntEnable();
+  int j;
+  //round robin
+  while(1)
+  {
+      for (j=0; j < numTasks; j++)
+      {
+          if (tasks[j].state == READY)
+          {
 
-    // Execute the first task immediately
-    if (tasks[currentTaskId].taskEnter) {
-        tasks[currentTaskId].taskEnter();
-    }
+              //clear flag
+              tasks[j].state = BLOCKED;
 
-    //to finish
+              //execute task
+              tasks[j].taskEnter();
+          }
+      }
+  }
 }
+
 
 //*****************************************************************************
 // pK_unregister_task: Removes the nominated task from those
