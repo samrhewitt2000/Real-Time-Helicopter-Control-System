@@ -21,6 +21,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include "inc/hw_types.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
 
 #define MAX_TASKS 10
 

@@ -27,6 +27,7 @@
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kg 33.3 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
+//#define change perc
 
 //volatile int32_t main_rotor_PWM = 0;
 volatile int32_t current_altitude = 0;

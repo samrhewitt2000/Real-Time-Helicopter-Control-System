@@ -81,7 +81,7 @@ uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t current_state = STATE_PERC; //initialize display state
-helicopter_state_t current_heli_state = FLYING; //initialize display state
+helicopter_state_t current_heli_state = LANDED; //initialize display state
 int32_t current_switch_state;
 
 
