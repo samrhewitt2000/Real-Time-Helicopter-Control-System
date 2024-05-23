@@ -23,6 +23,7 @@
 
 #include "buttons.h"
 
+#include "buttons.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -39,6 +40,12 @@
 void initButtons (void)
 {
     int i;
+
+    // SWITCH (active HIGH)
+    SysCtlPeripheralEnable (SWITCH_PERIPH);
+    GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
+    GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
+    but_normal[SWITCH] = SWITCH_NORMAL;
 
     // UP button (active HIGH)
     SysCtlPeripheralEnable (UP_BUT_PERIPH);
@@ -66,6 +73,7 @@ void initButtons (void)
       // "unlocked" before they can be reconfigured.  This also requires
       //      #include "inc/tm4c123gh6pm.h"
     SysCtlPeripheralEnable (RIGHT_BUT_PERIPH);
+
     //---Unlock PF0 for the right button:
     GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
     GPIO_PORTF_CR_R |= GPIO_PIN_0; //PF0 unlocked
@@ -135,6 +143,7 @@ void updateButtons (void)
         }
     }
 }
+
 
 
 

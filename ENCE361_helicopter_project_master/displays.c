@@ -65,6 +65,12 @@ void displayNothing(void)
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
 
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
+{
     char string[17];  // 16 characters across the display
 
     // Form a new string for the line.  The maximum width specified for the
@@ -83,10 +89,8 @@ void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint3
 {
     char string[17];
 
-    int32_t altitude_percent;
+    usnprintf (string, sizeof(string), "Alt: %2d %%  ", alt_percent);
 
-    altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
-    usnprintf (string, sizeof(string), "Alt: %2d %%  ", altitude_percent);
     OLEDStringDraw (string, display_col, display_row);
 }
 
@@ -99,14 +103,12 @@ void displayYaw(uint32_t display_col, uint32_t display_row)
 {
     char string[17];
 
-    yaw_angle_decimal = abs(((360 * yaw_ticks) % 448 * 10) / 448);
-
-    int32_t yaw_angle_int = abs(360 * yaw_ticks / 448);
-
-    if (yaw_ticks < 0) {
-        usnprintf (string, sizeof(string), "Yaw: -%d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
+    if (yaw_angle_int < 0) 
+    {
+        usnprintf (string, sizeof(string), "Yaw: -%d.%d Deg  ", abs(yaw_angle_int), yaw_angle_decimal);
     }
-    else {
+    else 
+    {
         usnprintf (string, sizeof(string), "Yaw:  %d.%d Deg  ", yaw_angle_int, yaw_angle_decimal);
     }
 

@@ -30,6 +30,10 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 #include "inc/hw_ints.h"
+#include "communications.h"
+#include "alt_control.h"
+#include "PID.h"
+#include "quad_enc.h"
 
 #include "circ_buffer.h"
 #include "quad_enc.h"
@@ -104,10 +108,17 @@ int main(void)
     uint32_t ui32TailFreq = PWM_START_RATE_HZ;
     uint32_t ui32TailDuty = PWM_FIXED_DUTY;
     initCircBuf (&g_inBuffer, BUF_SIZE);
+}
 
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-//    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-//    GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_DIR_MODE_OUT);
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+int main(void)
+ {
+
+    int32_t current_alt_percent;
 
 
     // calculate exactly how long this needs to be
@@ -125,12 +136,12 @@ int main(void)
 
     IntMasterEnable();
 
+
+
     while (1)
     {
-        //
-        // Background task: calculate the (approximate) mean of the values in the
-        // circular buffer and display it, together with the sample number.
-        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+        current_ADC_val = get_alt_val(&g_inBuffer);
+        current_alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
 
 //        if (checkButton(LEFT) == PUSHED) {
 //            initial_ADC_val = current_ADC_val;
@@ -202,4 +213,5 @@ int main(void)
 
     }
 }
+
 
