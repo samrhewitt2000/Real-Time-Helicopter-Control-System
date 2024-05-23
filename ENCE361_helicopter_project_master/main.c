@@ -37,6 +37,7 @@
 #include "ADC.h"
 #include "buttons.h"
 #include "PWM.h"
+#include "kernel.h"
 
 //*****************************************************************************
 // Constants
