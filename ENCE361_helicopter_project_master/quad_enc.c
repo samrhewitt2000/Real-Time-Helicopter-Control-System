@@ -28,8 +28,9 @@
 #define MAX_ENC_TICKS 224
 #define MIN_ENC_TICKS -223
 
+volatile int32_t quad_enc_ticks = 0;  // Global variable to store yaw angle ticks
+volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
 volatile phase_t current_phase = PHASE_4;
-
 volatile phase_t prev_phase = PHASE_4;
 
 // *******************************************************
@@ -40,20 +41,11 @@ void initYaw (void)
 //    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 //    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 
-
-// *******************************************************
-// init_quad_enc: Initialise the quadrature encoder
-// *******************************************************
-void init_quad_enc (void)
-{
     // Enable Peripheral
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-
-    // Wait for SysCtl Peripheral
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB))
     {
     }
-
     // Configure GPIO Pins (PB0 and PB1) as Inputs
     GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
@@ -64,7 +56,7 @@ void init_quad_enc (void)
     GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1, GPIO_BOTH_EDGES);
 
     // Register Interrupt Handlers
-    GPIOIntRegister(GPIO_PORTB_BASE, quad_enc_int_handler);
+    GPIOIntRegister(GPIO_PORTB_BASE, PB_IntHandler);
 
     // Enable GPIO Interrupts
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
@@ -162,14 +154,16 @@ void PB_IntHandler(void)
     //reset encoder ticks upon full rotation
     if (yaw_ticks > MAX_ENC_TICKS)
     {
-        yaw_ticks = MIN_ENC_TICKS;
+        quad_enc_ticks = MIN_ENC_TICKS;
     }
-    else if (yaw_ticks < MIN_ENC_TICKS)
+    else if (quad_enc_ticks < MIN_ENC_TICKS)
     {
-        yaw_ticks = MAX_ENC_TICKS;
+        quad_enc_ticks = MAX_ENC_TICKS;
     }
 
     //enable gpio pins for encoder and clear interrupts
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
+
+

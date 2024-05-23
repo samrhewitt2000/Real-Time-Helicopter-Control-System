@@ -1,5 +1,5 @@
-#ifndef CIRCBUFT_H_
-#define CIRCBUFT_H_
+#ifndef CIRCBUFFER_H_
+#define CIRCBUFFER_H_
 
 //*****************************************************************************
 // 

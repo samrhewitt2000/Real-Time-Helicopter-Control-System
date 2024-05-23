@@ -26,6 +26,7 @@
 #include "driverlib/systick.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
+#include "PWM.h"
 
 #include "buttons.h"
 #include "PWM.h"

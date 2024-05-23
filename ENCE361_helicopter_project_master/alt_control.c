@@ -1,5 +1,5 @@
 //*****************************************************************************
-// 
+//
 //      alt_control.c
 //
 // Controls the helicopter altitude based on ADC value and button input
@@ -15,24 +15,13 @@
 //
 //*****************************************************************************
 
-#include "PWM.h"
 #include "alt_control.h"
-#include "circ_buffer.h"
-#include "PID.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "driverlib/PWM.h"
-#include "ADC.h"
-#include "buttons.h"
-#include "quad_enc.h"
-#include "yaw_control.h"
 
-
-#define FLOAT_CONVERSION_FACTOR 1000
+#define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
-#define Kg 0.333 * FLOAT_CONVERSION_FACTOR
+#define Kg 33.3 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
 
 //volatile int32_t main_rotor_PWM = 0;
@@ -50,7 +39,7 @@ int32_t get_alt_val(circBuf_t *buffer)
     {
         sum += readCircBuf (buffer);
     }
-    
+
     return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
 }
 
@@ -81,8 +70,7 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     {
         desired_alt_percent = 0;
     }
-    int32_t offset = Kg;
+    int32_t offset = 33;
     //set pwm to control action
-    uint32_t *control_action = controller(desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset) / FLOAT_CONVERSION_FACTOR;
-    set_rotor_PWM (control_action); //divide control action by factor
+    set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
 }
