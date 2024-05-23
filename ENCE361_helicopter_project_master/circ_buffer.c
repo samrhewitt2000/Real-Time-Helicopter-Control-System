@@ -20,9 +20,6 @@
 
 #include <stdint.h>
 #include "stdlib.h"
-#include "circ_buffer.h"
-
-
 
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
