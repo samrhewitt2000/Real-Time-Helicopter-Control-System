@@ -64,13 +64,6 @@ void displayNothing(void)
 //*****************************************************************************
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
 {
-
-
-//*****************************************************************************
-//displayADCVal: Displays the current value of the ADC on the OLED display
-//*****************************************************************************
-void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row)
-{
     char string[17];  // 16 characters across the display
 
     // Form a new string for the line.  The maximum width specified for the
