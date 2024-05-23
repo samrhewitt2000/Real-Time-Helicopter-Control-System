@@ -63,14 +63,16 @@ typedef enum {
 } helicopter_state_t;
 
 
-/********************************************************
- * Function to set the freq, duty cycle of M1PWM5 (tail motor)
- ********************************************************/
+//********************************************************
+// Function to set the freq, duty cycle of M1PWM5 (tail motor)
+// ********************************************************
 void kill_motors(helicopter_state_t *current_heli_state)
 {
+    //set main motor PWM signal to zero
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
 
+    //set tail motor PWM signal to zero
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
 
