@@ -123,22 +123,32 @@ void initialise_program(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
+    // System initialization (e.g., clock setup, peripherals)
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+
+    // Initialize the protoKernel with a maximum of 10 tasks and a tick period
+    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
+
+    // Register tasks with the kernel
+    pK_register_task(Task1, 0); // Highest priority
+    pK_register_task(Task2, 1); // Lower priority
 }
+
 
 
 int main(void)
 {
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    initialise_program(void)
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
-
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     kill_motors(&current_heli_state);
-
     IntMasterEnable();
+
+    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
     while (1)
     {
