@@ -50,14 +50,23 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define RIGHT_BUT_PIN  GPIO_PIN_0
 #define RIGHT_BUT_NORMAL  true
 
-//switch
+// SWITCH slider
 #define SWITCH_PERIPH SYSCTL_PERIPH_GPIOA
 #define SWITCH_PORT_BASE  GPIO_PORTA_BASE
 #define SWITCH_PIN  GPIO_PIN_7
 #define SWITCH_NORMAL  true
 
-#define NUM_BUT_POLLS_RELEASED 4
+#define NUM_BUT_POLLS_RELEASED 5 // originally 4
 #define NUM_BUT_POLLS_PUSHED 1
+
+// *******************************************************
+// Globals to module
+// *******************************************************
+
+static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
+static uint8_t but_count[NUM_BUTS];
+static bool but_flag[NUM_BUTS];
+static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
@@ -67,7 +76,6 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants above.
-// *******************************************************
 void initButtons (void);
 
 // *******************************************************
@@ -75,7 +83,6 @@ void initButtons (void);
 // buttons once and updates variables associated with the buttons if
 // necessary.  It is efficient enough to be part of an ISR, e.g. from
 // a SysTick interrupt.
-// *******************************************************
 void updateButtons (void);
 
 // *******************************************************
@@ -83,7 +90,6 @@ void updateButtons (void);
 // (PUSHED or RELEASED) has changed since the last call, otherwise returns
 // NO_CHANGE.  The argument butName should be one of constants in the
 // enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
-// *******************************************************
 uint8_t checkButton (uint8_t butName);
 
 #endif /*BUTTONS_H_*/
