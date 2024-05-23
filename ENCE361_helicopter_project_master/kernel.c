@@ -115,11 +115,6 @@ void pK_start(void)
         return; // No tasks to schedule
     }
 
-    // Set up the SysTick timer to generate periodic interrupts
-    SysTickPeriodSet(g_tickPeriod);
-    SysTickEnable();
-    SysTickIntEnable();
-
     // Execute the first task immediately
     if (tasks[currentTaskId].taskEnter) {
         tasks[currentTaskId].taskEnter();

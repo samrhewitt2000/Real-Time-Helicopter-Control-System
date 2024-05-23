@@ -123,22 +123,32 @@ void initialise_program(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
+    // System initialization (e.g., clock setup, peripherals)
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+
+    // Initialize the protoKernel with a maximum of 10 tasks and a tick period
+    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
+
+    // Register tasks with the kernel
+    pK_register_task(Task1, 0); // Highest priority
+    pK_register_task(Task2, 1); // Lower priority
 }
+
 
 
 int main(void)
 {
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    initialise_program(void)
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
-
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     kill_motors(&current_heli_state);
-
     IntMasterEnable();
+
+    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
     while (1)
     {
@@ -149,22 +159,26 @@ int main(void)
         switch(current_heli_state)
         {
             case LANDED:
+                // set rotor and tail motors to zero
                 if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
                 {
                     current_heli_state = TAKEOFF;
                 }
                 break;
             case TAKEOFF:
-                // Handle TAKEOFF state
+                // helicopter calibrates to reference yaw when take off switch pressed
                 break;
             case FLYING:
+                // helicopter doesnt spaz when both yaw and altitude pressed consecutively
+                // alt in range 0 - 100 and pwm duty in range 2 - 98
                 if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
                 {
                     current_heli_state = LANDING;
                 }
                 break;
             case LANDING:
-                // Handle LANDING state
+                // When helicopter is landing pressing buttons or switches do nothig
+                // helicopter should return to reference yaw and land smoothly
                 break;
             default:
                 break;
