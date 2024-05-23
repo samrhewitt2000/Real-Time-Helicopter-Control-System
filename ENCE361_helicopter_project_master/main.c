@@ -130,15 +130,15 @@ void initialise_program(void)
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
     // Register tasks with the kernel
-    pK_register_task(Task1, 0); // Highest priority
-    pK_register_task(Task2, 1); // Lower priority
+    //pK_register_task(Task1, 0); // Highest priority
+    //pK_register_task(Task2, 1); // Lower priority
 }
 
 
 
 int main(void)
 {
-    initialise_program(void)
+    initialise_program();
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
     // calculate exactly how long this needs to be
@@ -160,6 +160,8 @@ int main(void)
         {
             case LANDED:
                 // set rotor and tail motors to zero
+                stop_rotor();
+                stop_tail();
                 if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
                 {
                     current_heli_state = TAKEOFF;
@@ -167,6 +169,7 @@ int main(void)
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
+
                 break;
             case FLYING:
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
@@ -184,8 +187,8 @@ int main(void)
                 break;
         }
 
-        pK_ready_task(alt_control_task); // Make altitude control task ready
-        pK_ready_task(yaw_control_task); // Make yaw control task ready
+        //pK_ready_task(alt_control_task); // Make altitude control task ready
+        //pK_ready_task(yaw_control_task); // Make yaw control task ready
 
         prev_switch_state = current_switch_state;
 

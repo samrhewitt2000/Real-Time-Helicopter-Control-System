@@ -22,6 +22,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#define MAX_TASKS 10
+
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
 // Sets period of SysTick interrupt

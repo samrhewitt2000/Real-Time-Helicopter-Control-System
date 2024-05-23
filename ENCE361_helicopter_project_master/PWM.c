@@ -162,9 +162,9 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
 
 
 
-/********************************************************
- * Function to set the freq, duty cycle of M1PWM5 (tail motor)
- ********************************************************/
+//********************************************************
+// Function to set the freq, duty cycle of M1PWM5 (tail motor)
+//********************************************************
 void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
@@ -177,46 +177,21 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 
 
 
-//int
-//main (void)
-//{
-//    uint32_t ui32Freq = PWM_START_RATE_HZ;
-//
-//    initClocks ();
-//
-//    // As a precaution, make sure that the peripherals used are reset
-//    SysCtlPeripheralReset (PWM_MAIN_PERIPH_GPIO); // Used for PWM output
-//    SysCtlPeripheralReset (PWM_MAIN_PERIPH_PWM);  // Main Rotor PWM
-//    SysCtlPeripheralReset (UP_BUT_PERIPH);        // UP button GPIO
-//    SysCtlPeripheralReset (DOWN_BUT_PERIPH);      // DOWN button GPIO
-//
-//    initButtons ();  // Initialises 4 pushbuttons (UP, DOWN, LEFT, RIGHT)
-//    initialisePWM ();
-//    initSysTick ();
-//
-//    // Initialisation is complete, so turn on the output.
-//    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-//
-//    //
-//    // Enable interrupts to the processor.
-//    IntMasterEnable ();
-//
-//    //
-//    // Loop forever, controlling the PWM frequency and
-//    // maintaining the the PWM duty cycle.
-//    while (1)
-//    {
-//        // Background task: Check for button pushes and control
-//        // the PWM frequency within a fixed range.
-//        if ((checkButton (UP) == PUSHED) && (ui32Freq < PWM_RATE_MAX_HZ))
-//        {
-//            ui32Freq += PWM_RATE_STEP_HZ;
-//            setPWM (ui32Freq, PWM_FIXED_DUTY);
-//        }
-//        if ((checkButton (DOWN) == PUSHED) && (ui32Freq > PWM_RATE_MIN_HZ))
-//        {
-//            ui32Freq -= PWM_RATE_STEP_HZ;
-//            setPWM (ui32Freq, PWM_FIXED_DUTY);
-//        }
-//    }
-//}
+//********************************************************
+// Function to set the freq, duty cycle of M1PWM5 (tail motor)
+//********************************************************
+void stop_rotor(void)
+{
+    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+}
+
+
+//********************************************************
+// Function to set the freq, duty cycle of M1PWM5 (tail motor)
+//********************************************************
+void stop_tail(void)
+{
+    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+}
