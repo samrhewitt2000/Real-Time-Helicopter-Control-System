@@ -52,6 +52,9 @@
 
 
 
+
+uint32_t *main_duty_cycle;
+
 /***********************************************************
  * Initialisation functions: clock, SysTick, PWM
  ***********************************************************
@@ -151,6 +154,7 @@ void initialise_tail_PWM(void)
  ********************************************************/
 void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
 {
+    *main_duty_cycle = ui32Duty;
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period =
         SysCtlClockGet() / PWM_DIVIDER / ui32Freq;
@@ -158,7 +162,7 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
-}
+    }
 
 
 

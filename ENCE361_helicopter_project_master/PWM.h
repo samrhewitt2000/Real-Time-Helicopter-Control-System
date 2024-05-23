@@ -59,6 +59,9 @@
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
+
+extern uint32_t* main_duty_cycle;
+
 // extern volatile int32_t main_rotor_duty = 0;
 
 // extern volatile int32_t tail_rotor_duty = 0;

@@ -81,15 +81,23 @@ uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t current_state = STATE_PERC; //initialize display state
-helicopter_state_t current_heli_state = FLYING; //initialize display state
+helicopter_state_t current_heli_state = LANDED; //initialize display state
 int32_t current_switch_state;
+uint32_t *counter = 0;
+
+
+// *******************************************************
+// Function prototypes
+// *******************************************************
+void increase_altitude_task(void);
+void decrease_altitude_task(void);
 
 
 
 //********************************************************
 // Function to set the freq, duty cycle of M1PWM5 (tail motor)
 // ********************************************************
-void kill_motors(helicopter_state_t *current_heli_state)
+void kill_motors(helicopter_state_t* current_heli_state)
 {
     //set main motor PWM signal to zero
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
@@ -126,14 +134,79 @@ void initialise_program(void)
     // System initialization (e.g., clock setup, peripherals)
     SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
+
     // Initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
     // Register tasks with the kernel
     //pK_register_task(Task1, 0); // Highest priority
     //pK_register_task(Task2, 1); // Lower priority
+
 }
 
+void get_ADC_task(void)
+{
+    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+}
+
+
+void buttons_task(void)
+{
+    *counter += 1;
+    if (checkButton(UP) == PUSHED && current_heli_state == FLYING)
+    {
+        //increase altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), 10);
+    }else if (checkButton(DOWN) == PUSHED && current_heli_state == FLYING)
+    {
+        //decrease altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), -10);
+    }else if (checkButton(SWITCH) == PUSHED && current_heli_state == LANDED)
+    {
+        current_heli_state = TAKEOFF;
+    }else if (checkButton(SWITCH) == RELEASED && current_heli_state == FLYING)
+    {
+        current_heli_state = LANDING;
+    }
+}
+
+
+void transition_task(void)
+{
+    switch(current_heli_state)
+    {
+        case TAKEOFF:
+            //lift off by 1% :)
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+            current_heli_state = FLYING;
+            break;
+        case LANDING:
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -100);
+            if (alt_val_to_percent(initial_ADC_val, current_ADC_val) == 0)
+            {
+                kill_motors(&current_heli_state);
+            }
+            break;
+        case FLYING:
+            break;
+        case LANDED:
+            break;
+    }
+}
+
+void print_task(void)
+{
+    if (but_state[4] == 1)
+    {
+        current_heli_state = FLYING;
+        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    }
+}
+//
+//void get_sensor_values_task(void)
+//{
+//    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+//}
 
 
 int main(void)
@@ -150,49 +223,38 @@ int main(void)
 
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
+    unsigned char increase_alt_task_ID = pK_register_task(increase_altitude_task, 0);
+    unsigned char decrease_alt_task_ID = pK_register_task(decrease_altitude_task, 0);
+
+    unsigned char buttons_task_ID = pK_register_task(buttons_task, 0);
+    unsigned char transition_task_ID = pK_register_task(transition_task, 0);
+    //unsigned char get_sensor_values_task_ID = pK_register_task(get_sensor_values_task, 0);
+    unsigned char print_task_ID = pK_register_task(print_task, 1);
+    unsigned char get_ADC_task_ID = pK_register_task(get_ADC_task, 0);
+
+
+    pK_ready_task(get_ADC_task_ID);
+    pK_ready_task(transition_task_ID);
+    pK_ready_task(decrease_alt_task_ID);
+    pK_ready_task(buttons_task_ID);
+    pK_ready_task(increase_alt_task_ID);
+    //pK_ready_task(get_sensor_values_task_ID);
+    pK_ready_task(print_task_ID);
+
+    pK_start();
+
     while (1)
     {
+
+
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
-        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-        current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-        switch(current_heli_state)
-        {
-            case LANDED:
-                // set rotor and tail motors to zero
-                stop_rotor();
-                stop_tail();
-                if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
-                {
-                    current_heli_state = TAKEOFF;
-                }
-                break;
-            case TAKEOFF:
-                // helicopter calibrates to reference yaw when take off switch pressed
 
-                break;
-            case FLYING:
-                // helicopter doesnt spaz when both yaw and altitude pressed consecutively
-                // alt in range 0 - 100 and pwm duty in range 2 - 98
-                if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
-                {
-                    current_heli_state = LANDING;
-                }
-                break;
-            case LANDING:
-                // When helicopter is landing pressing buttons or switches do nothig
-                // helicopter should return to reference yaw and land smoothly
-                break;
-            default:
-                break;
-        }
+        //current_switch_state = GPIOPinRead(SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-        //pK_ready_task(alt_control_task); // Make altitude control task ready
-        //pK_ready_task(yaw_control_task); // Make yaw control task ready
 
-        prev_switch_state = current_switch_state;
 
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
+
     }
 }
 
