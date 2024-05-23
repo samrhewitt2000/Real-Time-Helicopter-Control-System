@@ -81,12 +81,11 @@ void kill_motors(helicopter_state_t *current_heli_state)
 
 
 
-int main(void)
+//********************************************************
+//
+// ********************************************************
+void initialise_program(void)
 {
-    int32_t initial_ADC_val = 0;    // initialize first value
-    int32_t current_ADC_val = 0;    // initialize first value
-    
-    // Enable interrupts to the processor.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
@@ -101,22 +100,24 @@ int main(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
+}
+
+
+
+int main(void)
+{
+    int32_t initial_ADC_val = 0;    // initialize first value
+    int32_t current_ADC_val = 0;    // initialize first value
+
     uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
     uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
     uint32_t ui32TailFreq = PWM_START_RATE_HZ;
     uint32_t ui32TailDuty = PWM_FIXED_DUTY;
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
-    //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-//    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPD);
-//    GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_DIR_MODE_OUT);
-
-
     // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-
-    //prev_phase = get_current_phase();
 
     display_state_t current_state = STATE_PERC; //initialize display state
     helicopter_state_t current_heli_state = FLYING; //initialize display state
@@ -175,29 +176,20 @@ int main(void)
             prev_switch_state = current_switch_state;
         }
 
-        switch(current_state)
+        switch(current_heli_state)
         {
-        case STATE_PERC:
-            displayAltitudePerc(current_ADC_val, initial_ADC_val, 0, 0);
-            //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-            //SysCtlDelay(SysCtlClockGet() / yaw_angle);
-            //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x00);
-            displayYaw(0, 1);
-            display_rotor_PWM(0, 2, ui32TailDuty); // using for debugging
+            case LANDED:
+                if (current_switch_state != prev_switch_state)
+                {
 
-            // using for debugging
-            char string[17];
-            usnprintf (string, sizeof(string), "state: %2d %%  ", current_heli_state);
-            OLEDStringDraw (string, 0, 4);
-
-            break;
-        case STATE_MEAN_ADC_VAL:
-            // Calculate and display the rounded mean of the buffer contents
-            displayADCVal (current_ADC_val, 0, 1);
-            break;
-        case STATE_OFF:
-            displayNothing();
-            break;
+                }
+                break;
+            case TAKEOFF:
+                break;
+            case FLYING:
+                break;
+            case LANDING:
+                break;
         }
 
         SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
