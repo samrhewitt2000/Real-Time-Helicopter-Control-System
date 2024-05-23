@@ -2,7 +2,7 @@
 #define YAW_CONTROL_H_
 
 //*****************************************************************************
-// 
+//
 //      yaw_control.c
 //
 // What does this function do? (Replace)
@@ -18,13 +18,12 @@
 //
 //*****************************************************************************
 
+#include <stdint.h>
 #include "quad_enc.h"
+#include "PWM.h"
+#include "PID.h"
 
-extern volatile int32_t yaw_angle_decimal = 0;  // Global variable to store yaw angle ticks
-
-extern volatile int32_t yaw_angle_int = 0;
-
-
+//extern volatile int32_t yaw_angle_int = 0;
 
 //*****************************************************************************
 //

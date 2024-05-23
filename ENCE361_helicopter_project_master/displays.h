@@ -23,15 +23,17 @@
 // *******************************************************
 // initDisplay: Initialise the display
 // *******************************************************
-void init_display (void);
+void initDisplay (void);
 
-void display_nothing(void);
+void displayNothing(void);
 
 void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
 
-void display_alt_percent(int32_t alt_percent, uint32_t display_col, uint32_t display_row);
+void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
 
-void display_yaw(uint32_t display_col, uint32_t display_row, int32_t yaw_angle_int, int32_t yaw_angle_decimal);
+void displayYaw(uint32_t display_col, uint32_t display_row);
+
+void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq);
 
 void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
 
