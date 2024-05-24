@@ -158,7 +158,7 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
-}
+    }
 
 
 

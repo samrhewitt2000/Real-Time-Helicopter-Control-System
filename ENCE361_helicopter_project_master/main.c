@@ -107,10 +107,10 @@ void initialise_program(void)
 //*****************************************************************************
 void register_all_pk_tasks(task_ID_t *task_IDs)
 {
-    task_IDs[SWITCH_TASK] = pK_register_task(switch_task, 0);
-    task_IDs[PUSH_BUTTONS_TASK] = pK_register_task(pushbuttons_task, 1);
-    task_IDs[ALT_CONTROL_TASK] = pK_register_task(alt_control_task, 2);
-    task_IDs[YAW_CONTROL_TASK] = pK_register_task(yaw_control_task, 2);
+    task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0);
+    task_IDs->PUSH_BUTTONS_TASK = pK_register_task(pushbuttons_task, 1);
+    task_IDs->ALT_CONTROL_TASK = pK_register_task(alt_control_task, 2);
+    task_IDs->YAW_CONTROL_TASK = pK_register_task(yaw_control_task, 2);
 }
 
 
@@ -130,13 +130,16 @@ int main(void)
     IntMasterEnable();
 
     // Read in relevant peripheral values
-    static int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    static int32_t prev_switch_state;
+    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
     static int32_t current_switch_state;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-    bool first_state_entry = TRUE;
+    bool first_state_entry = true;
 
     while (1)
     {
+
+
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
@@ -147,7 +150,7 @@ int main(void)
                 if (first_state_entry)
                 {
                     kill_motors(&heli_state); // precautionary
-                    first_state_entry = FALSE;
+                    first_state_entry = false;
                 }
                 pK_ready_task(switch_task);
                 break;
@@ -165,13 +168,12 @@ int main(void)
                 break;
         }
 
+
         pK_start();
 
         pK_block_all_tasks();
 
-        prev_switch_state = current_switch_state;
 
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
     }
 }
 

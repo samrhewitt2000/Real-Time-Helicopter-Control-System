@@ -16,10 +16,13 @@
 //*****************************************************************************
 
 #include "PID.H"
-
 //*****************************************************************************
 // NOTE: change the variable name of sensor_reading (not always a sensor reading)
 //*****************************************************************************
+
+
+
+
 
 // change to struct
 int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output)
@@ -28,8 +31,8 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     static int32_t prev_sensor_reading = 0;
     int32_t error = setpoint - sensor_reading;
     int32_t P = Kp * error;
-    int32_t dI = Ki * error; //* delta_t; ///delta_t = 1/systick?
-    int32_t D = Kd * (prev_sensor_reading - sensor_reading); /// delta_t;
+    int32_t dI = Ki * error; //Integral time constant = 1
+    int32_t D = Kd * (prev_sensor_reading - sensor_reading); //derivative time constant = 1
 
     int32_t control_action = (P + (I + dI) + D + offset) / float_conversion_factor;
 

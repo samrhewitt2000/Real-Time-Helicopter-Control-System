@@ -21,7 +21,7 @@
 #include "PID.h"
 #include "kernel.h"
 
-#define FLOAT_CONVERSION_FACTOR 10
+#define FLOAT_CONVERSION_FACTOR 100
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
@@ -75,7 +75,7 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     {
         desired_alt_percent = 0;
     }
-    int32_t offset = 33;
+    int32_t offset = 330;
     //set pwm to control action
     set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
 }

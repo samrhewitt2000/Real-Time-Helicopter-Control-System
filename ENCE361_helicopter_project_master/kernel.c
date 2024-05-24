@@ -42,6 +42,7 @@ void SysTickHandler(void)
     if (tasks[currentTaskId].taskEnter) {
         tasks[currentTaskId].taskEnter();
     }
+
 }
 
 //*****************************************************************************
@@ -77,6 +78,8 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
     return 0xFF; // Error: Task registration failed
 }
 
+
+
 //*****************************************************************************
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have
 // been registered and that are 'ready'.
@@ -95,6 +98,8 @@ void pK_start(void)
 
     //to finish
 }
+
+
 
 //*****************************************************************************
 // pK_unregister_task: Removes the nominated task from those
@@ -163,13 +168,16 @@ unsigned char pK_get_current_task_id(void)
 //*****************************************************************************
 void pK_block_all_tasks(void)
 {
+    int32_t i = 0;  // Initialize loop counter outside the loop
 
     // Loop through tasks to find the next one that is ready
-    while (int32_t i = 0; i < num_tasks; i++)
+    while (i < num_tasks)  // Condition without initialization or increment here
     {
         if (tasks[i].state == READY)
         {
             tasks[i].state = BLOCKED;
         }
+        i++;  // Increment i within the loop
     }
 }
+
