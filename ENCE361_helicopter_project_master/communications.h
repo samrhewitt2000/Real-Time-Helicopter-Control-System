@@ -28,12 +28,6 @@
 
 #include "yaw_control.h"
 
-typedef enum {
-    LANDED = 0,
-    LANDING,
-    TAKEOFF,
-    FLYING
-} helicopter_state_t;
 
 #define MAX_STR_LEN 16
 

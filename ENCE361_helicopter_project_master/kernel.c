@@ -19,39 +19,15 @@
 
 //*****************************************************************************
 //
-//******************************************************************************
-typedef enum {
-    READY,
-    BLOCKED
-} task_state_t;
-
-//*****************************************************************************
-//
-//*****************************************************************************
-typedef struct {
-    void (*taskEnter)(void);
-    unsigned char priority;
-    task_state_t state;
-} task_t;
-
-static task_t tasks[MAX_TASKS];
-static unsigned char numTasks = 6;
-static unsigned long g_tickPeriod = 0;
-volatile unsigned char currentTaskId = 0; // Initialize to the first task
-volatile uint32_t systick_flag = 0;
-
-//*****************************************************************************
-//
 //*****************************************************************************
 void SysTickHandler(void)
 {
-    systick_flag = 1;
     // Find the next ready task
-    unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+    unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
 
     // Loop through tasks to find the next one that is ready
     while (tasks[nextTaskId].state != READY) {
-        nextTaskId = (nextTaskId + 1) % numTasks;
+        nextTaskId = (nextTaskId + 1) % num_tasks;
 
         // Break the loop if we have checked all tasks to avoid infinite loop
         if (nextTaskId == currentTaskId) {
@@ -75,7 +51,7 @@ void SysTickHandler(void)
 //*****************************************************************************
 void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 {
-    numTasks = maxTasks;
+    num_tasks = maxTasks;
     g_tickPeriod = tickPeriod;
     SysTickPeriodSet(g_tickPeriod);
     SysTickEnable();
@@ -92,90 +68,37 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 //*****************************************************************************
 unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
 {
-    if (numTasks < MAX_TASKS)
+    if (num_tasks < MAX_TASKS)
     {
-        tasks[numTasks].taskEnter = taskEnter;
-        tasks[numTasks].priority = priority;
-        tasks[numTasks].state = BLOCKED;
-        return numTasks++;
+        tasks[num_tasks].taskEnter = taskEnter;
+        tasks[num_tasks].priority = priority;
+        tasks[num_tasks].state = READY;
+        return num_tasks++;
     }
     return 0xFF; // Error: Task registration failed
 }
+
+
 
 //*****************************************************************************
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have
 // been registered and that are 'ready'.
 //*****************************************************************************
-//void pK_start(void)
-//{
-//    // Ensure that there is at least one task registered
-//    if (numTasks == 0) {
-//        return; // No tasks to schedule
-//    }
-//
-//    // Execute the first task immediately
-//    if (tasks[currentTaskId].taskEnter) {
-//        tasks[currentTaskId].taskEnter();
-//    }
-//    while(1)
-//    {
-//        //wait for systick
-//        while (!systick_flag)
-//        {
-//
-//        systick_flag = 0;
-//
-//        //find next task thats ready
-//        unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
-//
-//        //loop until ready task found
-//        while (tasks[nextTaskId].state != READY)
-//        {
-//            nextTaskId = (nextTaskId + 1) % numTasks;
-//
-//            //break if all tasks checked
-//            if (nextTaskId == currentTaskId)
-//            {
-//                break;
-//            }
-//        }
-//
-//        //set current to next ready task
-//        currentTaskId = nextTaskId;
-//
-//        //execute current task
-//        if (tasks[currentTaskId].taskEnter)
-//        {
-//            tasks[currentTaskId].taskEnter();
-//        }
-//        }
-//
-//    }
-//    //to finish
-//}
 void pK_start(void)
 {
-  SysTickPeriodSet(g_tickPeriod);
-  SysTickEnable();
-  SysTickIntEnable();
-  int j;
-  //round robin
-  while(1)
-  {
-      for (j=0; j < numTasks; j++)
-      {
-          if (tasks[j].state == READY)
-          {
+    // Ensure that there is at least one task registered
+    if (num_tasks == 0) {
+        return; // No tasks to schedule
+    }
 
-              //clear flag
-              tasks[j].state = BLOCKED;
+    // Execute the first task immediately
+    if (tasks[currentTaskId].taskEnter) {
+        tasks[currentTaskId].taskEnter();
+    }
 
-              //execute task
-              tasks[j].taskEnter();
-          }
-      }
-  }
+    //to finish
 }
+
 
 
 //*****************************************************************************
@@ -185,7 +108,7 @@ void pK_start(void)
 //*****************************************************************************
 void pK_unregister_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         // Remove the task
         tasks[taskId].taskEnter = NULL;
@@ -200,7 +123,7 @@ void pK_unregister_task(unsigned char taskId)
 //*****************************************************************************
 void pK_ready_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         tasks[taskId].state = READY;
     }
@@ -212,7 +135,7 @@ void pK_ready_task(unsigned char taskId)
 //*****************************************************************************
 void pK_block_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         tasks[taskId].state = BLOCKED;
     }
@@ -223,7 +146,7 @@ void pK_block_task(unsigned char taskId)
 //*****************************************************************************
 int pK_task_state(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         return tasks[taskId].state;
     }
@@ -237,3 +160,24 @@ unsigned char pK_get_current_task_id(void)
 {
     return currentTaskId;
 }
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void pK_block_all_tasks(void)
+{
+    int32_t i = 0;  // Initialize loop counter outside the loop
+
+    // Loop through tasks to find the next one that is ready
+    while (i < num_tasks)  // Condition without initialization or increment here
+    {
+        if (tasks[i].state == READY)
+        {
+            tasks[i].state = BLOCKED;
+        }
+        i++;  // Increment i within the loop
+    }
+}
+
