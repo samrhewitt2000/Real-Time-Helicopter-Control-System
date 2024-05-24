@@ -60,18 +60,6 @@ typedef enum {
 
 
 // *******************************************************
-// Helicopter state enum
-// *******************************************************
-typedef enum {
-    LANDED,
-    TAKEOFF,
-    FLYING,
-    LANDING
-} helicopter_state_t;
-
-
-
-// *******************************************************
 // Global Variables
 // *******************************************************
 uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
@@ -79,9 +67,7 @@ uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t display_state = STATE_PERC; //initialize display state
-helicopter_state_t heli_state = LANDED; //initialize display state
-
-
+static helicopter_state_t heli_state = LANDED; //initialize display state
 
 //********************************************************
 //
@@ -119,12 +105,12 @@ void initialise_program(void)
 //*****************************************************************************
 //
 //*****************************************************************************
-void register_all_pk_tasks(void)
+void register_all_pk_tasks(task_ID_t *task_IDs)
 {
-    unsigned char switch_task_ID = pK_register_task(switch_task, 0);
-    unsigned char pushbuttons_task_ID = pK_register_task(pushbuttons_task, 1);
-    unsigned char alt_control_task_ID = pK_register_task(alt_control_task, 2);
-    unsigned char yaw_control_task_ID = pK_register_task(yaw_control_task, 2);
+    task_IDs[SWITCH_TASK] = pK_register_task(switch_task, 0);
+    task_IDs[PUSH_BUTTONS_TASK] = pK_register_task(pushbuttons_task, 1);
+    task_IDs[ALT_CONTROL_TASK] = pK_register_task(alt_control_task, 2);
+    task_IDs[YAW_CONTROL_TASK] = pK_register_task(yaw_control_task, 2);
 }
 
 
@@ -138,13 +124,16 @@ int main(void)
     kill_motors(&heli_state);
 
     // Perform the task registration for the protokernal
-    register_all_pk_tasks();
+    task_ID_t task_IDs[num_tasks];
+    register_all_pk_tasks(&task_IDs);
 
     IntMasterEnable();
 
     // Read in relevant peripheral values
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    static int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    static int32_t current_switch_state;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+    bool first_state_entry = TRUE;
 
     while (1)
     {
@@ -155,20 +144,20 @@ int main(void)
         {
             case LANDED:
                 // set rotor and tail motors to zero
-                switch_task();
+                if (first_state_entry)
+                {
+                    kill_motors(&heli_state); // precautionary
+                    first_state_entry = FALSE;
+                }
+                pK_ready_task(switch_task);
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
-                found_yaw = find_yaw_ref();
 
                 break;
             case FLYING:
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
-                switch_task();
-                pushbuttons_task();
-                alt_control_task();
-                yaw_control_task();
                 break;
             case LANDING:
                 // When helicopter is landing pressing buttons or switches do nothing
@@ -176,8 +165,9 @@ int main(void)
                 break;
         }
 
-        //pK_ready_task(alt_control_task); // Make altitude control task ready
-        //pK_ready_task(yaw_control_task); // Make yaw control task ready
+        pK_start();
+
+        pK_block_all_tasks();
 
         prev_switch_state = current_switch_state;
 

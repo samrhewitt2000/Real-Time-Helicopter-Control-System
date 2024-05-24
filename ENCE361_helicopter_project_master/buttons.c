@@ -189,11 +189,11 @@ void pushbuttons_task(void)
     if (checkButton(UP) == PUSHED && heli_state == FLYING)
     {
         //increase altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), 10);
+        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }
     else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
     {
         //decrease altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), -10);
+        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
     }
 }
