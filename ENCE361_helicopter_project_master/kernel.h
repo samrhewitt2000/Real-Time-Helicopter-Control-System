@@ -27,6 +27,42 @@
 
 #define MAX_TASKS 100
 
+
+
+
+//*****************************************************************************
+//
+//******************************************************************************
+typedef enum {
+    READY,
+    BLOCKED
+} task_state_t;
+
+//*****************************************************************************
+//
+//******************************************************************************
+typedef struct {
+    void (*taskEnter)(void);
+    unsigned char priority;
+    task_state_t state;
+} task_t;
+
+
+
+typedef enum {
+    INCREASE_ALT_TASK,
+    DECREASE_ALT_TASK,
+    BUTTONS_TASK,
+    TRANSITION_TASK,
+    PRINT_TASK,
+    GET_ADC_TASK,
+    MAX_TASKS
+} task_id_t;
+
+
+extern task_t tasks[MAX_TASKS];
+
+
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
 // Sets period of SysTick interrupt

@@ -17,24 +17,13 @@
 
 #include "kernel.h"
 
-//*****************************************************************************
-//
-//******************************************************************************
-typedef enum {
-    READY,
-    BLOCKED
-} task_state_t;
+
 
 //*****************************************************************************
 //
 //*****************************************************************************
-typedef struct {
-    void (*taskEnter)(void);
-    unsigned char priority;
-    task_state_t state;
-} task_t;
 
-static task_t tasks[MAX_TASKS];
+
 static unsigned char numTasks = 6;
 static unsigned long g_tickPeriod = 0;
 volatile unsigned char currentTaskId = 0; // Initialize to the first task
@@ -43,31 +32,31 @@ volatile uint32_t systick_flag = 0;
 //*****************************************************************************
 //
 //*****************************************************************************
-void SysTickHandler(void)
-{
-    systick_flag = 1;
-    // Find the next ready task
-    unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
-
-    // Loop through tasks to find the next one that is ready
-    while (tasks[nextTaskId].state != READY) {
-        nextTaskId = (nextTaskId + 1) % numTasks;
-
-        // Break the loop if we have checked all tasks to avoid infinite loop
-        if (nextTaskId == currentTaskId) {
-            return;
-        }
-    }
-
-    // Update the current task ID to the next ready task
-    currentTaskId = nextTaskId;
-
-    // Execute the current task if it has a valid function pointer
-    if (tasks[currentTaskId].taskEnter) {
-        tasks[currentTaskId].taskEnter();
-    }
-
-}
+//void SysTickHandler(void)
+//{
+//    systick_flag = 1;
+//    // Find the next ready task
+//    unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+//
+//    // Loop through tasks to find the next one that is ready
+//    while (tasks[nextTaskId].state != READY) {
+//        nextTaskId = (nextTaskId + 1) % numTasks;
+//
+//        // Break the loop if we have checked all tasks to avoid infinite loop
+//        if (nextTaskId == currentTaskId) {
+//            return;
+//        }
+//    }
+//
+//    // Update the current task ID to the next ready task
+//    currentTaskId = nextTaskId;
+//
+//    // Execute the current task if it has a valid function pointer
+//    if (tasks[currentTaskId].taskEnter) {
+//        tasks[currentTaskId].taskEnter();
+//    }
+//
+//}
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -98,6 +87,7 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
         tasks[numTasks].priority = priority;
         tasks[numTasks].state = BLOCKED;
         return numTasks++;
+
     }
     return 0xFF; // Error: Task registration failed
 }
@@ -158,21 +148,15 @@ void pK_start(void)
   SysTickPeriodSet(g_tickPeriod);
   SysTickEnable();
   SysTickIntEnable();
-  int j;
   //round robin
   while(1)
   {
-      for (j=0; j < numTasks; j++)
+      while (!systick_flag)
       {
-          if (tasks[j].state == READY)
-          {
-
-              //clear flag
-              tasks[j].state = BLOCKED;
-
-              //execute task
-              tasks[j].taskEnter();
-          }
+      }
+      if (tasks[currentTaskId].taskEnter && tasks[currentTaskId].state == READY)
+      {
+          tasks[currentTaskId].taskEnter();
       }
   }
 }

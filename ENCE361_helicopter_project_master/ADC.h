@@ -16,6 +16,12 @@
 
 #include "circ_buffer.h"
 
+#define BUF_SIZE 10
+
+volatile extern int32_t current_ADC_val;
+extern int32_t initial_ADC_val;
+extern circBuf_t g_inBuffer;
+
 void SysTickIntHandler(void);
 
 //*****************************************************************************
