@@ -59,6 +59,9 @@ typedef enum {
 
 
 
+
+
+
 // *******************************************************
 // Global Variables
 // *******************************************************
@@ -68,8 +71,37 @@ uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
 uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
-display_state_t display_state = STATE_PERC; //initialize display state
-static helicopter_state_t heli_state = LANDED; //initialize display state
+display_state_t current_state = STATE_PERC; //initialize display state
+helicopter_state_t heli_state = LANDED; //initialize display state
+int32_t current_switch_state;
+uint32_t counter = 0;
+extern num_tasks;
+
+// *******************************************************
+// Function prototypes
+// *******************************************************
+//void increase_altitude_task(void);
+//void decrease_altitude_task(void);
+
+
+
+//********************************************************
+// Function to set the freq, duty cycle of M1PWM5 (tail motor)
+// ********************************************************
+//void kill_motors(helicopter_state_t heli_state)
+//{
+//    //set main motor PWM signal to zero
+//    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
+//    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
+//
+//    //set tail motor PWM signal to zero
+//    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+//    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+//
+//    heli_state = LANDED;
+//}
+
+
 
 //********************************************************
 //
@@ -80,6 +112,7 @@ void initialise_program(void)
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
     }
+
     initButtons();
     initClocks ();
     initADC ();
@@ -90,26 +123,94 @@ void initialise_program(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
+
     // System initialization (e.g., clock setup, peripherals)
     SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // Initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
-    // Register tasks with the kernel
-    //pK_register_task(Task1, 0); // Highest priority
-    //pK_register_task(Task2, 1); // Lower priority
-
+    //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
-    // calculate exactly how long this needs to be
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
 }
 
+//void get_ADC_task(void)
+//{
+//    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+//}
+
+
+void buttons_task(void)
+{
+    updateButtons();
+    counter += 1;
+    if (checkButton(UP) == PUSHED && heli_state == FLYING)
+    {
+        //increase altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), 10);
+    }else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+    {
+        //decrease altitude by 10%
+        change_altitude(alt_val_to_percent(initial_ADC_val,current_ADC_val), -10);
+    }else if (checkButton(SWITCH) == PUSHED && heli_state == LANDED)
+    {
+        heli_state = TAKEOFF;
+    }else if (checkButton(SWITCH) == RELEASED && heli_state == FLYING)
+    {
+        heli_state = LANDING;
+    }
+}
+
+
+
+void transition_task(void)
+{
+    switch(heli_state)
+    {
+        case TAKEOFF:
+            //lift off by 1% :)
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+            heli_state = FLYING;
+            break;
+        case LANDING:
+            change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -100);
+            if (alt_val_to_percent(initial_ADC_val, current_ADC_val) == 0)
+            {
+                kill_motors(heli_state);
+            }
+            break;
+        case FLYING:
+            break;
+        case LANDED:
+            break;
+    }
+}
+
+
+
+
+void print_task(void)
+{
+    if (but_state[4] == 1)
+    {
+        heli_state = FLYING;
+        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    }
+}
+
+
+
+void get_sensor_values(void)
+{
+    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+}
 
 
 //*****************************************************************************
 //
 //*****************************************************************************
+
 void register_all_pk_tasks(task_ID_t *task_IDs)
 {
     task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0);
@@ -120,37 +221,54 @@ void register_all_pk_tasks(task_ID_t *task_IDs)
 
 
 
-
 int main(void)
 {
     initialise_program();
 
-    // Kill motors for software reset
+
+    // calculate exactly how long this needs to be
+
+    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
     kill_motors(&heli_state);
-
-    // Perform the task registration for the protokernal
-    task_ID_t task_IDs[num_tasks];
-    register_all_pk_tasks(&task_IDs);
-
-    kill_motors(&current_heli_state);
     IntMasterEnable();
 
-    // Read in relevant peripheral values
-    static int32_t prev_switch_state;
-    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
-    static int32_t current_switch_state;
-    int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+    int32_t *prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+
+
+    task_ID_t task_IDs[num_tasks];
+    register_all_pk_tasks(&task_IDs);
+//
+//    taskIDs[INCREASE_ALT_TASK] = pK_register_task(increase_altitude_task, 0);
+//    taskIDs[DECREASE_ALT_TASK] = pK_register_task(decrease_altitude_task, 0);
+//
+//    taskIDs[PUSH_BUTTONS_TASK] = pK_register_task(buttons_task, 0);
+//    taskIDs[TRANSITION_TASK] = pK_register_task(transition_task, 0);
+//    //unsigned char get_sensor_values_task_ID = pK_register_task(get_sensor_values_task, 0);
+//    taskIDs[PRINT_TASK] = pK_register_task(print_task, 1);
+////    taskIDs[GET_ADC_TASK] = pK_register_task(get_ADC_task, 0);
+
+
+//    pK_ready_task(taskIDs[GET_ADC_TASK]);
+//    pK_ready_task(taskIDs[TRANSITION_TASK]);
+//    pK_ready_task(taskIDs[DECREASE_ALT_TASK]);
+//    pK_ready_task(taskIDs[BUTTONS_TASK]);
+//    pK_ready_task(taskIDs[INCREASE_ALT_TASK]);
+//    //pK_ready_task(get_sensor_values_task_ID);
+//    pK_ready_task(taskIDs[GET_ADC_TASK]);
+
     bool first_state_entry = true;
 
     while (1)
     {
-
-
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
         switch(heli_state)
         {
+            case INIT:
+
+                break;
             case LANDED:
                 // set rotor and tail motors to zero
                 if (first_state_entry)
@@ -182,4 +300,5 @@ int main(void)
 
     }
 }
+
 

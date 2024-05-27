@@ -25,18 +25,12 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
-
+#include "buttons.h"
 #include "yaw_control.h"
 
 
 #define MAX_STR_LEN 16
 
-typedef enum {
-    LANDED,
-    TAKEOFF,
-    FLYING,
-    LANDING
-} helicopter_state_t;
 
 extern helicopter_state_t current_heli_state;
 

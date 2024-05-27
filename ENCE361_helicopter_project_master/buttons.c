@@ -22,7 +22,7 @@
 //*****************************************************************************
 
 #include "buttons.h"
-
+#include "circ_buffer.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -32,6 +32,7 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 #include "kernel.h"
+
 
 extern int32_t prev_switch_state;
 extern int32_t current_switch_state;
@@ -186,6 +187,7 @@ void switch_task(void)
     {
         heli_state = LANDING;
     }
+    prev_switch_state = current_switch_state;
 }
 
 
@@ -195,13 +197,13 @@ void switch_task(void)
 //*****************************************************************************
 void pushbuttons_task(void)
 {
-    current_ADC_val = get_ADC_val(*g_inbuffer, BUF_SIZE);
-    if (checkButton(UP) == PUSHED && current_heli_state == FLYING)
+
+    if (checkButton(UP) == PUSHED && heli_state == FLYING)
     {
         //increase altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }
-    else if (checkButton(DOWN) == PUSHED && current_heli_state == FLYING)
+    else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
     {
         //decrease altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);

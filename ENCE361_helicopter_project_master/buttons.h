@@ -23,8 +23,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
-
+#
 
 //*****************************************************************************
 // Constants
@@ -61,6 +60,21 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define NUM_BUT_POLLS_RELEASED 5 // originally 4
 #define NUM_BUT_POLLS_PUSHED 1
 
+
+
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+typedef enum {
+    INIT,
+    LANDED,
+    TAKEOFF,
+    FLYING,
+    LANDING
+} helicopter_state_t;
+
+
+
 // *******************************************************
 // Globals to module
 // *******************************************************
@@ -69,24 +83,12 @@ static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
-volatile extern int32_t prev_switch_state;
+//static int32_t prev_switch_state;
+volatile extern int32_t current_ADC_val;
+//extern int32_t current_switch_state;
+//extern helicopter_state_t heli_state;
 
 
-// *******************************************************
-// Helicopter state enum
-// *******************************************************
-
-
-
-// *******************************************************
-// Helicopter state enum
-// *******************************************************
-typedef enum {
-    LANDED,
-    TAKEOFF,
-    FLYING,
-    LANDING
-} helicopter_state_t;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
