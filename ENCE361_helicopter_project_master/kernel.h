@@ -29,7 +29,6 @@
 
 
 
-
 //*****************************************************************************
 //
 //******************************************************************************
@@ -61,6 +60,9 @@ typedef struct {
 
 
 extern task_t tasks[MAX_TASKS];
+extern unsigned char num_tasks;
+extern task_t tasks[MAX_TASKS];
+
 
 //*****************************************************************************
 //
@@ -114,5 +116,16 @@ void pK_block_task (unsigned char taskId);
 // pK_task_state: Returns the current state of the task.
 //*****************************************************************************
 int pK_task_state (unsigned char taskId);
+
+//*****************************************************************************
+// pK_get_current_task_id: Returns the current task ID.
+//*****************************************************************************
+unsigned char pK_get_current_task_id(void);
+
+//*****************************************************************************
+// pK_block_all_tasks: Switches all tasks to
+// 'blocked' so that they will not be executed.
+//*****************************************************************************
+void pK_block_all_tasks(void);
 
 #endif /*KERNEL_H_*/

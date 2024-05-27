@@ -24,10 +24,11 @@
 //*****************************************************************************
 
 
-static unsigned char numTasks = 6;
+unsigned char num_tasks = 6;
 static unsigned long g_tickPeriod = 0;
 volatile unsigned char currentTaskId = 0; // Initialize to the first task
 volatile uint32_t systick_flag = 0;
+task_t tasks[MAX_TASKS];
 
 //*****************************************************************************
 //
@@ -38,11 +39,11 @@ void SysTickHandler(void)
 
 
     // Find the next ready task
-    unsigned char nextTaskId = (currentTaskId + 1) % numTasks;
+    unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
 
     // Loop through tasks to find the next one that is ready
     while (tasks[nextTaskId].state != READY) {
-        nextTaskId = (nextTaskId + 1) % numTasks;
+        nextTaskId = (nextTaskId + 1) % num_tasks;
 
         // Break the loop if we have checked all tasks to avoid infinite loop
         if (nextTaskId == currentTaskId) {
@@ -63,7 +64,7 @@ void SysTickHandler(void)
 //*****************************************************************************
 void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 {
-    numTasks = maxTasks;
+    num_tasks = maxTasks;
     g_tickPeriod = tickPeriod;
     SysTickPeriodSet(g_tickPeriod);
     SysTickEnable();
@@ -82,12 +83,12 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 //*****************************************************************************
 unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
 {
-    if (numTasks < MAX_TASKS)
+    if (num_tasks < MAX_TASKS)
     {
-        tasks[numTasks].taskEnter = taskEnter;
-        tasks[numTasks].priority = priority;
-        tasks[numTasks].state = BLOCKED;
-        return numTasks++;
+        tasks[num_tasks].taskEnter = taskEnter;
+        tasks[num_tasks].priority = priority;
+        tasks[num_tasks].state = BLOCKED;
+        return num_tasks++;
 
     }
     return 0xFF; // Error: Task registration failed
@@ -122,7 +123,7 @@ void pK_start(void)
 //*****************************************************************************
 void pK_unregister_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         // Remove the task
         tasks[taskId].taskEnter = NULL;
@@ -137,7 +138,7 @@ void pK_unregister_task(unsigned char taskId)
 //*****************************************************************************
 void pK_ready_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         tasks[taskId].state = READY;
     }
@@ -149,7 +150,7 @@ void pK_ready_task(unsigned char taskId)
 //*****************************************************************************
 void pK_block_task(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         tasks[taskId].state = BLOCKED;
     }
@@ -160,7 +161,7 @@ void pK_block_task(unsigned char taskId)
 //*****************************************************************************
 int pK_task_state(unsigned char taskId)
 {
-    if (taskId < numTasks)
+    if (taskId < num_tasks)
     {
         return tasks[taskId].state;
     }
@@ -174,3 +175,21 @@ unsigned char pK_get_current_task_id(void)
 {
     return currentTaskId;
 }
+
+
+
+void pK_block_all_tasks(void)
+{
+    int32_t i = 0;  // Initialize loop counter outside the loop
+
+    // Loop through tasks to find the next one that is ready
+    while (i < num_tasks)  // Condition without initialization or increment here
+    {
+        if (tasks[i].state == READY)
+        {
+            tasks[i].state = BLOCKED;
+        }
+        i++;  // Increment i within the loop
+    }
+}
+

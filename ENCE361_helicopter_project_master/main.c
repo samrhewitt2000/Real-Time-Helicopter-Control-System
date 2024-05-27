@@ -75,13 +75,13 @@ display_state_t current_state = STATE_PERC; //initialize display state
 helicopter_state_t heli_state = LANDED; //initialize display state
 int32_t current_switch_state;
 uint32_t counter = 0;
-extern num_tasks;
+extern unsigned char num_tasks;
 
 // *******************************************************
 // Function prototypes
 // *******************************************************
-//void increase_altitude_task(void);
-//void decrease_altitude_task(void);
+void increase_altitude_task(void);
+void decrease_altitude_task(void);
 
 
 

@@ -15,11 +15,12 @@
 //
 //*****************************************************************************
 
+#include "kernel.h"
 #include "alt_control.h"
 #include "PWM.h"
 #include "circ_buffer.h"
 #include "PID.h"
-#include "kernel.h"
+
 
 #define FLOAT_CONVERSION_FACTOR 100
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
