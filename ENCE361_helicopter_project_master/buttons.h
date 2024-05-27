@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
+
 //*****************************************************************************
 // Constants
 //*****************************************************************************
@@ -75,6 +77,16 @@ volatile extern int32_t prev_switch_state;
 // *******************************************************
 
 
+
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+typedef enum {
+    LANDED,
+    TAKEOFF,
+    FLYING,
+    LANDING
+} helicopter_state_t;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have

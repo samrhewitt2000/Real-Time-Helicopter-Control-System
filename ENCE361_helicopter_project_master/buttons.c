@@ -32,8 +32,13 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 #include "kernel.h"
-#include "communications.h"
-#include "ADC.h"
+
+extern int32_t prev_switch_state;
+extern int32_t current_switch_state;
+extern helicopter_state_t heli_state;
+
+
+
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
@@ -175,16 +180,11 @@ void switch_task(void)
 
     if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
     {
-        current_heli_state = TAKEOFF;
-        pK_block_task(taskIDs[BUTTONS_TASK]);
-        //pK_block_task(some yaw reference task);
-
+        heli_state = TAKEOFF;
     }
     else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
     {
-        current_heli_state = LANDING;
-        tasks[taskIDs[BUTTONS_TASK]].ready = BLOCKED;
-        //tasks[some yaw reference task] = READY;
+        heli_state = LANDING;
     }
 }
 
@@ -199,11 +199,11 @@ void pushbuttons_task(void)
     if (checkButton(UP) == PUSHED && current_heli_state == FLYING)
     {
         //increase altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }
     else if (checkButton(DOWN) == PUSHED && current_heli_state == FLYING)
     {
         //decrease altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
     }
 }

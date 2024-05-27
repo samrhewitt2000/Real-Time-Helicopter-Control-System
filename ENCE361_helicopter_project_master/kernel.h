@@ -27,8 +27,12 @@
 
 #define MAX_TASKS 100
 
-
-
+typedef struct {
+    unsigned char SWITCH_TASK;
+    unsigned char PUSH_BUTTONS_TASK;
+    unsigned char ALT_CONTROL_TASK;
+    unsigned char YAW_CONTROL_TASK;
+} task_ID_t;
 
 //*****************************************************************************
 //
@@ -40,28 +44,17 @@ typedef enum {
 
 //*****************************************************************************
 //
-//******************************************************************************
+//*****************************************************************************
 typedef struct {
     void (*taskEnter)(void);
     unsigned char priority;
     task_state_t state;
 } task_t;
 
-
-
-typedef enum {
-    INCREASE_ALT_TASK,
-    DECREASE_ALT_TASK,
-    BUTTONS_TASK,
-    TRANSITION_TASK,
-    PRINT_TASK,
-    GET_ADC_TASK,
-    MAX_TASKS
-} task_id_t;
-
-
-extern task_t tasks[MAX_TASKS];
-
+static task_t tasks[MAX_TASKS];
+static unsigned char num_tasks = 0;
+static unsigned long g_tickPeriod = 0;
+static unsigned char currentTaskId = 0; // Initialize to the first task
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -108,5 +101,7 @@ void pK_block_task (unsigned char taskId);
 // pK_task_state: Returns the current state of the task.
 //*****************************************************************************
 int pK_task_state (unsigned char taskId);
+
+void pK_block_all_tasks(void);
 
 #endif /*KERNEL_H_*/
