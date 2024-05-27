@@ -69,6 +69,14 @@ static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
+volatile extern int32_t prev_switch_state;
+
+
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+
+
 
 // *******************************************************
 // Helicopter state enum

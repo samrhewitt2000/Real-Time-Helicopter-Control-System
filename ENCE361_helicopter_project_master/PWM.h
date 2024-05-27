@@ -14,9 +14,10 @@
 //
 //*****************************************************************************
 
+#include "communications.h"
 #include <stdint.h>
-
 #include "buttons.h"
+
 
 /**********************************************************
  * Constants
@@ -86,6 +87,6 @@ void set_rotor_PWM (uint32_t ui32RotorFreq, uint32_t ui32RotorDuty);
 
 void set_tail_PWM(uint32_t ui32TailFreq, uint32_t ui32TailDuty);
 
-void kill_motors(helicopter_state_t *current_heli_state);
+void kill_motors(helicopter_state_t current_heli_state);
 
 #endif /*PWM_H_*/

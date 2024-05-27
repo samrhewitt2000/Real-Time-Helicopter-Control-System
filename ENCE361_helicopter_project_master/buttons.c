@@ -176,6 +176,8 @@ uint8_t checkButton (uint8_t butName)
 //*****************************************************************************
 void switch_task(void)
 {
+    int32_t current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+
     if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
     {
         heli_state = TAKEOFF;
@@ -193,12 +195,13 @@ void switch_task(void)
 //*****************************************************************************
 void pushbuttons_task(void)
 {
-    if (checkButton(UP) == PUSHED && heli_state == FLYING)
+    current_ADC_val = get_ADC_val(*g_inbuffer, BUF_SIZE);
+    if (checkButton(UP) == PUSHED && current_heli_state == FLYING)
     {
         //increase altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }
-    else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+    else if (checkButton(DOWN) == PUSHED && current_heli_state == FLYING)
     {
         //decrease altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);

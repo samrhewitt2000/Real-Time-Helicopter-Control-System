@@ -40,11 +40,11 @@
 #include "kernel.h"
 #include "alt_control.h"
 #include "yaw_control.h"
-
+#include "communications.h"
 //*****************************************************************************
 // Constants
 //*****************************************************************************
-#define BUF_SIZE 10
+
 
 
 
@@ -62,6 +62,8 @@ typedef enum {
 // *******************************************************
 // Global Variables
 // *******************************************************
+extern int32_t initial_ADC_val = 0;    // initialize first value
+volatile extern int32_t current_ADC_val = 0;    // initialize first value
 uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
 uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
@@ -88,12 +90,15 @@ void initialise_program(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
+    // System initialization (e.g., clock setup, peripherals)
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // Initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
-    // System initialization (e.g., clock setup, peripherals)
-    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    // Register tasks with the kernel
+    //pK_register_task(Task1, 0); // Highest priority
+    //pK_register_task(Task2, 1); // Lower priority
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
     // calculate exactly how long this needs to be
@@ -115,9 +120,9 @@ void register_all_pk_tasks(task_ID_t *task_IDs)
 
 
 
+
 int main(void)
 {
-    //Initialise peripherals etc
     initialise_program();
 
     // Kill motors for software reset
@@ -127,6 +132,7 @@ int main(void)
     task_ID_t task_IDs[num_tasks];
     register_all_pk_tasks(&task_IDs);
 
+    kill_motors(&current_heli_state);
     IntMasterEnable();
 
     // Read in relevant peripheral values

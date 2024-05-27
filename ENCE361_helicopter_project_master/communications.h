@@ -31,6 +31,15 @@
 
 #define MAX_STR_LEN 16
 
+typedef enum {
+    LANDED,
+    TAKEOFF,
+    FLYING,
+    LANDING
+} helicopter_state_t;
+
+extern helicopter_state_t current_heli_state;
+
 char statusStr[MAX_STR_LEN + 1];
 
 void initialise_USB_UART(void);
