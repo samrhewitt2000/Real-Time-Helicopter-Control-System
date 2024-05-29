@@ -30,7 +30,9 @@
 #define BUF_SIZE 10
 //#define change perc
 
-//volatile int32_t main_rotor_PWM = 0;
+volatile int32_t *ptr_current_alt_percent;
+static int32_t current_alt_percent;
+
 volatile int32_t current_altitude = 0;
 
 
@@ -56,7 +58,9 @@ int32_t get_alt_val(circBuf_t *buffer)
 //*****************************************************************************
 int32_t alt_val_to_percent(int32_t initial_alt_val, int32_t current_alt_val)
 {
-    return ((330 * (initial_alt_val - current_alt_val)) / 4095); // replace these vals with names
+    current_alt_percent = ((330 * (initial_alt_val - current_alt_val)) / 4095); // replace these vals with names
+    ptr_current_alt_percent = &current_alt_percent;
+    return current_alt_percent;
 }
 
 
@@ -80,6 +84,8 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     //set pwm to control action
     set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
 }
+
+
 //
 //void increase_altitude_task(void)
 //{

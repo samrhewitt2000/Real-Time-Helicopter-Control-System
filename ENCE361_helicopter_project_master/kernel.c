@@ -41,7 +41,7 @@ void SysTickHandler(void)
     {
         tick_count = 0;
     }
-    }
+}
 
 
 
@@ -59,13 +59,15 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 }
 
 
+void (*task_functions[MAX_TASKS])(void);
+
 
 //*****************************************************************************
 // pK_register_task: Registers a task with the protoKernel;
 // Takes a pointer to the function which executes the task and
 // an unsigned value for the 'priority' of the task
 // (0 is highest priority).
-// Tasks are in the ready state by default.
+// Tasks are in the ready state by default.s
 // Returns a unique 8-bit ID.
 //*****************************************************************************
 unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
@@ -78,8 +80,10 @@ unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
         uint32_t time = 0; //initialize time as 0 in order to execute first according to priority
         tasks[num_tasks].time = time;
         tasks[num_tasks].interval = interval;
-        return num_tasks++;
 
+        unsigned char taskID = num_tasks;
+        num_tasks++;
+        return taskID;
     }
     return 0xFF; // Error: Task registration failed
 }
@@ -88,26 +92,36 @@ unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
 
 void pK_start(void)
 {
-
+    int any_task_ready = 0;
 
     // Find the next ready task
     unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
 
     // Loop through tasks to find the next one that is ready
     while (tasks[nextTaskId].state != READY) {
-        if (tick_count >= tasks[nextTaskId].time)
+        if (tasks[nextTaskId].state == READY)
         {
-            tasks[nextTaskId].time += tasks[nextTaskId].interval;
-            tasks[nextTaskId].taskEnter();
+            any_task_ready = 1;
         }
 
 
         nextTaskId = (nextTaskId + 1) % num_tasks;
 
         // Break the loop if we have checked all tasks to avoid infinite loop
-        if (nextTaskId == currentTaskId) {
-            return;
+        if (nextTaskId == currentTaskId)
+        {
+            if (!any_task_ready)
+            {
+                return;
+            }
+            any_task_ready = 0;
         }
+    }
+    //execute if time interval has elapsed and update time
+    if (tick_count >= tasks[nextTaskId].time)
+    {
+        tasks[nextTaskId].time += tasks[nextTaskId].interval;
+        tasks[nextTaskId].taskEnter();
     }
 
     // Update the current task ID to the next ready task

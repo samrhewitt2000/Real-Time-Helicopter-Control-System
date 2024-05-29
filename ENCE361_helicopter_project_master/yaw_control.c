@@ -26,6 +26,14 @@
 #include "ADC.h"
 #include "buttons.h"
 #include "kernel.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_gpio.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/interrupt.h"
+
+
+
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
@@ -81,11 +89,6 @@ void init_ref_yaw (void)
 
 
 
-void reference_yaw_task(void)
-{
-
-}
-
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -124,7 +127,7 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
 
     //account for coupling on main rotor
-    int32_t offset = Kc * rotor_PWM;
+    int32_t offset = Kc * *ptr_main_duty_cycle;
 
     //calculate control
     int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY);
@@ -149,3 +152,19 @@ void yaw_control_task(void)
     // Indicate task completion
     pK_block_task(pK_get_current_task_id());
 }
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void find_reference_yaw_task(void)
+{
+    change_altitude(*ptr_current_alt_percent, 10);
+    change_yaw_angle(360, *ptr_main_duty_cycle);
+
+}
+
+
+
+

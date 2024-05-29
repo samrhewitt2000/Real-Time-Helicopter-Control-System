@@ -29,6 +29,8 @@
 #define TICK_COUNT_RESET_THRESHOLD 1000000
 
 
+
+
 //*****************************************************************************
 //
 //******************************************************************************
@@ -55,18 +57,19 @@ typedef struct {
 //task IDs struct
 //*****************************************************************************
 typedef struct {
-    unsigned char SWITCH_TASK;
-    unsigned char PUSH_BUTTONS_TASK;
-    unsigned char ALT_CONTROL_TASK;
-    unsigned char YAW_CONTROL_TASK;
-    unsigned char TRANSITION_TASK;
+    void (*SWITCH_TASK)(void);
+    void (*PUSH_BUTTONS_TASK)(void);
+    void (*ALT_CONTROL_TASK)(void);
+    void (*YAW_CONTROL_TASK)(void);
+    void (*TRANSITION_TASK)(void);
+    void (*REF_YAW_TASK)(void);
 } task_ID_t;
 
 
 extern task_t tasks[MAX_TASKS];
 extern unsigned char num_tasks;
 extern task_t tasks[MAX_TASKS];
-
+extern task_ID_t *task_IDs;
 
 //*****************************************************************************
 //

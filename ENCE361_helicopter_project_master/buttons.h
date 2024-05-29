@@ -66,7 +66,7 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 // Helicopter state enum
 // *******************************************************
 typedef enum {
-    INITIAL,
+    YAW_REF,
     LANDED,
     TAKEOFF,
     FLYING,

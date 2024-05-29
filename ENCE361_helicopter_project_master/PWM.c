@@ -31,6 +31,15 @@
 #include "buttons.h"
 #include "PWM.h"
 
+
+
+volatile uint32_t *ptr_main_duty_cycle;
+volatile uint32_t *ptr_tail_duty_cycle;
+
+static uint32_t main_duty_cycle;
+static uint32_t tail_duty_cycle;
+
+
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
  * PC5 (M0PWM7).  This is the same PWM output as the
@@ -49,7 +58,7 @@
 //    //
 //    // It is not necessary to clear the SysTick interrupt.
 //}
-
+extern helicopter_state_t heli_state;
 
 
 /***********************************************************
@@ -113,6 +122,9 @@ void initialise_rotor_PWM (void)
 
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
+
+    ptr_main_duty_cycle = &main_duty_cycle;
+
 }
 
 
@@ -142,6 +154,8 @@ void initialise_tail_PWM(void)
 
     // Disable the output initially, can be enabled later
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
+
+    ptr_tail_duty_cycle = &tail_duty_cycle;
 }
 
 // ^fix terminology? rotor/motor?^
@@ -158,6 +172,7 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
+    main_duty_cycle = ui32Duty;
     }
 
 
@@ -173,6 +188,7 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
     // Configure the PWM period and duty cycle
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+    tail_duty_cycle = ui32Duty;
 }
 
 
@@ -180,7 +196,7 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 //********************************************************
 // Function to set the freq, duty cycle of both motors to zero
 // ********************************************************
-void kill_motors(helicopter_state_t heli_state)
+void kill_motors(void)
 {
     set_rotor_PWM (0, 0);
     set_tail_PWM(0, 0);
