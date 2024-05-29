@@ -26,12 +26,14 @@
 #include "driverlib/systick.h"
 
 #define MAX_TASKS 100
+#define TICK_COUNT_RESET_THRESHOLD 1000000
 
 typedef struct {
     unsigned char SWITCH_TASK;
     unsigned char PUSH_BUTTONS_TASK;
     unsigned char ALT_CONTROL_TASK;
     unsigned char YAW_CONTROL_TASK;
+    unsigned char GET_YAW_REF_TASK;
 } task_ID_t;
 
 //*****************************************************************************
@@ -49,12 +51,16 @@ typedef struct {
     void (*taskEnter)(void);
     unsigned char priority;
     task_state_t state;
+    uint32_t time;
+    uint32_t interval;
 } task_t;
 
 static task_t tasks[MAX_TASKS];
 static unsigned char num_tasks = 0;
 static unsigned long g_tickPeriod = 0;
 static unsigned char currentTaskId = 0; // Initialize to the first task
+static uint32_t tick_count = 0;
+
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -70,7 +76,7 @@ void pK_init (unsigned char maxTasks, unsigned long tickPeriod);
 // Tasks are in the ready state by default.
 // Returns a unique 8-bit ID.
 //*****************************************************************************
-unsigned char pK_register_task (void (*taskEnter) (void), unsigned char priority);
+unsigned char pK_register_task(void (*taskEnter)(void), uint32_t priority, uint32_t interval);
 
 //*****************************************************************************
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have

@@ -31,6 +31,7 @@
 
 //volatile int32_t main_rotor_PWM = 0;
 volatile int32_t current_altitude = 0;
+int32_t current_alt_perc;
 
 
 //*****************************************************************************************************

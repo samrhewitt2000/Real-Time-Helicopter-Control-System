@@ -22,8 +22,16 @@
 #include "quad_enc.h"
 #include "PWM.h"
 #include "PID.h"
+#include "driverlib/pin_map.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_gpio.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/interrupt.h"
 
 //extern volatile int32_t yaw_angle_int = 0;
+//extern unsigned char get_yaw_ref_task;
+extern int32_t current_alt_perc;
 
 //*****************************************************************************
 //
@@ -53,5 +61,11 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM);
 //
 //*****************************************************************************
 void yaw_control_task(void);
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void get_yaw_ref_task(void);
+
 
 #endif /* YAW_CONTROL_H_ */

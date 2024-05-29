@@ -22,28 +22,14 @@
 //*****************************************************************************
 void SysTickHandler(void)
 {
-    // Find the next ready task
-    unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
-
-    // Loop through tasks to find the next one that is ready
-    while (tasks[nextTaskId].state != READY) {
-        nextTaskId = (nextTaskId + 1) % num_tasks;
-
-        // Break the loop if we have checked all tasks to avoid infinite loop
-        if (nextTaskId == currentTaskId) {
-            return;
-        }
+    tick_count++;
+    if (tick_count >= TICK_COUNT_RESET_THRESHOLD)
+    {
+        tick_count = 0;
     }
-
-    // Update the current task ID to the next ready task
-    currentTaskId = nextTaskId;
-
-    // Execute the current task if it has a valid function pointer
-    if (tasks[currentTaskId].taskEnter) {
-        tasks[currentTaskId].taskEnter();
-    }
-
 }
+
+
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -51,7 +37,8 @@ void SysTickHandler(void)
 //*****************************************************************************
 void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 {
-    num_tasks = maxTasks;
+    //num_tasks = maxTasks;
+    num_tasks = 0;
     g_tickPeriod = tickPeriod;
     SysTickPeriodSet(g_tickPeriod);
     SysTickEnable();
@@ -63,17 +50,23 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 // Takes a pointer to the function which executes the task and
 // an unsigned value for the 'priority' of the task
 // (0 is highest priority).
-// Tasks are in the ready state by default.
+// Tasks are in the ready state by default.s
 // Returns a unique 8-bit ID.
 //*****************************************************************************
-unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
+unsigned char pK_register_task(void (*taskEnter)(void), uint32_t priority, uint32_t interval)
 {
-    if (num_tasks < MAX_TASKS)
+    if (num_tasks <= MAX_TASKS)
     {
         tasks[num_tasks].taskEnter = taskEnter;
-        tasks[num_tasks].priority = priority;
-        tasks[num_tasks].state = READY;
-        return num_tasks++;
+//        tasks[num_tasks].priority = priority;      unsigned char priority,
+        tasks[num_tasks].state = BLOCKED;
+        uint32_t time = 0; //initialize time as 0 in order to execute first according to priority
+        tasks[num_tasks].time = time;
+        tasks[num_tasks].interval = interval;
+
+        unsigned char taskID = num_tasks;
+        num_tasks++;
+        return taskID;
     }
     return 0xFF; // Error: Task registration failed
 }

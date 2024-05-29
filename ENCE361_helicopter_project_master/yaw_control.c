@@ -35,6 +35,51 @@
 
 
 
+extern int32_t current_alt_perc;
+extern task_ID_t task_IDs;
+
+
+void ref_yaw_int_handler(void)
+{
+    //disale interrupts, no preemption
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    //set reference yaw to zero
+    quad_enc_ticks = 0;
+    pK_block_task(task_IDs.GET_YAW_REF_TASK);
+    change_altitude(current_alt_perc, 9);
+    heli_state = LANDED;
+}
+
+
+
+void init_ref_yaw (void)
+{
+    // Enable Peripheral
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC))
+    {
+    }
+    // Configure GPIO Pin PC4 as Inputs
+    GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    // Enable Pull-up Resistors for
+    GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+
+    // Configure Interrupt Type (Both Edges) for PC4
+    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_BOTH_EDGES);
+
+    // Register Interrupt Handlers
+    GPIOIntRegister(GPIO_PORTC_BASE, ref_yaw_int_handler);
+
+    // Enable GPIO Interrupts
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    // Enable Master Interrupts
+    IntMasterEnable();
+}
+
+
+
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -96,5 +141,20 @@ void yaw_control_task(void)
     change_yaw_angle(30, 50); // Assuming 50 as rotor PWM value
 
     // Indicate task completion
-    pK_block_task(pK_get_current_task_id());
+    //pK_block_task(pK_get_current_task_id());
 }
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void get_yaw_ref_task(void)
+{
+    //pK_block_task(pK_get_current_task_id());
+    //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    //change_yaw_angle(360, *ptr_main_duty_cycle);
+
+    //return;
+}
+

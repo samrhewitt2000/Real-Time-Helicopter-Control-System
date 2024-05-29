@@ -69,6 +69,9 @@ uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t display_state = STATE_PERC; //initialize display state
 extern helicopter_state_t heli_state; //initialize display state
 
+// Perform the task registration for the protokernal
+task_ID_t task_IDs;
+
 //********************************************************
 //
 // ********************************************************
@@ -107,10 +110,11 @@ void initialise_program(void)
 //*****************************************************************************
 void register_all_pk_tasks(task_ID_t *task_IDs)
 {
-    task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0);
-    task_IDs->PUSH_BUTTONS_TASK = pK_register_task(pushbuttons_task, 1);
-    task_IDs->ALT_CONTROL_TASK = pK_register_task(alt_control_task, 2);
-    task_IDs->YAW_CONTROL_TASK = pK_register_task(yaw_control_task, 2);
+    task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0, 100);
+    task_IDs->PUSH_BUTTONS_TASK = pK_register_task(pushbuttons_task, 1, 500);
+    task_IDs->ALT_CONTROL_TASK = pK_register_task(alt_control_task, 2, 1000);
+    task_IDs->YAW_CONTROL_TASK = pK_register_task(yaw_control_task, 3, 200);
+    task_IDs->GET_YAW_REF_TASK = pK_register_task(get_yaw_ref_task, 4, 300);
 }
 
 
@@ -123,9 +127,7 @@ int main(void)
     // Kill motors for software reset
     kill_motors(&heli_state);
 
-    // Perform the task registration for the protokernal
-    task_ID_t task_IDs[num_tasks];
-    register_all_pk_tasks(task_IDs);
+    register_all_pk_tasks(&task_IDs);
 
     IntMasterEnable();
 
@@ -152,7 +154,7 @@ int main(void)
                     kill_motors(&heli_state); // precautionary
                     first_state_entry = false;
                 }
-                pK_ready_task(task_IDs->SWITCH_TASK);
+                pK_ready_task(task_IDs.SWITCH_TASK);
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
