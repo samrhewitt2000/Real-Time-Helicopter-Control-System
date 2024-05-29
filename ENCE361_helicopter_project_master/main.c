@@ -112,7 +112,7 @@ void initialise_program(void)
 //*****************************************************************************
 void register_all_pk_tasks(task_ID_t *task_IDs)
 {
-    task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0, 100);
+    task_IDs->SWITCH_TASK = pK_register_task(switch_task, 0, 10000);
     task_IDs->PUSH_BUTTONS_TASK = pK_register_task(pushbuttons_task, 1, 500);
     task_IDs->ALT_CONTROL_TASK = pK_register_task(alt_control_task, 2, 1000);
     task_IDs->YAW_CONTROL_TASK = pK_register_task(yaw_control_task, 3, 200);
@@ -135,8 +135,8 @@ int main(void)
 
     // Read in relevant peripheral values
     extern int32_t prev_switch_state;
-    //prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
-    prev_switch_state = 0;
+    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    //prev_switch_state = 0;
     extern int32_t current_switch_state;
     current_switch_state = prev_switch_state;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
@@ -181,8 +181,6 @@ int main(void)
                 // helicopter should return to reference yaw and land smoothly
                 break;
         }
-
-        debug_display(0, 1, current_switch_state, heli_state);
 
         pK_start();
 

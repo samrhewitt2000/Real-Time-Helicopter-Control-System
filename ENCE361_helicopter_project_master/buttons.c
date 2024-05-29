@@ -188,15 +188,18 @@ uint8_t checkButton (uint8_t butName)
 void switch_task(void)
 {
     current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    if (current_switch_state != prev_switch_state)
+    {
+        if (current_switch_state == SWITCH_NORMAL && heli_state == LANDED)
+        {
+            heli_state = TAKEOFF;
+        }
+        else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL && heli_state == LANDED)
+        {
+            heli_state = LANDING;
+        }
+    }
 
-    if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
-    {
-        heli_state = TAKEOFF;
-    }
-    else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
-    {
-        heli_state = LANDING;
-    }
     prev_switch_state = current_switch_state;
 }
 

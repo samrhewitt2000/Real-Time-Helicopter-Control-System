@@ -15,23 +15,7 @@
 //
 //*****************************************************************************
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/adc.h"
-#include "driverlib/pwm.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/debug.h"
-#include "utils/ustdlib.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
-
-#include "displays.h"
 #include "ADC.h"
-#include "buttons.h"
 
 //*****************************************************************************
 // Global variables
@@ -41,22 +25,22 @@
 
 circBuf_t g_inBuffer;
 
-static uint32_t g_ulSampCnt;    // Counter for the interrupts
+volatile uint32_t g_ulSampCnt;    // Counter for the interrupts
 
 //*****************************************************************************
 //
 // The interrupt handler for the for SysTick interrupt.
 //
 //*****************************************************************************
-void SysTickIntHandler(void)
-{
-    //
-    // Initiate a conversion
-    //
-    ADCProcessorTrigger(ADC0_BASE, 3); 
-    updateButtons();
-    g_ulSampCnt++;
-}
+//void SysTickIntHandler(void)
+//{
+//    //
+//    // Initiate a conversion
+//    //
+//    ADCProcessorTrigger(ADC0_BASE, 3);
+//    updateButtons();
+//    g_ulSampCnt++;
+//}
 
 
 

@@ -17,16 +17,21 @@
 
 #include "kernel.h"
 
+
 //*****************************************************************************
 //
 //*****************************************************************************
 void SysTickHandler(void)
 {
     tick_count++;
+    debug_display(0, 1, tick_count, heli_state);
     if (tick_count >= TICK_COUNT_RESET_THRESHOLD)
     {
         tick_count = 0;
     }
+    ADCProcessorTrigger(ADC0_BASE, 3);
+    updateButtons();
+    g_ulSampCnt++;
 }
 
 
@@ -48,7 +53,8 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
     SysTickPeriodSet (tickPeriod);
     //
     // Register the interrupt handler
-    SysTickIntRegister (SysTickIntHandler);
+    SysTickIntRegister (SysTickHandler);
+
     //
     // Enable interrupt and device
     SysTickIntEnable ();

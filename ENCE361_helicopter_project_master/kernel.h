@@ -26,6 +26,7 @@
 #include "driverlib/systick.h"
 
 #include "ADC.h"
+#include "displays.h"
 
 #define MAX_TASKS 100
 #define TICK_COUNT_RESET_THRESHOLD 1000000
@@ -63,6 +64,7 @@ static unsigned long g_tickPeriod = 0;
 static unsigned char current_task_ID = 0; // Initialize to the first task
 static uint32_t tick_count = 0;
 
+extern uint32_t g_ulSampCnt;
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks

@@ -22,6 +22,7 @@
 #include "circ_buffer.h"
 #include "PWM.h"
 #include "PID.h"
+#include "kernel.h"
 
 int32_t get_alt_val(circBuf_t *buffer);
 
