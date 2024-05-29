@@ -26,6 +26,22 @@
 
 
 
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+typedef enum {
+    LANDED,
+    TAKEOFF,
+    FLYING,
+    LANDING
+} helicopter_state_t;
+
+
+
+int32_t prev_switch_state;
+int32_t current_switch_state;
+helicopter_state_t heli_state;
+
 //*****************************************************************************
 // Constants
 //*****************************************************************************
@@ -69,16 +85,6 @@ static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
-
-// *******************************************************
-// Helicopter state enum
-// *******************************************************
-typedef enum {
-    LANDED,
-    TAKEOFF,
-    FLYING,
-    LANDING
-} helicopter_state_t;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have

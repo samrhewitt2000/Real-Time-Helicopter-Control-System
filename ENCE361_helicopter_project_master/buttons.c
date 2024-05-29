@@ -33,10 +33,6 @@
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 #include "kernel.h"
 
-extern int32_t prev_switch_state;
-extern int32_t current_switch_state;
-extern helicopter_state_t heli_state;
-
 
 
 // *******************************************************

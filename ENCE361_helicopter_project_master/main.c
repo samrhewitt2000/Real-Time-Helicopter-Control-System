@@ -67,7 +67,7 @@ uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t display_state = STATE_PERC; //initialize display state
-static helicopter_state_t heli_state = LANDED; //initialize display state
+extern helicopter_state_t heli_state; //initialize display state
 
 //********************************************************
 //
@@ -125,14 +125,14 @@ int main(void)
 
     // Perform the task registration for the protokernal
     task_ID_t task_IDs[num_tasks];
-    register_all_pk_tasks(&task_IDs);
+    register_all_pk_tasks(task_IDs);
 
     IntMasterEnable();
 
     // Read in relevant peripheral values
-    static int32_t prev_switch_state;
+    extern int32_t prev_switch_state;
     prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
-    static int32_t current_switch_state;
+    extern int32_t current_switch_state;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
     bool first_state_entry = true;
 
@@ -152,7 +152,7 @@ int main(void)
                     kill_motors(&heli_state); // precautionary
                     first_state_entry = false;
                 }
-                pK_ready_task(switch_task);
+                pK_ready_task(task_IDs->SWITCH_TASK);
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
