@@ -159,12 +159,14 @@ void push_buttons_task(void)
     counter += 1;
     if (checkButton(UP) == PUSHED && heli_state == FLYING)
     {
+        set_rotor_PWM(250, *ptr_main_duty_cycle + 10);
         //increase altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
     {
+        set_rotor_PWM(250, *ptr_main_duty_cycle - 10);
         //decrease altitude by 10%
-        change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
     }else if (checkButton(SWITCH) == PUSHED && heli_state == LANDED)
     {
         heli_state = TAKEOFF;
@@ -237,6 +239,7 @@ int main(void)
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
+                displayYaw(0, 3);
                 pK_block_task(switch_task_ID);
                 pK_block_task(push_buttons_task_ID);
                 change_altitude(0, -100);

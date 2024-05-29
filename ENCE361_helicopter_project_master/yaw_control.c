@@ -161,7 +161,8 @@ void find_reference_yaw_task(void)
     //pK_block_task(pK_get_current_task_id());
     //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     change_yaw_angle(360, *ptr_main_duty_cycle);
-
+    set_rotor_PWM(250, 51);
+    set_tail_PWM(250, 5);
     return;
 }
 

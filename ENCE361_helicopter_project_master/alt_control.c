@@ -23,9 +23,9 @@
 #include "displays.h"
 
 #define FLOAT_CONVERSION_FACTOR 100
-#define Kp 1.0 * FLOAT_CONVERSION_FACTOR
-#define Ki 1.0 * FLOAT_CONVERSION_FACTOR
-#define Kd 1.0 * FLOAT_CONVERSION_FACTOR
+#define Kp 0.1 * FLOAT_CONVERSION_FACTOR
+#define Ki 0.1 * FLOAT_CONVERSION_FACTOR
+#define Kd 0.1 * FLOAT_CONVERSION_FACTOR
 #define Kg 33.3 * FLOAT_CONVERSION_FACTOR
 #define BUF_SIZE 10
 //#define change perc
