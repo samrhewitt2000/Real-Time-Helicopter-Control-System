@@ -20,7 +20,7 @@
 #include "PWM.h"
 #include "circ_buffer.h"
 #include "PID.h"
-
+#include "displays.h"
 
 #define FLOAT_CONVERSION_FACTOR 100
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
@@ -80,6 +80,15 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     {
         desired_alt_percent = 0;
     }
+
+
+    //test code
+    char string[17];
+    usnprintf (string, sizeof(string), "Alt: %2d %%  ", desired_alt_percent);
+    OLEDStringDraw (string, 0, 0);
+
+
+
     int32_t offset = 330;
     //set pwm to control action
     set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));

@@ -162,7 +162,6 @@ void find_reference_yaw_task(void)
 {
     change_altitude(*ptr_current_alt_percent, 10);
     change_yaw_angle(360, *ptr_main_duty_cycle);
-
 }
 
 

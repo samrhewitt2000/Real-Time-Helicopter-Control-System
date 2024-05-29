@@ -124,3 +124,5 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
     usnprintf (string, sizeof(string), "R_PWM: %2d %%  ", ui32Freq);
     OLEDStringDraw (string, display_col, display_row);
 }
+
+

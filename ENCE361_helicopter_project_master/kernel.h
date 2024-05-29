@@ -35,8 +35,8 @@
 //
 //******************************************************************************
 typedef enum {
-    READY,
-    BLOCKED
+    BLOCKED,
+    READY
 } task_state_t;
 
 //*****************************************************************************
@@ -44,7 +44,6 @@ typedef enum {
 //******************************************************************************
 typedef struct {
     void (*taskEnter)(void);
-    unsigned char priority;
     task_state_t state;
     uint32_t time;
     uint32_t interval;
