@@ -43,26 +43,24 @@
 
 
 
-
+extern circBuf_t g_inBuffer;
 
 
 void ref_yaw_int_handler(void)
 {
     //disale interrupts, no preemption
     GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
-
     //set reference yaw to zero
     quad_enc_ticks = 0;
-
+    pK_block_task(ref_yaw_task_ID);
+    change_altitude(*ptr_current_alt_percent, 9);
+    heli_state = LANDED;
 }
 
 
 
 void init_ref_yaw (void)
 {
-//    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
-//    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
-
     // Enable Peripheral
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC))
@@ -150,7 +148,6 @@ void yaw_control_task(void)
     change_yaw_angle(30, 50); // Assuming 50 as rotor PWM value
 
     // Indicate task completion
-    pK_block_task(pK_get_current_task_id());
 }
 
 
@@ -160,8 +157,11 @@ void yaw_control_task(void)
 //*****************************************************************************
 void find_reference_yaw_task(void)
 {
-    change_altitude(*ptr_current_alt_percent, 10);
+    pK_block_task(pK_get_current_task_id());
+    change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     change_yaw_angle(360, *ptr_main_duty_cycle);
+
+    return;
 }
 
 

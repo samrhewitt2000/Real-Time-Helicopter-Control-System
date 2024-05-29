@@ -135,12 +135,13 @@ void initialise_program(void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     initSysTick ();
 
+    init_ref_yaw ();
+
     // System initialization (e.g., clock setup, peripherals)
     SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // initialize the protoKernel with a maximum of 10 tasks and a tick period
     pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
-
     //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
@@ -173,49 +174,6 @@ void push_buttons_task(void)
     }
 }
 
-//
-//
-//void transition_task(void)
-//{
-//    switch(heli_state)
-//    {
-//        case INITIAL_REFIZE:
-//            //get reference function
-//            heli_state = TAKEOFF;
-//
-//            break;
-//        case TAKEOFF:
-//            pK_ready_task(tasl_IDs[SWITCH_TASK])
-//            //lift off by 1% :)
-//            change_altitude(alt_val_to_percent(INITIAL_REF_ADC_val, current_ADC_val), 10);
-//            heli_state = FLYING;
-//            break;
-//        case LANDING:
-//            change_altitude(alt_val_to_percent(INITIAL_REF_ADC_val, current_ADC_val), -100);
-//            if (alt_val_to_percent(INITIAL_REF_ADC_val, current_ADC_val) == 0)
-//            {
-//                kill_motors(heli_state);
-//            }
-//            break;
-//        case FLYING:
-//            break;
-//        case LANDED:
-//            break;
-//    }
-//}
-
-
-//
-//
-//void print_task(void)
-//{
-//    if (but_state[4] == 1)
-//    {
-//        heli_state = FLYING;
-//        change_altitude(alt_val_to_percent(INITIAL_REF_ADC_val, current_ADC_val), 10);
-//    }
-//}
-
 
 
 void get_sensor_values(void)
@@ -243,33 +201,24 @@ int main(void)
 {
     initialise_program();
 
-
-    // calculate exactly how long this needs to be
-
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
     IntMasterEnable();
 
     int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-
     register_all_pk_tasks();
-
-
-
-
-
+    pK_block_all_tasks();
     while (1)
     {
-        // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
         current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
         switch(heli_state)
         {
             case YAW_REF:
                 //ready reference yaw task to use tail motor to find reference yaw
+                displayYaw(0, 3);
                 pK_ready_task(ref_yaw_task_ID);
-
                 break;
             case LANDED:
                 kill_motors();
@@ -280,6 +229,8 @@ int main(void)
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
 
+                change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
+                change_altitude(0, 10);
                 break;
             case FLYING:
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively

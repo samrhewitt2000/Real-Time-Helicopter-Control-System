@@ -53,6 +53,8 @@ void initButtons (void)
     GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
     GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
     but_normal[SWITCH] = SWITCH_NORMAL;
+    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+
 
     // UP button (active HIGH)
     SysCtlPeripheralEnable (UP_BUT_PERIPH);
@@ -88,12 +90,6 @@ void initButtons (void)
     GPIOPadConfigSet (RIGHT_BUT_PORT_BASE, RIGHT_BUT_PIN, GPIO_STRENGTH_2MA,
        GPIO_PIN_TYPE_STD_WPU);
     but_normal[RIGHT] = RIGHT_BUT_NORMAL;
-
-    // SWITCH (active HIGH)
-    SysCtlPeripheralEnable (SWITCH_PERIPH);
-    GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
-    GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
-    but_normal[SWITCH] = SWITCH_NORMAL;
 
     //initialize each button's status
     for (i = 0; i < NUM_BUTS; i++)
@@ -179,11 +175,11 @@ void switch_task(void)
 {
     int32_t current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-    if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
+    if (heli_state == LANDED && current_switch_state == SWITCH_NORMAL && current_switch_state != prev_switch_state)
     {
         heli_state = TAKEOFF;
     }
-    else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
+    else if (heli_state == FLYING && current_switch_state != SWITCH_NORMAL & current_switch_state != prev_switch_state)
     {
         heli_state = LANDING;
     }
