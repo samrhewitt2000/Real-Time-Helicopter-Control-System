@@ -17,8 +17,18 @@
 
 #include "kernel.h"
 #include <stdint.h>
+#include "ADC.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "driverlib/adc.h"
+#include "driverlib/pwm.h"
 #include "driverlib/gpio.h"
-
+#include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/debug.h"
+#include "utils/ustdlib.h"
+#include "OrbitOLED/OrbitOLEDInterface.h"
 //*****************************************************************************
 //
 //*****************************************************************************
@@ -29,19 +39,22 @@ static unsigned long g_tickPeriod = 0;
 volatile unsigned char current_task_ID = 0; // Initialize to the first task
 volatile uint32_t systick_flag = 0;
 task_t tasks[MAX_TASKS];
-uint32_t tick_count = 0;
+static uint32_t tick_count = 0;
 
 //*****************************************************************************
 //
 //*****************************************************************************
 void SysTickHandler(void)
 {
+    ADCProcessorTrigger(ADC0_BASE, 3);
+    g_ulSampCnt++;
+
     tick_count++;
-    displayYaw(0, 1);
     if (tick_count >= TICK_COUNT_RESET_THRESHOLD)
     {
         tick_count = 0;
     }
+
 }
 
 
@@ -55,8 +68,10 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
     g_tickPeriod = tickPeriod;
     current_task_ID = 0;
     SysTickPeriodSet(g_tickPeriod);
-    SysTickEnable();
+    SysTickIntRegister (SysTickHandler);
     SysTickIntEnable();
+    SysTickEnable();
+
 }
 
 
@@ -93,9 +108,8 @@ unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
 
 void pK_start(void)
 {
-    int any_task_ready = 1;
     unsigned char checked_tasks = 0;
-//    unsigned char current_task_ID = (current_task_ID + 1) % num_tasks;
+    current_task_ID = 0;
 
     // Check all tasks to find a ready one
     while (checked_tasks < num_tasks)
@@ -120,7 +134,10 @@ void pK_start(void)
                 return; // Exit after executing one task
             }
         }
-
+        if (tasks[current_task_ID].time >= TICK_COUNT_RESET_THRESHOLD)
+        {
+            tasks[current_task_ID].time = 0;
+        }
         // Move to the next task
         current_task_ID = (current_task_ID + 1) % num_tasks;
         checked_tasks++;

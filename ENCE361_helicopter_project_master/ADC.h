@@ -21,8 +21,8 @@
 volatile extern int32_t current_ADC_val;
 extern int32_t initial_ADC_val;
 extern circBuf_t g_inBuffer;
+uint32_t g_ulSampCnt;
 
-void SysTickIntHandler(void);
 
 //*****************************************************************************
 // The handler for the ADC conversion complete interrupt.
@@ -30,10 +30,6 @@ void SysTickIntHandler(void);
 //*****************************************************************************
 void ADCIntHandler(void);
 
-//*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, display
-//*****************************************************************************
-void initClock (void);
 
 //*****************************************************************************
 // Initializes ADC0 to take single samples from CH9 (pin PE4, AIN9)

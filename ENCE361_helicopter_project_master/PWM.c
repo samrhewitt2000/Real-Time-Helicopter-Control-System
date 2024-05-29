@@ -27,7 +27,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "PWM.h"
-
+#include "kernel.h"
 #include "buttons.h"
 #include "PWM.h"
 
@@ -61,40 +61,40 @@ static uint32_t tail_duty_cycle;
 extern helicopter_state_t heli_state;
 
 
-/***********************************************************
- * Initialisation functions: clock, SysTick, PWM
- ***********************************************************
- * Clock
- ***********************************************************/
-void initClocks (void)
-{
-    // Set the clock rate to 20 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+///***********************************************************
+// * Initialisation functions: clock, SysTick, PWM
+// ***********************************************************
+// * Clock
+// ***********************************************************/
+//void initClocks (void)
+//{
+//    // Set the clock rate to 20 MHz
+//    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+//
+//    // Set the PWM clock rate (using the prescaler)
+//    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+//}
+//
 
-    // Set the PWM clock rate (using the prescaler)
-    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
-}
 
-
-
-/*************************************************************
- * SysTick interrupt
- ************************************************************/
-void initSysTick (void)
-{
-    //
-    // Set up the period for the SysTick timer.  The SysTick
-    // timer period is set as a function of the system clock.
-    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
-    //
-    // Register the interrupt handler
-    SysTickIntRegister (SysTickIntHandler);
-    //
-    // Enable interrupt and device
-    SysTickIntEnable ();
-    SysTickEnable ();
-}
-
+///*************************************************************
+// * SysTick interrupt
+// ************************************************************/
+//void initSysTick (void)
+//{
+//    //
+//    // Set up the period for the SysTick timer.  The SysTick
+//    // timer period is set as a function of the system clock.
+//    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
+//    //
+//    // Register the interrupt handler
+//    SysTickIntRegister (SysTickIntHandler);
+//    //
+//    // Enable interrupt and device
+//    SysTickIntEnable ();
+//    SysTickEnable ();
+//}
+//
 
 
 /*********************************************************

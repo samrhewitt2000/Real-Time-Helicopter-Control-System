@@ -32,7 +32,7 @@
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 #include "kernel.h"
-
+#include "PWM.h"
 //
 //extern int32_t prev_switch_state;
 //extern int32_t current_switch_state;
@@ -173,18 +173,20 @@ uint8_t checkButton (uint8_t butName)
 //*****************************************************************************
 void switch_task(void)
 {
-    int32_t current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    //int32_t current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-    if (heli_state == LANDED && current_switch_state == SWITCH_NORMAL && current_switch_state != prev_switch_state)
+    if (heli_state == LANDED && checkButton(SWITCH) == RELEASED)//&& current_switch_state != prev_switch_state
     {
         heli_state = TAKEOFF;
     }
-    else if (heli_state == FLYING && current_switch_state != SWITCH_NORMAL & current_switch_state != prev_switch_state)
+    if (heli_state == FLYING && checkButton(SWITCH) == PUSHED)//& current_switch_state != prev_switch_state
     {
         heli_state = LANDING;
     }
-    prev_switch_state = current_switch_state;
+    //prev_switch_state = current_switch_state;
 }
+
+
 
 
 
@@ -196,11 +198,13 @@ void pushbuttons_task(void)
 
     if (checkButton(UP) == PUSHED && heli_state == FLYING)
     {
+        set_rotor_PWM(250, *ptr_main_duty_cycle + 5);
         //increase altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     }
-    else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+    if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
     {
+        set_rotor_PWM(250, *ptr_main_duty_cycle - 5);
         //decrease altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
     }

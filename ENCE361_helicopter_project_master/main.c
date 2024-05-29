@@ -119,29 +119,28 @@ void find_reference_yaw_task(void);
 // ********************************************************
 void initialise_program(void)
 {
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
     }
-
+    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
     initButtons();
-    initClocks ();
+    //initClocks ();
     initADC ();
     initDisplay ();
     initYaw ();
+    init_ref_yaw();
     initialise_rotor_PWM ();
     initialise_tail_PWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-    initSysTick ();
-
-    init_ref_yaw ();
 
     // System initialization (e.g., clock setup, peripherals)
-    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
-    // initialize the protoKernel with a maximum of 10 tasks and a tick period
-    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
+
+
+
     //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
     SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
@@ -156,24 +155,24 @@ void initialise_program(void)
 void push_buttons_task(void)
 {
     updateButtons();
-    counter += 1;
-    if (checkButton(UP) == PUSHED && heli_state == FLYING)
-    {
-        set_rotor_PWM(250, *ptr_main_duty_cycle + 10);
-        //increase altitude by 10%
-        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
-    }else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
-    {
-        set_rotor_PWM(250, *ptr_main_duty_cycle - 10);
-        //decrease altitude by 10%
-        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
-    }else if (checkButton(SWITCH) == PUSHED && heli_state == LANDED)
-    {
-        heli_state = TAKEOFF;
-    }else if (checkButton(SWITCH) == RELEASED && heli_state == FLYING)
-    {
-        heli_state = LANDING;
-    }
+//    counter += 1;
+//    if (checkButton(UP) == PUSHED && heli_state == FLYING)
+//    {
+//        set_rotor_PWM(250, *ptr_main_duty_cycle + 10);
+//        //increase altitude by 10%
+//        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+//    }else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+//    {
+//        set_rotor_PWM(250, *ptr_main_duty_cycle - 10);
+//        //decrease altitude by 10%
+//        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
+//    }else if (checkButton(SWITCH) == PUSHED && heli_state == LANDED)
+//    {
+//        heli_state = TAKEOFF;
+//    }else if (checkButton(SWITCH) == RELEASED && heli_state == FLYING)
+//    {
+//        heli_state = LANDING;
+//    }
 }
 
 
@@ -190,11 +189,11 @@ void get_sensor_values(void)
 //*****************************************************************************
 void register_all_pk_tasks(void)
 {
-    ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 100);
-    switch_task_ID = pK_register_task(switch_task, 500);
-    push_buttons_task_ID = pK_register_task(push_buttons_task, 1000);
-    alt_control_task_ID = pK_register_task(alt_control_task, 200);
-    yaw_control_task_ID = pK_register_task(yaw_control_task, 300);
+    ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 1);
+    switch_task_ID = pK_register_task(switch_task, 200);
+    push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
+    alt_control_task_ID = pK_register_task(alt_control_task, 2);
+    yaw_control_task_ID = pK_register_task(yaw_control_task, 3);
 }
 
 
@@ -203,57 +202,55 @@ int main(void)
 {
     initialise_program();
 
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
 
     IntMasterEnable();
 
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+
 
     register_all_pk_tasks();
     pK_block_all_tasks();
     while (1)
     {
-        current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+        //current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
         switch(heli_state)
         {
             case YAW_REF:
+                pK_ready_task(ref_yaw_task_ID);
                 //ready reference yaw task to use tail motor to find reference yaw
                 displayYaw(0, 3);
-                pK_ready_task(ref_yaw_task_ID);
+
                 break;
             case LANDED:
                 kill_motors();
                 pK_ready_task(switch_task_ID);
                 // set rotor and tail motors to zero
-                pK_ready_task(push_buttons_task_ID);
+                //pK_ready_task(push_buttons_task_ID);
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
 
-                change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
-                change_altitude(0, 10);
+                //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
+                set_rotor_PWM(250, 60);
                 break;
             case FLYING:
+                pK_ready_task(push_buttons_task_ID);
+                pK_ready_task(switch_task_ID);
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
                 displayYaw(0, 3);
-                pK_block_task(switch_task_ID);
-                pK_block_task(push_buttons_task_ID);
-                change_altitude(0, -100);
+                //change_altitude(0, -100);
                 // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly
-                if (*ptr_current_alt_percent == 0)
-                {
-                    kill_motors();
-                    heli_state = LANDED;
-                }
+                kill_motors();
+                heli_state = LANDED;
                 break;
         }
         pK_start();
-
+        pK_block_all_tasks();
 
     }
 }

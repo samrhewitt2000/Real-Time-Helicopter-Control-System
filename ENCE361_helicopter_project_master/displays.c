@@ -40,8 +40,9 @@
 //*****************************************************************************
 void initDisplay (void)
 {
+
     // intialise the Orbit OLED display
-    OLEDInitialise ();
+    OLEDInitialise();
 }
 
 
