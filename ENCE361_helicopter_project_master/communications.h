@@ -32,7 +32,7 @@
 #define MAX_STR_LEN 16
 
 
-extern helicopter_state_t current_heli_state;
+
 
 char statusStr[MAX_STR_LEN + 1];
 

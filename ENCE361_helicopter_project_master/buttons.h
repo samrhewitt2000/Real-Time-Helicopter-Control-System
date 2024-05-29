@@ -66,7 +66,7 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 // Helicopter state enum
 // *******************************************************
 typedef enum {
-    INIT,
+    INITIAL,
     LANDED,
     TAKEOFF,
     FLYING,
@@ -86,7 +86,7 @@ static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 static int32_t prev_switch_state;
 volatile extern int32_t current_ADC_val;
 //extern int32_t current_switch_state;
-//extern helicopter_state_t heli_state;
+extern helicopter_state_t heli_state;
 
 
 

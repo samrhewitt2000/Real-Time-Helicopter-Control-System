@@ -29,31 +29,18 @@ static unsigned long g_tickPeriod = 0;
 volatile unsigned char currentTaskId = 0; // Initialize to the first task
 volatile uint32_t systick_flag = 0;
 task_t tasks[MAX_TASKS];
+uint32_t tick_count = 0;
 
 //*****************************************************************************
 //
 //*****************************************************************************
 void SysTickHandler(void)
 {
-    uint32_t tick_count = 0;
-
-
-    // Find the next ready task
-    unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
-
-    // Loop through tasks to find the next one that is ready
-    while (tasks[nextTaskId].state != READY) {
-        nextTaskId = (nextTaskId + 1) % num_tasks;
-
-        // Break the loop if we have checked all tasks to avoid infinite loop
-        if (nextTaskId == currentTaskId) {
-            return;
-        }
-    }
-
-    // Update the current task ID to the next ready task
-    currentTaskId = nextTaskId;
     tick_count++;
+    if (tick_count >= TICK_COUNT_RESET_THRESHOLD)
+    {
+        tick_count = 0;
+    }
     }
 
 
@@ -81,13 +68,16 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 // Tasks are in the ready state by default.
 // Returns a unique 8-bit ID.
 //*****************************************************************************
-unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
+unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
 {
     if (num_tasks < MAX_TASKS)
     {
         tasks[num_tasks].taskEnter = taskEnter;
-        tasks[num_tasks].priority = priority;
+//        tasks[num_tasks].priority = priority;      unsigned char priority,
         tasks[num_tasks].state = BLOCKED;
+        uint32_t time = 0; //initialize time as 0 in order to execute first according to priority
+        tasks[num_tasks].time = time;
+        tasks[num_tasks].interval = interval;
         return num_tasks++;
 
     }
@@ -96,24 +86,53 @@ unsigned char pK_register_task(void (*taskEnter)(void), unsigned char priority)
 
 
 
-
 void pK_start(void)
 {
-  SysTickPeriodSet(g_tickPeriod);
-  SysTickEnable();
-  SysTickIntEnable();
-  //round robin
-  while(1)
-  {
-      while (!systick_flag)
-      {
-      }
-      if (tasks[currentTaskId].taskEnter && tasks[currentTaskId].state == READY)
-      {
-          tasks[currentTaskId].taskEnter();
-      }
-  }
+
+
+    // Find the next ready task
+    unsigned char nextTaskId = (currentTaskId + 1) % num_tasks;
+
+    // Loop through tasks to find the next one that is ready
+    while (tasks[nextTaskId].state != READY) {
+        if (tick_count >= tasks[nextTaskId].time)
+        {
+            tasks[nextTaskId].time += tasks[nextTaskId].interval;
+            tasks[nextTaskId].taskEnter();
+        }
+
+
+        nextTaskId = (nextTaskId + 1) % num_tasks;
+
+        // Break the loop if we have checked all tasks to avoid infinite loop
+        if (nextTaskId == currentTaskId) {
+            return;
+        }
+    }
+
+    // Update the current task ID to the next ready task
+    currentTaskId = nextTaskId;
+
 }
+
+//
+//void pK_start(void)
+//{
+//  SysTickPeriodSet(g_tickPeriod);
+//  SysTickEnable();
+//  SysTickIntEnable();
+//  //round robin
+//  while(1)
+//  {
+//      while (!systick_flag)
+//      {
+//      }
+//      if (tasks[currentTaskId].taskEnter && tasks[currentTaskId].state == READY)
+//      {
+//          tasks[currentTaskId].taskEnter();
+//      }
+//  }
+//}
 
 
 //*****************************************************************************
@@ -127,7 +146,7 @@ void pK_unregister_task(unsigned char taskId)
     {
         // Remove the task
         tasks[taskId].taskEnter = NULL;
-        tasks[taskId].priority = 0;
+        tasks[taskId].interval = 0;
         tasks[taskId].state = BLOCKED;
     }
 }

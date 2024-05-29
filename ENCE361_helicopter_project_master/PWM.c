@@ -180,10 +180,9 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
 //********************************************************
 // Function to set the freq, duty cycle of both motors to zero
 // ********************************************************
-void kill_motors(helicopter_state_t current_heli_state)
+void kill_motors(helicopter_state_t heli_state)
 {
     set_rotor_PWM (0, 0);
     set_tail_PWM(0, 0);
-
-    current_heli_state = LANDED;
+    heli_state = LANDED;
 }

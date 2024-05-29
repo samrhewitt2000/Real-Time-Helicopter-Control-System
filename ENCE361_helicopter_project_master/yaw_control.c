@@ -35,6 +35,57 @@
 
 
 
+
+
+
+void ref_yaw_int_handler(void)
+{
+    //disale interrupts, no preemption
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    //set reference yaw to zero
+    quad_enc_ticks = 0;
+
+}
+
+
+
+void init_ref_yaw (void)
+{
+//    GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+//    GPIOIntDisable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+
+    // Enable Peripheral
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC))
+    {
+    }
+    // Configure GPIO Pin PC4 as Inputs
+    GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    // Enable Pull-up Resistors for
+    GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+
+    // Configure Interrupt Type (Both Edges) for PC4
+    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_BOTH_EDGES);
+
+    // Register Interrupt Handlers
+    GPIOIntRegister(GPIO_PORTC_BASE, ref_yaw_int_handler);
+
+    // Enable GPIO Interrupts
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    // Enable Master Interrupts
+    IntMasterEnable();
+}
+
+
+
+void reference_yaw_task(void)
+{
+
+}
+
 //*****************************************************************************
 //
 //*****************************************************************************
