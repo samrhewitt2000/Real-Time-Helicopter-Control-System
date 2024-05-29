@@ -34,7 +34,6 @@
 
 
 
-
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
@@ -53,8 +52,10 @@ void ref_yaw_int_handler(void)
     //set reference yaw to zero
     quad_enc_ticks = 0;
     pK_block_task(ref_yaw_task_ID);
-    change_altitude(*ptr_current_alt_percent, 9);
-    heli_state = LANDED;
+    change_altitude(*ptr_current_alt_percent, -10);
+    heli_state = LANDING;
+    //test code
+    displayYaw(0, 3);
 }
 
 
@@ -157,8 +158,8 @@ void yaw_control_task(void)
 //*****************************************************************************
 void find_reference_yaw_task(void)
 {
-    pK_block_task(pK_get_current_task_id());
-    change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    //pK_block_task(pK_get_current_task_id());
+    //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     change_yaw_angle(360, *ptr_main_duty_cycle);
 
     return;

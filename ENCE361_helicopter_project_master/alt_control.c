@@ -36,6 +36,7 @@ static int32_t current_alt_percent;
 volatile int32_t current_altitude = 0;
 
 
+
 //*****************************************************************************************************
 // get_ADC_val: returns the average ADC value from the values stored in the circular buffer structure
 //*****************************************************************************************************
@@ -80,13 +81,6 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
     {
         desired_alt_percent = 0;
     }
-
-
-    //test code
-    char string[17];
-    usnprintf (string, sizeof(string), "Alt: %2d %%  ", desired_alt_percent);
-    OLEDStringDraw (string, 0, 0);
-
 
 
     int32_t offset = 330;

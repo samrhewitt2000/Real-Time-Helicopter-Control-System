@@ -26,7 +26,7 @@
 #include "driverlib/systick.h"
 
 #define MAX_TASKS 100
-#define TICK_COUNT_RESET_THRESHOLD 1000000
+#define TICK_COUNT_RESET_THRESHOLD 100000000
 
 
 

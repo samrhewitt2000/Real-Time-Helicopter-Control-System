@@ -59,9 +59,6 @@ typedef enum {
 
 
 
-
-
-
 // *******************************************************
 // Global Variables
 // *******************************************************
@@ -76,6 +73,9 @@ helicopter_state_t heli_state = YAW_REF; //INITIAL_REFize heli state
 int32_t current_switch_state;
 uint32_t counter = 0;
 extern unsigned char num_tasks;
+static circBuf_t g_inbuffer;
+
+
 
 //declare task IDs globally
 unsigned char ref_yaw_task_ID;
@@ -182,10 +182,10 @@ void get_sensor_values(void)
 }
 
 
+
 //*****************************************************************************
 //
 //*****************************************************************************
-
 void register_all_pk_tasks(void)
 {
     ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 100);
@@ -237,8 +237,16 @@ int main(void)
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
+                pK_block_task(switch_task_ID);
+                pK_block_task(push_buttons_task_ID);
+                change_altitude(0, -100);
                 // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly
+                if (*ptr_current_alt_percent == 0)
+                {
+                    kill_motors();
+                    heli_state = LANDED;
+                }
                 break;
         }
         pK_start();

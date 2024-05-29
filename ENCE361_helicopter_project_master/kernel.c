@@ -24,7 +24,7 @@
 //*****************************************************************************
 
 
-unsigned char num_tasks = 6;
+unsigned char num_tasks = 0;
 static unsigned long g_tickPeriod = 0;
 volatile unsigned char current_task_ID = 0; // Initialize to the first task
 volatile uint32_t systick_flag = 0;
@@ -37,6 +37,7 @@ uint32_t tick_count = 0;
 void SysTickHandler(void)
 {
     tick_count++;
+    displayYaw(0, 1);
     if (tick_count >= TICK_COUNT_RESET_THRESHOLD)
     {
         tick_count = 0;
@@ -105,7 +106,7 @@ void pK_start(void)
             // Task is ready, check if its time interval has elapsed
             if (tick_count >= tasks[current_task_ID].time)
             {
-                tasks[current_task_ID].time += tasks[current_task_ID].interval;
+                tasks[current_task_ID].time += tasks[current_task_ID].interval + tick_count - tasks[current_task_ID].time;
 
                 // Check if taskEnter is not NULL before calling it
                 if (tasks[current_task_ID].taskEnter != NULL)
@@ -212,6 +213,7 @@ void pK_unregister_task(unsigned char taskId)
         tasks[taskId].taskEnter = NULL;
         tasks[taskId].interval = 0;
         tasks[taskId].state = BLOCKED;
+
     }
 }
 
