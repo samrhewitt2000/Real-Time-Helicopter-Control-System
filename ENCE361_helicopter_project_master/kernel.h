@@ -25,6 +25,8 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
 
+#include "ADC.h"
+
 #define MAX_TASKS 100
 #define TICK_COUNT_RESET_THRESHOLD 1000000
 
@@ -40,8 +42,8 @@ typedef struct {
 //
 //******************************************************************************
 typedef enum {
-    READY,
-    BLOCKED
+    BLOCKED,
+    READY
 } task_state_t;
 
 //*****************************************************************************
@@ -56,9 +58,9 @@ typedef struct {
 } task_t;
 
 static task_t tasks[MAX_TASKS];
-static unsigned char num_tasks = 0;
+static unsigned char num_tasks_registered = 0;
 static unsigned long g_tickPeriod = 0;
-static unsigned char currentTaskId = 0; // Initialize to the first task
+static unsigned char current_task_ID = 0; // Initialize to the first task
 static uint32_t tick_count = 0;
 
 

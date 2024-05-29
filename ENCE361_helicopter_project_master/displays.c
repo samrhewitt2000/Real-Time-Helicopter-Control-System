@@ -124,3 +124,14 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
     usnprintf (string, sizeof(string), "R_PWM: %2d %%  ", ui32Freq);
     OLEDStringDraw (string, display_col, display_row);
 }
+
+void debug_display(uint32_t display_col, uint32_t display_row, int32_t debug_val, helicopter_state_t heli_state)
+{
+    char string1[17];
+    char string2[17];
+
+    usnprintf (string1, sizeof(string1), "Debug val: %2d %%  ", debug_val);
+    usnprintf (string2, sizeof(string2), "Debug state: %2d %%  ", heli_state);
+    OLEDStringDraw (string1, display_col, display_row);
+    OLEDStringDraw (string1, display_col, display_row + 1);
+}

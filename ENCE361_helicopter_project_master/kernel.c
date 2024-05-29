@@ -39,10 +39,20 @@ void pK_init(unsigned char maxTasks, unsigned long tickPeriod)
 {
     //num_tasks_registered = maxTasks;
     num_tasks_registered = 0;
-    g_tickPeriod = tickPeriod;
-    SysTickPeriodSet(g_tickPeriod);
-    SysTickEnable();
-    SysTickIntEnable();
+    //g_tickPeriod = tickPeriod;
+    //SysTickPeriodSet(g_tickPeriod);
+
+
+    // Set up the period for the SysTick timer.  The SysTick
+    // timer period is set as a function of the system clock.
+    SysTickPeriodSet (tickPeriod);
+    //
+    // Register the interrupt handler
+    SysTickIntRegister (SysTickIntHandler);
+    //
+    // Enable interrupt and device
+    SysTickIntEnable ();
+    SysTickEnable ();
 }
 
 //*****************************************************************************
@@ -73,24 +83,43 @@ unsigned char pK_register_task(void (*taskEnter)(void), uint32_t priority, uint3
 
 
 
-//*****************************************************************************
-// pK_start: Starts the round-robin scheduling of the tasks (if any) that have
-// been registered and that are 'ready'.
-//*****************************************************************************
 void pK_start(void)
 {
-    // Ensure that there is at least one task registered
-    if (num_tasks_registered == 0) {
-        return; // No tasks to schedule
+    unsigned char checked_tasks = 0;
+//    unsigned char current_task_ID = (current_task_ID + 1) % num_tasks_registered;
+
+    // Check all tasks to find a ready one
+    while (checked_tasks < num_tasks_registered)
+    {
+        // Check if the task is ready
+        if (tasks[current_task_ID].state == READY)
+        {
+            // Task is ready, check if its time interval has elapsed
+            if (tick_count >= tasks[current_task_ID].time)
+            {
+                tasks[current_task_ID].time += tasks[current_task_ID].interval + tick_count - tasks[current_task_ID].time;
+
+                // Check if taskEnter is not NULL before calling it
+                if (tasks[current_task_ID].taskEnter != NULL)
+                {
+                    tasks[current_task_ID].taskEnter();
+                }
+
+                // Update the current task ID to the next ready task
+                current_task_ID = (current_task_ID + 1) % num_tasks_registered;
+
+                return; // Exit after executing one task
+            }
+        }
+
+        // Move to the next task
+        current_task_ID = (current_task_ID + 1) % num_tasks_registered;
+        checked_tasks++;
     }
 
-    // Execute the first task immediately
-    if (tasks[currentTaskId].taskEnter) {
-        tasks[currentTaskId].taskEnter();
-    }
-
-    //to finish
+    // If no task is ready to execute, the function will return without doing anything
 }
+
 
 
 
@@ -151,7 +180,7 @@ int pK_task_state(unsigned char taskId)
 //*****************************************************************************
 unsigned char pK_get_current_task_id(void)
 {
-    return currentTaskId;
+    return current_task_ID;
 }
 
 

@@ -68,6 +68,7 @@ uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 display_state_t display_state = STATE_PERC; //initialize display state
 extern helicopter_state_t heli_state; //initialize display state
+helicopter_state_t prev_heli_state;
 
 // Perform the task registration for the protokernal
 task_ID_t task_IDs;
@@ -81,8 +82,12 @@ void initialise_program(void)
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
     }
-    initButtons();
+
     initClocks ();
+    // Initialize the protoKernel with a maximum of 10 tasks and a tick period
+    pK_init(MAX_TASKS, SysCtlClockGet() / SYSTICK_RATE_HZ); // e.g., 10ms tick period
+
+    initButtons();
     initADC ();
     initDisplay ();
     initYaw ();
@@ -90,13 +95,10 @@ void initialise_program(void)
     initialise_tail_PWM ();
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-    initSysTick ();
-
-    // Initialize the protoKernel with a maximum of 10 tasks and a tick period
-    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
+    //initSysTick ();
 
     // System initialization (e.g., clock setup, peripherals)
-    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    //SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
     // calculate exactly how long this needs to be
@@ -133,31 +135,41 @@ int main(void)
 
     // Read in relevant peripheral values
     extern int32_t prev_switch_state;
-    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    //prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    prev_switch_state = 0;
     extern int32_t current_switch_state;
+    current_switch_state = prev_switch_state;
     int32_t initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-    bool first_state_entry = true;
 
     while (1)
     {
 
 
         // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
-        current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+        //current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
         switch(heli_state)
         {
             case LANDED:
                 // set rotor and tail motors to zero
-                if (first_state_entry)
+
+                if (prev_heli_state != LANDED)
                 {
                     kill_motors(&heli_state); // precautionary
-                    first_state_entry = false;
                 }
                 pK_ready_task(task_IDs.SWITCH_TASK);
+
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
+                if (prev_heli_state != LANDED)
+                {
+                    pK_ready_task(task_IDs.GET_YAW_REF_TASK);
+                }
+                pK_ready_task(task_IDs.SWITCH_TASK);
+                pK_ready_task(task_IDs.PUSH_BUTTONS_TASK);
+                pK_ready_task(task_IDs.YAW_CONTROL_TASK);
+                pK_ready_task(task_IDs.ALT_CONTROL_TASK);
 
                 break;
             case FLYING:
@@ -170,12 +182,13 @@ int main(void)
                 break;
         }
 
+        debug_display(0, 1, current_switch_state, heli_state);
 
         pK_start();
 
         pK_block_all_tasks();
 
-
+        prev_heli_state = heli_state;
     }
 }
 

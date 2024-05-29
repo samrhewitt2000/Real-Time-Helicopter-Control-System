@@ -18,7 +18,7 @@
 //
 //*****************************************************************************
 
-
+#include "buttons.h"
 
 // *******************************************************
 // initDisplay: Initialise the display
@@ -54,5 +54,9 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
 //void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
 
 //void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
+
+
+
+void debug_display(uint32_t display_col, uint32_t display_row, int32_t debug_val, helicopter_state_t heli_state);
 
 #endif /*DISPLAYS_H_*/

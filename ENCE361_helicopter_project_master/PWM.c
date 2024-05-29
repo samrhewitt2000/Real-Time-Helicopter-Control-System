@@ -71,20 +71,20 @@ void initClocks (void)
 /*************************************************************
  * SysTick interrupt
  ************************************************************/
-void initSysTick (void)
-{
-    //
-    // Set up the period for the SysTick timer.  The SysTick
-    // timer period is set as a function of the system clock.
-    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
-    //
-    // Register the interrupt handler
-    SysTickIntRegister (SysTickIntHandler);
-    //
-    // Enable interrupt and device
-    SysTickIntEnable ();
-    SysTickEnable ();
-}
+//void initSysTick (void)
+//{
+//    //
+//    // Set up the period for the SysTick timer.  The SysTick
+//    // timer period is set as a function of the system clock.
+//    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
+//    //
+//    // Register the interrupt handler
+//    SysTickIntRegister (SysTickIntHandler);
+//    //
+//    // Enable interrupt and device
+//    SysTickIntEnable ();
+//    SysTickEnable ();
+//}
 
 
 
