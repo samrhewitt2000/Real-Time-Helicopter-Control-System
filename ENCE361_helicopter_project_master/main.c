@@ -236,6 +236,7 @@ int main(void)
 
                 break;
         }
+        //UART_transmit_info(0, abs(360 * quad_enc_ticks / 448), abs(((360 * quad_enc_ticks) % 448 * 10) / 448), 0, *ptr_current_alt_percent, *ptr_tail_duty_cycle, *ptr_main_duty_cycle, heli_state);
         pK_start();
         pK_block_all_tasks();
 
