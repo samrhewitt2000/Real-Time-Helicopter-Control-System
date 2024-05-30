@@ -32,8 +32,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 
-
-
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
@@ -48,14 +46,16 @@ extern circBuf_t g_inBuffer;
 void ref_yaw_int_handler(void)
 {
     //disable interrupts, no preemption
-    //GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    //
     //set reference yaw to zero
     quad_enc_ticks = 0;
     pK_block_task(ref_yaw_task_ID);
-    change_altitude(*ptr_current_alt_percent, -10);
+    set_rotor_PWM(250, 30);
     heli_state = LANDING;
+    displayYaw(0, 3);
     //test code
     //GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 }
 
 
@@ -129,7 +129,7 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t offset = Kc * *ptr_main_duty_cycle;
 
     //calculate control
-    int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY);
+    int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY, SYSTICK_RATE_HZ);
 
     //send to PWM and motors
     //set_yaw_PWM (control_action);
@@ -161,10 +161,11 @@ void find_reference_yaw_task(void)
     //pK_block_task(pK_get_current_task_id());
     //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     //change_yaw_angle(360, *ptr_main_duty_cycle);
-    set_rotor_PWM(250, 51);
-    set_tail_PWM(250, 5);
+    set_rotor_PWM(250, 55);
+    set_tail_PWM(250, 95);
     return;
 }
+
 
 
 

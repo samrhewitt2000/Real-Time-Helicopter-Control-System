@@ -69,11 +69,11 @@ uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
 
-helicopter_state_t heli_state = YAW_REF; //INITIAL_REFize heli state
+helicopter_state_t heli_state = LANDED; //INITIAL_REFize heli state
 int32_t current_switch_state;
 uint32_t counter = 0;
 extern unsigned char num_tasks;
-static circBuf_t g_inbuffer;
+extern circBuf_t g_inbuffer;
 
 
 
@@ -190,7 +190,7 @@ void get_sensor_values(void)
 void register_all_pk_tasks(void)
 {
     ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 1);
-    switch_task_ID = pK_register_task(switch_task, 200);
+    switch_task_ID = pK_register_task(switch_task, 50);
     push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
     alt_control_task_ID = pK_register_task(alt_control_task, 2);
     yaw_control_task_ID = pK_register_task(yaw_control_task, 3);
@@ -201,7 +201,7 @@ void register_all_pk_tasks(void)
 int main(void)
 {
     initialise_program();
-
+    kill_motors();
 
 
     IntMasterEnable();
@@ -216,27 +216,30 @@ int main(void)
 
         switch(heli_state)
         {
-            case YAW_REF:
-                pK_ready_task(ref_yaw_task_ID);
-                //ready reference yaw task to use tail motor to find reference yaw
-                displayYaw(0, 3);
-
-                break;
             case LANDED:
                 kill_motors();
                 pK_ready_task(switch_task_ID);
                 // set rotor and tail motors to zero
                 //pK_ready_task(push_buttons_task_ID);
+                displayYaw(0, 3);
+                break;
+            case YAW_REF:
+                    pK_ready_task(ref_yaw_task_ID);
+                    //ready reference yaw task to use tail motor to find reference yaw
+                    displayYaw(0, 3);
+
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
 
                 //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
-                set_rotor_PWM(250, 60);
+                set_rotor_PWM(250, 51);
                 break;
             case FLYING:
                 pK_ready_task(push_buttons_task_ID);
                 pK_ready_task(switch_task_ID);
+                displayYaw(0, 3);
+                set_rotor_PWM(250, 51);
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;

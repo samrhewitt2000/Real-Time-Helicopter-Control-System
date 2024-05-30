@@ -21,7 +21,7 @@
 volatile extern int32_t current_ADC_val;
 extern int32_t initial_ADC_val;
 extern circBuf_t g_inBuffer;
-uint32_t g_ulSampCnt;
+static uint32_t g_ulSampCnt;
 
 
 //*****************************************************************************

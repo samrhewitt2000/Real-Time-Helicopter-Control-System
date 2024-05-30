@@ -40,7 +40,6 @@
 #define SAMPLE_RATE_HZ 100
 
 circBuf_t g_inBuffer;
-static uint32_t g_ulSampCnt;
   // Counter for the interrupts
 
 

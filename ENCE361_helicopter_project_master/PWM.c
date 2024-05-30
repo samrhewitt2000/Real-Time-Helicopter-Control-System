@@ -115,7 +115,7 @@ void initialise_rotor_PWM (void)
     PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the initial PWM parameters
-    set_rotor_PWM (PWM_START_RATE_HZ, PWM_FIXED_DUTY);
+    //set_rotor_PWM (PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
     //enable PWM generator for main motor
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
@@ -147,7 +147,7 @@ void initialise_tail_PWM(void)
     PWMGenConfigure(PWM_TAIL_BASE, PWM_TAIL_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the initial PWM parameters for tail motor
-    set_tail_PWM(PWM_START_RATE_HZ, PWM_FIXED_DUTY);
+    //set_tail_PWM(PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
     // Enable PWM generator for tail motor
     PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);

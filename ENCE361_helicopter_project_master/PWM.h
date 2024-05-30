@@ -26,10 +26,10 @@
 #define SYSTICK_RATE_HZ    100
 
 // PWM configuration
-#define PWM_START_RATE_HZ  250
+#define PWM_START_RATE_HZ  225
 #define PWM_RATE_STEP_HZ   50
-#define PWM_RATE_MIN_HZ    50
-#define PWM_RATE_MAX_HZ    400
+#define PWM_RATE_MIN_HZ    150
+#define PWM_RATE_MAX_HZ    300
 #define PWM_FIXED_DUTY     60 // increase to about 70 for faster start rate
 #define PWM_MAX_DUTY       98
 #define PWM_MIN_DUTY       2

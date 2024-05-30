@@ -22,6 +22,7 @@
 #include "quad_enc.h"
 #include "PWM.h"
 #include "PID.h"
+#include "displays.h"
 
 //extern volatile int32_t yaw_angle_int = 0;
 
@@ -31,7 +32,7 @@ extern unsigned char ref_yaw_task_ID;
 //*****************************************************************************
 int32_t yaw_angle_ticks_to_decimal(int32_t quad_enc_ticks);
 
-
+void init_ref_yaw (void);
 
 //*****************************************************************************
 //
