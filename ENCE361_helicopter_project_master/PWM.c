@@ -36,8 +36,8 @@
 volatile uint32_t *ptr_main_duty_cycle;
 volatile uint32_t *ptr_tail_duty_cycle;
 
-static uint32_t main_duty_cycle;
-static uint32_t tail_duty_cycle;
+uint32_t main_duty_cycle;
+uint32_t tail_duty_cycle;
 
 
 /**********************************************************

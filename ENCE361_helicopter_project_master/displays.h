@@ -18,7 +18,28 @@
 //
 //*****************************************************************************
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "driverlib/adc.h"
+#include "driverlib/pwm.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/debug.h"
+#include "utils/ustdlib.h"
+#include "OrbitOLED/OrbitOLEDInterface.h"
 
+#include "circ_buffer.h"
+#include "ADC.h"
+#include "buttons.h"
+#include "PWM.h"
+#include "quad_enc.h"
+
+extern uint32_t main_duty_cycle;
+extern uint32_t tail_duty_cycle;
 
 // *******************************************************
 // initDisplay: Initialise the display
@@ -54,5 +75,7 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
 //void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
 
 //void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
+
+void final_displays(helicopter_state_t heli_state);
 
 #endif /*DISPLAYS_H_*/

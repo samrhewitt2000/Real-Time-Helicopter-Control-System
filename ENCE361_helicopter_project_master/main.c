@@ -210,6 +210,7 @@ int main(void)
 
     register_all_pk_tasks();
     pK_block_all_tasks();
+    displayNothing();
     while (1)
     {
         //current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
@@ -221,12 +222,12 @@ int main(void)
                 pK_ready_task(switch_task_ID);
                 // set rotor and tail motors to zero
                 //pK_ready_task(push_buttons_task_ID);
-                displayYaw(0, 3);
+                //displayYaw(0, 3);
                 break;
             case YAW_REF:
                     pK_ready_task(ref_yaw_task_ID);
                     //ready reference yaw task to use tail motor to find reference yaw
-                    displayYaw(0, 3);
+                    //displayYaw(0, 3);
 
                 break;
             case TAKEOFF:
@@ -236,15 +237,14 @@ int main(void)
                 set_rotor_PWM(250, 51);
                 break;
             case FLYING:
-                pK_ready_task(push_buttons_task_ID);
-                pK_ready_task(switch_task_ID);
-                displayYaw(0, 3);
-                set_rotor_PWM(250, 51);
+
+                if
+
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
-                displayYaw(0, 3);
+                //displayYaw(0, 3);
                 //change_altitude(0, -100);
                 // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly

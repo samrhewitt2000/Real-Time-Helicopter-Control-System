@@ -108,6 +108,7 @@ unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval)
 
 void pK_start(void)
 {
+    final_displays(heli_state);
     unsigned char checked_tasks = 0;
     current_task_ID = 0;
 

@@ -15,25 +15,7 @@
 //
 //*****************************************************************************
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/adc.h"
-#include "driverlib/pwm.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/debug.h"
-#include "utils/ustdlib.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
-
-#include "circ_buffer.h"
-#include "ADC.h"
-#include "buttons.h"
 #include "displays.h"
-#include "quad_enc.h"
 
 //*****************************************************************************
 //
@@ -127,3 +109,16 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
 }
 
 
+void final_displays(helicopter_state_t heli_state)
+{
+    char string1[17];
+    char string2[17];
+    char string3[17];
+
+    usnprintf (string1, sizeof(string1), "TAIL PWM: %2d %%  ", tail_duty_cycle);
+    OLEDStringDraw (string1, 0, 0);
+    usnprintf (string2, sizeof(string2), "MAIN PWM: %2d %%  ", main_duty_cycle);
+    OLEDStringDraw (string2, 0, 1);
+    usnprintf (string3, sizeof(string3), "STATE: %2d        ", heli_state);
+    OLEDStringDraw (string3, 0, 2);
+}

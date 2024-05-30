@@ -24,6 +24,8 @@
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
+#include "buttons.h"
+#include "PWM.h"
 
 #define MAX_TASKS 100
 #define TICK_COUNT_RESET_THRESHOLD 100000000
