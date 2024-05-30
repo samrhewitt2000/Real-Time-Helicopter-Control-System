@@ -87,7 +87,7 @@ static int32_t prev_switch_state;
 volatile extern int32_t current_ADC_val;
 //extern int32_t current_switch_state;
 extern helicopter_state_t heli_state;
-
+int32_t current_switch_state;
 
 
 // Debounce algorithm: A state machine is associated with each button.

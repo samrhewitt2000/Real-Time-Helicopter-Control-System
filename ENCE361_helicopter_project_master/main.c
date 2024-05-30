@@ -220,11 +220,11 @@ int main(void)
                 pK_ready_task(ref_yaw_task_ID);
                 //ready reference yaw task to use tail motor to find reference yaw
                 displayYaw(0, 3);
-
                 break;
             case LANDED:
                 kill_motors();
                 pK_ready_task(switch_task_ID);
+                displayYaw(0, 3);
                 // set rotor and tail motors to zero
                 //pK_ready_task(push_buttons_task_ID);
                 break;
@@ -235,6 +235,7 @@ int main(void)
                 set_rotor_PWM(250, 60);
                 break;
             case FLYING:
+                displayYaw(0, 3);
                 pK_ready_task(push_buttons_task_ID);
                 pK_ready_task(switch_task_ID);
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively

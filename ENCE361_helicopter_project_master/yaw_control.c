@@ -31,7 +31,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
-
+#include "displays.h"
 
 
 #define FLOAT_CONVERSION_FACTOR 10
@@ -48,14 +48,16 @@ extern circBuf_t g_inBuffer;
 void ref_yaw_int_handler(void)
 {
     //disable interrupts, no preemption
-    //GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    //
     //set reference yaw to zero
     quad_enc_ticks = 0;
     pK_block_task(ref_yaw_task_ID);
-    change_altitude(*ptr_current_alt_percent, -10);
+    set_rotor_PWM(250, 30);
     heli_state = LANDING;
+    displayYaw(0, 3);
     //test code
     //GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 }
 
 
