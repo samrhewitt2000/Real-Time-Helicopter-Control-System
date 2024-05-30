@@ -133,7 +133,6 @@ void alt_control_task(void)
     // Implement altitude control logic here
 
     // Example: Change altitude by 10% upwards
-    change_altitude(current_altitude, 10);
 
     // Indicate task completion
     //pK_block_task(pK_get_current_task_id());

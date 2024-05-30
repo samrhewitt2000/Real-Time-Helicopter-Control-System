@@ -165,7 +165,7 @@ void find_reference_yaw_task(void)
     //change_yaw_angle(360, *ptr_main_duty_cycle);
 
     change_altitude(alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer)), 10);
-    set_tail_PWM(250, 30);
+    set_tail_PWM(250, 50);
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     return;

@@ -48,6 +48,7 @@ void SysTickHandler(void)
 {
     ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
+    updateButtons();
 
     tick_count++;
     if (tick_count >= TICK_COUNT_RESET_THRESHOLD)

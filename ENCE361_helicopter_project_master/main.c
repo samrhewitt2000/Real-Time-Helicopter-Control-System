@@ -94,7 +94,8 @@ unsigned char display_task_ID;
 void increase_altitude_task(void);
 void decrease_altitude_task(void);
 void find_reference_yaw_task(void);
-
+void push_buttons_task(void);
+void switch_task(void);
 
 //********************************************************
 // Function to set the freq, duty cycle of M1PWM5 (tail motor)
@@ -142,11 +143,11 @@ void initialise_program(void)
 
     //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
-    while (!*ptr_buffer_full)
-    {
-
-    }
-
+//    while (*ptr_buffer_full == 0)
+//    {
+//
+//    }
+    SysCtlDelay(SysCtlClockGet() / 10);
     //initialize PWM clock
     SysCtlPWMClockSet(PWM_DIVIDER_CODE);
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
@@ -158,35 +159,6 @@ void initialise_program(void)
 //}
 
 
-void push_buttons_task(void)
-{
-    updateButtons();
-//    counter += 1;
-//    if (checkButton(UP) == PUSHED && heli_state == FLYING)
-//    {
-//        set_rotor_PWM(250, *ptr_main_duty_cycle + 10);
-//        //increase altitude by 10%
-//        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
-//    }else if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
-//    {
-//        set_rotor_PWM(250, *ptr_main_duty_cycle - 10);
-//        //decrease altitude by 10%
-//        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
-//    }else if (checkButton(SWITCH) == PUSHED && heli_state == LANDED)
-//    {
-//        heli_state = TAKEOFF;
-//    }else if (checkButton(SWITCH) == RELEASED && heli_state == FLYING)
-//    {
-//        heli_state = LANDING;
-//    }
-}
-
-
-
-void get_sensor_values(void)
-{
-    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-}
 
 
 
@@ -241,6 +213,7 @@ int main(void)
                 pK_ready_task(switch_task_ID);
                 //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
                 set_rotor_PWM(250, 60);
+                heli_state = FLYING;
                 break;
             case FLYING:
                 pK_ready_task(display_task_ID);
@@ -250,6 +223,7 @@ int main(void)
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
+
                 pK_ready_task(display_task_ID);
                 //change_altitude(0, -100);
                 // When helicopter is landing pressing buttons or switches do nothing

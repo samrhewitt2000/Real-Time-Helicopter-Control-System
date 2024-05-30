@@ -196,7 +196,7 @@ void switch_task(void)
         {
             heli_state = TAKEOFF;
         }
-        else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL && heli_state == TAKEOFF)
+        else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL && heli_state == FLYING)
         {
             heli_state = LANDING;
         }
@@ -210,7 +210,7 @@ void switch_task(void)
 //*****************************************************************************
 //
 //*****************************************************************************
-void pushbuttons_task(void)
+void push_buttons_task(void)
 {
 
     if (checkButton(UP) == PUSHED && heli_state == FLYING)
@@ -224,5 +224,13 @@ void pushbuttons_task(void)
         set_rotor_PWM(250, *ptr_main_duty_cycle - 5);
         //decrease altitude by 10%
         //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
+    }
+    if (checkButton(LEFT) == PUSHED && heli_state == FLYING)
+    {
+        set_tail_PWM(250, *ptr_tail_duty_cycle + 5);
+    }
+    if (checkButton(RIGHT) == PUSHED && heli_state == FLYING)
+    {
+        set_tail_PWM(250, *ptr_tail_duty_cycle - 5);
     }
 }

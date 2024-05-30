@@ -62,7 +62,7 @@ void ADCIntHandler(void)
     //
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
-    alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer));
+    //alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer));
 
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
