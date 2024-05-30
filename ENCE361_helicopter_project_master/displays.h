@@ -5,7 +5,7 @@
 // 
 //      displays.h
 //
-// What does this function do? (Replace)
+// Header file for OLED display functions
 //
 //*****************************************************************************
 //
@@ -13,53 +13,24 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
-//
-// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
-//
-//*****************************************************************************
-#include "circ_buffer.h"
 
+#include "circ_buffer.h"    // Circular buffer
 
+extern circBuf_t g_inbuffer;   // External circular buffer
 
-extern circBuf_t g_inbuffer;
+// Function prototypes
+void initDisplay(void); // Initializes the display
 
+void displayNothing(void);  // Clears the screen and displays nothing
 
+void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row); // Displays ADC value on OLED display
 
-// *******************************************************
-// initDisplay: Initialise the display
-// *******************************************************
-void initDisplay (void);
+void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row); // Displays altitude percentage on OLED display
 
+void displayYaw(uint32_t display_col, uint32_t display_row); // Displays yaw angle on OLED display
 
-//*****************************************************************************
-//displayNothing: clears screen and displays nothing
-//*****************************************************************************
-void displayNothing(void);
+void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq); // Displays rotor PWM frequency on OLED display
 
-//*****************************************************************************
-//displayADCVal: Displays the current value of the ADC on the OLED display
-//*****************************************************************************
-void displayADCVal(int32_t ADC_val, uint32_t display_col, uint32_t display_row);
+void display_task(void); // Task to update display with yaw and altitude information
 
-//*****************************************************************************
-//displayAltitudePerc: Displays the current altitude on the OLED display
-//*****************************************************************************
-void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint32_t display_col, uint32_t display_row);
-
-//*****************************************************************************
-//displayYaw: Displays the current yaw angle on the OLED display
-//*****************************************************************************
-void displayYaw(uint32_t display_col, uint32_t display_row);
-
-//*****************************************************************************
-//display_rotor_PWM: Displays the current PWM frequency                            CHANGE THIS
-//*****************************************************************************
-void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq);
-
-
-void display_task(void);
-//void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
-
-//void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
-
-#endif /*DISPLAYS_H_*/
+#endif /* DISPLAYS_H_ */

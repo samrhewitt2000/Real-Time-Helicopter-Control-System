@@ -10,10 +10,6 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
-//
-// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
-//
-//*****************************************************************************
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -116,7 +112,7 @@ void switch_task(void);
 
 
 //********************************************************
-//
+//Initialise_program: calls all the initializing functions and fills buffer
 // ********************************************************
 void initialise_program(void)
 {
@@ -143,22 +139,15 @@ void initialise_program(void)
 
     //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
-//    while (*ptr_buffer_full == 0)
-//    {
-//
-//    }
+
+    //wait for buffer to fill
     SysCtlDelay(SysCtlClockGet() / 10);
     //initialize PWM clock
     SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+
+    //get initial ADC value
     initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 }
-
-//void get_ADC_task(void)
-//{
-//    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-//}
-
-
 
 
 

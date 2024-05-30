@@ -61,38 +61,25 @@
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
 
+extern volatile uint32_t *ptr_main_duty_cycle;  // Pointer to the main rotor duty cycle
+extern volatile uint32_t *ptr_tail_duty_cycle;  // Pointer to the tail rotor duty cycle
 
 
 
-extern volatile uint32_t *ptr_main_duty_cycle;
-extern volatile uint32_t *ptr_tail_duty_cycle;
+void SysTickIntHandler(void);  // Interrupt handler for SysTick
 
+void initClocks(void);  // Initialize clocks
 
+void initSysTick(void);  // Initialize SysTick
 
-// extern volatile int32_t main_rotor_duty = 0;
+void initialise_rotor_PWM(void);  // Initialize main rotor PWM
 
-// extern volatile int32_t tail_rotor_duty = 0;
+void initialise_tail_PWM(void);   // Initialize tail rotor PWM
 
-// void initialise_PWM (void);
+void set_rotor_PWM(uint32_t ui32RotorFreq, uint32_t ui32RotorDuty);  // Set main rotor PWM
 
-// void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty);
+void set_tail_PWM(uint32_t ui32TailFreq, uint32_t ui32TailDuty);   // Set tail rotor PWM
 
-// void set_tail_PWM (uint32_t ui32Freq, uint32_t ui32Duty);
-
-void SysTickIntHandler (void);
-
-void initClocks (void);
-
-void initSysTick (void);
-
-void initialise_rotor_PWM (void);
-
-void initialise_tail_PWM (void);
-
-void set_rotor_PWM (uint32_t ui32RotorFreq, uint32_t ui32RotorDuty);
-
-void set_tail_PWM(uint32_t ui32TailFreq, uint32_t ui32TailDuty);
-
-void kill_motors(void);
+void kill_motors(void);  // Function to stop both rotors
 
 #endif /*PWM_H_*/

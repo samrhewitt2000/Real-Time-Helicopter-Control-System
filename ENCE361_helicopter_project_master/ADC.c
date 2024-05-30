@@ -2,7 +2,7 @@
 //
 //      ADC.c
 //
-// What does this function do? (Replace)
+// Calculates ADC values and writes to circular buffer using gpio interrupts
 //
 // *****************************************************************************
 //
@@ -37,13 +37,10 @@
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
-
 #define SAMPLE_RATE_HZ 100
 
-circBuf_t g_inBuffer;
-volatile uint32_t g_ulSampCnt;
-  // Counter for the interrupts
-
+circBuf_t g_inBuffer; //circular buffer for storing ADC samples
+volatile uint32_t g_ulSampCnt; // counter for the interrupts
 
 
 
@@ -55,14 +52,11 @@ void ADCIntHandler(void)
 {
     uint32_t ulValue;
 
-    //
     // Get the single sample from ADC0.  ADC_BASE is defined in
-    // inc/hw_memmap.h
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-    //
+
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
-    //alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer));
 
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
@@ -71,34 +65,10 @@ void ADCIntHandler(void)
 
 
 //*****************************************************************************
-// initClock: Initialisation functions for the clock (incl. SysTick), ADC, display
-//*****************************************************************************
-//void initClock (void)
-//{
-//    // Set the clock rate to 20 MHz
-//    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-//                   SYSCTL_XTAL_16MHZ);
-//    //
-//    // Set up the period for the SysTick timer.  The SysTick timer period is
-//    // set as a function of the system clock.
-//    SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
-//    //
-//    // Register the interrupt handler
-//    SysTickIntRegister(SysTickIntHandler);
-//    //
-//    // Enable interrupt and device
-//    SysTickIntEnable();
-//    SysTickEnable();
-//}
-
-
-
-//*****************************************************************************
 //initADC: Initializes ADC0 to take single samples from CH9 (pin PE4, AIN9)
 //*****************************************************************************
 void initADC (void)
 {
-    //
     // The ADC0 peripheral must be enabled for configuration and use.
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0))
@@ -109,7 +79,6 @@ void initADC (void)
     // conversion.
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
   
-    //
     // Configure step 0 on sequence 3.  Sample channel 0 (ADC_CTL_CH0) in
     // single-ended mode (default) and configure the interrupt flag
     // (ADC_CTL_IE) to be set when the sample is done.  Tell the ADC logic
@@ -121,15 +90,12 @@ void initADC (void)
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0, ADC_CTL_CH9 | ADC_CTL_IE |
                              ADC_CTL_END);    
                              
-    //
     // Since sample sequence 3 is now configured, it must be enabled.
     ADCSequenceEnable(ADC0_BASE, 3);
   
-    //
     // Register the interrupt handler
     ADCIntRegister (ADC0_BASE, 3, ADCIntHandler);
   
-    //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
 
@@ -143,6 +109,10 @@ void initADC (void)
 int32_t get_ADC_val(circBuf_t *buffer, uint32_t buf_size)
 {
     int32_t sum = 0;
+
+    //calculate the sum of the buffer values
     sum = sum_CircBuf_vals (sum, buffer, buf_size);
+    
+    //return the average value
     return (2 * sum + buf_size) / 2 / buf_size;
 }

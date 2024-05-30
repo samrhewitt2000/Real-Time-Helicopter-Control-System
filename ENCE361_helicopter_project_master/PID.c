@@ -2,7 +2,7 @@
 // 
 //      PID.c
 //
-// What does this function do? (Replace)
+// Implementation of a PID controller
 //
 //*****************************************************************************
 //
@@ -10,34 +10,24 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
-//
-// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
-//
-//*****************************************************************************
 
-#include "PID.h"
-//*****************************************************************************
-// NOTE: change the variable name of sensor_reading (not always a sensor reading)
-//*****************************************************************************
-#include "displays.h"
+#include "PID.h"                // PID header file
+#include "displays.h"           // Display functions
 
-
-
-
-// change to struct
-int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output)
+int32_t controller(int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output)
 {
-    int32_t delta_t = (SysCtlClockGet() / 100); //change to global variable
-    int32_t I = 0;
-    int32_t prev_sensor_reading = 0;
-    int32_t error = setpoint - sensor_reading;
-    int32_t P = Kp * error;
-    int32_t dI = Ki * error / delta_t;
-    int32_t D = Kd * (prev_sensor_reading - sensor_reading) * delta_t;
+    static int32_t delta_t = (SysCtlClockGet() / 100); // Sampling period (global variable)
+    static int32_t I = 0;                              // Integral term
+    static int32_t prev_sensor_reading = 0;             // Previous sensor reading
+    int32_t error = setpoint - sensor_reading;          // Error calculation
+    int32_t P = Kp * error;                             // Proportional term
+    int32_t dI = Ki * error / delta_t;                  // Integral term change
+    int32_t D = Kd * (prev_sensor_reading - sensor_reading) * delta_t; // Derivative term
 
+    // Calculate control action
     int32_t control_action = (P + (I + dI) + D + offset) / float_conversion_factor;
 
-    //check for integral saturation
+    // Check for integral saturation
     if (control_action > max_output)
     {
         control_action = max_output;
@@ -48,10 +38,10 @@ int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_
     }
     else 
     {
-        I = (I + dI);
+        I = (I + dI);   // Update integral term
     }
 
-    prev_sensor_reading = sensor_reading;
+    prev_sensor_reading = sensor_reading; // Update previous sensor reading
 
-    return control_action;
+    return control_action;  // Return control action
 }

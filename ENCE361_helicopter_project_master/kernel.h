@@ -5,7 +5,7 @@
 //
 //      kernel.h
 //
-// What does this function do? (Replace)
+// Header file for ProtoKernel
 //
 //*****************************************************************************
 //
@@ -13,126 +13,73 @@
 // Last modified:   May 2024
 //
 //*****************************************************************************
-//
-// Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
-//
-//*****************************************************************************
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include "inc/hw_types.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
+#include <stdint.h>             // Standard integer types
+#include <stdbool.h>            // Boolean types
+#include <stdlib.h>             // Standard library
+#include "inc/hw_types.h"       // Hardware types
+#include "driverlib/sysctl.h"   // System control driver library
+#include "driverlib/systick.h"  // SysTick driver library
 
-#define MAX_TASKS 100
-#define TICK_COUNT_RESET_THRESHOLD 100000000
-
-
-
+#define MAX_TASKS 100                   // Maximum number of tasks
+#define TICK_COUNT_RESET_THRESHOLD 100000000 // Threshold for tick count reset
 
 //*****************************************************************************
-//
-//******************************************************************************
+// Task state enumeration
+//*****************************************************************************
 typedef enum {
-    BLOCKED,
-    READY
+    BLOCKED,    // Task is blocked
+    READY       // Task is ready for execution
 } task_state_t;
 
 //*****************************************************************************
-//
-//******************************************************************************
+// Task structure
+//*****************************************************************************
 typedef struct {
-    void (*taskEnter)(void);
-    task_state_t state;
-    uint32_t time;
-    uint32_t interval;
+    void (*taskEnter)(void);    // Pointer to the task entry function
+    task_state_t state;         // Current state of the task
+    uint32_t time;              // Time of last execution
+    uint32_t interval;          // Execution interval
 } task_t;
 
-
-
-
 //*****************************************************************************
-//task IDs struct
+// Task IDs structure (not sure if it's a struct or typedef)
 //*****************************************************************************
 typedef struct {
-    void (*SWITCH_TASK)(void);
-    void (*PUSH_BUTTONS_TASK)(void);
-    void (*ALT_CONTROL_TASK)(void);
-    void (*YAW_CONTROL_TASK)(void);
-    void (*TRANSITION_TASK)(void);
-    void (*REF_YAW_TASK)(void);
-    void (*DISPLAY_TASK)(void);
+    void (*SWITCH_TASK)(void);          // Switch task function
+    void (*PUSH_BUTTONS_TASK)(void);    // Push buttons task function
+    void (*ALT_CONTROL_TASK)(void);     // Altitude control task function
+    void (*YAW_CONTROL_TASK)(void);     // Yaw control task function
+    void (*TRANSITION_TASK)(void);      // Transition task function
+    void (*REF_YAW_TASK)(void);         // Reference yaw task function
+    void (*DISPLAY_TASK)(void);         // Display task function
 } task_ID_t;
 
-
-extern task_t tasks[MAX_TASKS];
-extern unsigned char num_tasks;
-extern task_t tasks[MAX_TASKS];
-extern task_ID_t *task_IDs;
+extern task_t tasks[MAX_TASKS];    // Array of tasks
+extern unsigned char num_tasks;    // Number of tasks
+extern task_ID_t *task_IDs;        // Task IDs
 
 //*****************************************************************************
-//
+// Function prototypes
 //*****************************************************************************
-void SysTickHandler(void);
+void SysTickHandler(void);  // SysTick interrupt handler
 
+void pK_init(unsigned char maxTasks, unsigned long tickPeriod); // ProtoKernel initialization
 
+unsigned char pK_register_task(void (*taskEnter)(void), uint32_t interval); // Register a task
 
-//*****************************************************************************
-// pK_init: Initialises protoKernel for up to maxTasks tasks
-// Sets period of SysTick interrupt
-//*****************************************************************************
-void pK_init (unsigned char maxTasks, unsigned long tickPeriod);
+void pK_start(void);    // Start ProtoKernel task scheduling
 
-//*****************************************************************************
-// pK_register_task: Registers a task with the protoKernel;
-// Takes a pointer to the function which executes the task and
-// an unsigned value for the 'priority' of the task
-// (0 is highest priority).
-// Tasks are in the ready state by default.
-// Returns a unique 8-bit ID.
-//*****************************************************************************
-unsigned char pK_register_task (void (*taskEnter) (void), uint32_t interval);
+void pK_unregister_task(unsigned char taskId);   // Unregister a task
 
-//*****************************************************************************
-// pK_start: Starts the round-robin scheduling of the tasks (if any) that have
-// been registered and that are 'ready'.
-//*****************************************************************************
-void pK_start (void);
+void pK_ready_task(unsigned char taskId);       // Set a task to ready state
 
-//*****************************************************************************
-// pK_unregister_task: Removes the nominated task from those
-// registered with protoKernel. The task can be subsequently
-// re-registered.
-//*****************************************************************************
-void pK_unregister_task (unsigned char taskId);
+void pK_block_task(unsigned char taskId);       // Block a task
 
-//*****************************************************************************
-// pK_ready_task: Switches the task with ID 'taskId' to 'ready'
-// so that it will be executed within the round robin.
-//*****************************************************************************
-void pK_ready_task (unsigned char taskId);
+int pK_task_state(unsigned char taskId);        // Get the state of a task
 
-//*****************************************************************************
-// pK_block_task: Switches the task with ID 'taskId' to
-// 'blocked' so that it will not be executed.
-//*****************************************************************************
-void pK_block_task (unsigned char taskId);
+unsigned char pK_get_current_task_id(void);     // Get the ID of the current task
 
-//*****************************************************************************
-// pK_task_state: Returns the current state of the task.
-//*****************************************************************************
-int pK_task_state (unsigned char taskId);
+void pK_block_all_tasks(void);                  // Block all tasks
 
-//*****************************************************************************
-// pK_get_current_task_id: Returns the current task ID.
-//*****************************************************************************
-unsigned char pK_get_current_task_id(void);
-
-//*****************************************************************************
-// pK_block_all_tasks: Switches all tasks to
-// 'blocked' so that they will not be executed.
-//*****************************************************************************
-void pK_block_all_tasks(void);
-
-#endif /*KERNEL_H_*/
+#endif /* KERNEL_H_ */
