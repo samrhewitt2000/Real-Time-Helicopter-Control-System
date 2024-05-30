@@ -194,7 +194,7 @@ void switch_task(void)
     {
         if (current_switch_state == SWITCH_NORMAL && heli_state == LANDED)
         {
-            heli_state = FLYING;
+            heli_state = TAKEOFF;
         }
         else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL && heli_state == FLYING)
         {

@@ -129,7 +129,7 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t offset = Kc * *ptr_main_duty_cycle;
 
     //calculate control
-    int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY, SYSTICK_RATE_HZ);
+    int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY);
 
     //send to PWM and motors
     //set_yaw_PWM (control_action);

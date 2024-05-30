@@ -25,8 +25,9 @@
 
 
 // change to struct
-int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output, int32_t delta_t)
+int32_t controller (int32_t setpoint, int32_t sensor_reading, int32_t Kp, int32_t Ki, int32_t Kd, int32_t offset, int32_t float_conversion_factor, int32_t max_output, int32_t min_output)
 {
+    int32_t delta_t = SysCtlClockGet() / SYSTICK_RATE_HZ;
     int32_t I = 0;
     int32_t prev_sensor_reading = 0;
     int32_t error = setpoint - sensor_reading;

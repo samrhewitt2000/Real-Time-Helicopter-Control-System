@@ -85,7 +85,8 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
 
     int32_t offset = 330;
     //set pwm to control action
-    set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY, SYSTICK_RATE_HZ));
+    int32_t control_action = controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY)
+    set_rotor_PWM(PWM_START_RATE_HZ, control_action);
 }
 
 
