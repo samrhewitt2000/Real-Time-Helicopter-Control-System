@@ -77,24 +77,6 @@ extern helicopter_state_t heli_state;
 //
 
 
-///*************************************************************
-// * SysTick interrupt
-// ************************************************************/
-//void initSysTick (void)
-//{
-//    //
-//    // Set up the period for the SysTick timer.  The SysTick
-//    // timer period is set as a function of the system clock.
-//    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
-//    //
-//    // Register the interrupt handler
-//    SysTickIntRegister (SysTickIntHandler);
-//    //
-//    // Enable interrupt and device
-//    SysTickIntEnable ();
-//    SysTickEnable ();
-//}
-//
 
 
 /*********************************************************
@@ -114,8 +96,6 @@ void initialise_rotor_PWM (void)
     //configure PWM outpus for main motor
     PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
-    // Set the initial PWM parameters
-    set_rotor_PWM (PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
     //enable PWM generator for main motor
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);

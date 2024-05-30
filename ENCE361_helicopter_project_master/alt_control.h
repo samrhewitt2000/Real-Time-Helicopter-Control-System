@@ -26,7 +26,6 @@
 
 extern volatile int32_t *ptr_current_alt_percent;
 
-
 int32_t get_alt_val(circBuf_t *buffer);
 
 int32_t alt_val_to_percent(int32_t initial_alt_val, int32_t current_alt_val);

@@ -48,13 +48,13 @@ extern circBuf_t g_inBuffer;
 void ref_yaw_int_handler(void)
 {
     //disable interrupts, no preemption
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
     //
     //set reference yaw to zero
     quad_enc_ticks = 0;
     pK_block_task(ref_yaw_task_ID);
     set_rotor_PWM(250, 30);
     heli_state = LANDING;
-    displayYaw(0, 3);
     //test code
     //GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
     GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
@@ -85,7 +85,7 @@ void init_ref_yaw (void)
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
 
     // Enable Master Interrupts
-    IntMasterEnable();
+    //IntMasterEnable();
 }
 
 
@@ -163,8 +163,11 @@ void find_reference_yaw_task(void)
     //pK_block_task(pK_get_current_task_id());
     //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
     //change_yaw_angle(360, *ptr_main_duty_cycle);
-    set_rotor_PWM(250, 51);
-    set_tail_PWM(250, 5);
+
+    change_altitude(alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer)), 10);
+    set_tail_PWM(250, 30);
+    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
+    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
     return;
 }
 

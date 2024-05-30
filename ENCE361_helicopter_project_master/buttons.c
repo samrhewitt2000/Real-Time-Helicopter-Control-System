@@ -201,8 +201,8 @@ void switch_task(void)
             heli_state = LANDING;
         }
     }
-
     prev_switch_state = current_switch_state;
+
 }
 
 

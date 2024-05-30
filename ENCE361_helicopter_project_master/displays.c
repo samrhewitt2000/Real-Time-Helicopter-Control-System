@@ -34,6 +34,7 @@
 #include "buttons.h"
 #include "displays.h"
 #include "quad_enc.h"
+#include "alt_control.h"
 
 //*****************************************************************************
 //
@@ -85,7 +86,7 @@ void displayAltitudePerc(int32_t current_ADC_val, int32_t initial_ADC_val, uint3
 
     int32_t altitude_percent;
 
-    altitude_percent = (330 * (initial_ADC_val - current_ADC_val)) / 4095;
+    altitude_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
     usnprintf (string, sizeof(string), "Alt: %2d %%  ", altitude_percent);
     OLEDStringDraw (string, display_col, display_row);
 }
@@ -126,4 +127,11 @@ void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32
     OLEDStringDraw (string, display_col, display_row);
 }
 
+
+
+void display_task(void)
+{
+    displayYaw(0, 3);
+    displayAltitudePerc(get_ADC_val(&g_inBuffer, BUF_SIZE), initial_ADC_val, 0, 0);
+}
 

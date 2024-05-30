@@ -32,7 +32,8 @@ typedef struct {
 } circBuf_t;
 
 extern circBuf_t g_inBuffer;
-
+extern int buffer_full;
+extern int *ptr_buffer_full;
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
 // the start of the buffer.  Dynamically allocate and clear the the 

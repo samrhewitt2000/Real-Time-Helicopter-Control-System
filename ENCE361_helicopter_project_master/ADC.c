@@ -32,6 +32,7 @@
 #include "displays.h"
 #include "ADC.h"
 #include "buttons.h"
+#include "alt_control.h"
 
 //*****************************************************************************
 // Global variables
@@ -40,7 +41,7 @@
 #define SAMPLE_RATE_HZ 100
 
 circBuf_t g_inBuffer;
-static uint32_t g_ulSampCnt;
+volatile uint32_t g_ulSampCnt;
   // Counter for the interrupts
 
 
@@ -61,8 +62,8 @@ void ADCIntHandler(void)
     //
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
+    alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer));
 
-    //
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
 }
@@ -131,7 +132,7 @@ void initADC (void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
 }
 
 

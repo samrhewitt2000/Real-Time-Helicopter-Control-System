@@ -21,6 +21,7 @@
 #include "circ_buffer.h"
 #include "PID.h"
 #include "displays.h"
+#include "ADC.h"
 
 #define FLOAT_CONVERSION_FACTOR 100
 #define Kp 0.1 * FLOAT_CONVERSION_FACTOR
@@ -30,9 +31,9 @@
 #define BUF_SIZE 10
 //#define change perc
 
-volatile int32_t *ptr_current_alt_percent;
-static int32_t current_alt_percent;
 
+static int32_t current_alt_percent;
+volatile int32_t *ptr_current_alt_percent;
 volatile int32_t current_altitude = 0;
 
 
@@ -85,7 +86,7 @@ void change_altitude(int32_t current_alt_percent, int32_t alt_percent_change)
 
     int32_t offset = 330;
     //set pwm to control action
-    set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
+    set_rotor_PWM (PWM_START_RATE_HZ ,controller (desired_alt_percent, *ptr_current_alt_percent, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY));
 }
 
 
@@ -127,6 +128,7 @@ void alt_control_task(void)
 {
     // Get current altitude value
     int32_t current_altitude = get_alt_val(&g_inBuffer);
+    alt_val_to_percent(initial_ADC_val, current_altitude);
 
     // Implement altitude control logic here
 

@@ -62,6 +62,7 @@ typedef struct {
     void (*YAW_CONTROL_TASK)(void);
     void (*TRANSITION_TASK)(void);
     void (*REF_YAW_TASK)(void);
+    void (*DISPLAY_TASK)(void);
 } task_ID_t;
 
 

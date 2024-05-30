@@ -83,7 +83,7 @@ unsigned char switch_task_ID;
 unsigned char push_buttons_task_ID;
 unsigned char alt_control_task_ID;
 unsigned char yaw_control_task_ID;
-
+unsigned char display_task_ID;
 
 
 
@@ -133,8 +133,7 @@ void initialise_program(void)
     init_ref_yaw();
     initialise_rotor_PWM ();
     initialise_tail_PWM ();
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
+
 
     // System initialization (e.g., clock setup, peripherals)
 
@@ -143,7 +142,14 @@ void initialise_program(void)
 
     //initialise buffer
     initCircBuf (&g_inBuffer, BUF_SIZE);
-    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+    while (!*ptr_buffer_full)
+    {
+
+    }
+
+    //initialize PWM clock
+    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 }
 
 //void get_ADC_task(void)
@@ -190,10 +196,11 @@ void get_sensor_values(void)
 void register_all_pk_tasks(void)
 {
     ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 1);
-    switch_task_ID = pK_register_task(switch_task, 200);
+    switch_task_ID = pK_register_task(switch_task, 2);
     push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
     alt_control_task_ID = pK_register_task(alt_control_task, 2);
     yaw_control_task_ID = pK_register_task(yaw_control_task, 3);
+    display_task_ID = pK_register_task(display_task, 1);
 }
 
 
@@ -217,37 +224,42 @@ int main(void)
         switch(heli_state)
         {
             case YAW_REF:
+                pK_ready_task(display_task_ID);
                 pK_ready_task(ref_yaw_task_ID);
                 //ready reference yaw task to use tail motor to find reference yaw
-                displayYaw(0, 3);
                 break;
             case LANDED:
                 kill_motors();
+                pK_ready_task(display_task_ID);
                 pK_ready_task(switch_task_ID);
-                displayYaw(0, 3);
                 // set rotor and tail motors to zero
                 //pK_ready_task(push_buttons_task_ID);
                 break;
             case TAKEOFF:
+                pK_ready_task(display_task_ID);
                 // helicopter calibrates to reference yaw when take off switch pressed
-
+                pK_ready_task(switch_task_ID);
                 //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
                 set_rotor_PWM(250, 60);
                 break;
             case FLYING:
-                displayYaw(0, 3);
+                pK_ready_task(display_task_ID);
                 pK_ready_task(push_buttons_task_ID);
                 pK_ready_task(switch_task_ID);
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
                 break;
             case LANDING:
-                displayYaw(0, 3);
+                pK_ready_task(display_task_ID);
                 //change_altitude(0, -100);
                 // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly
-                kill_motors();
-                heli_state = LANDED;
+                set_rotor_PWM(250, 30);
+                if (*ptr_current_alt_percent < 1 && heli_state == LANDING)
+                {
+                    kill_motors(); //also sets heli_mode = LANDED
+                }
+
                 break;
         }
         pK_start();
