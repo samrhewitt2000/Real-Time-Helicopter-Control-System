@@ -45,7 +45,7 @@
 // Constants
 //*****************************************************************************
 
-
+#define BUF_SIZE 10
 
 
 // *******************************************************
@@ -142,8 +142,7 @@ void initialise_program(void)
 
 
     //initialise buffer
-    initCircBuf (&g_inBuffer, BUF_SIZE);
-    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+
 }
 
 
@@ -155,7 +154,7 @@ void register_all_pk_tasks(void)
 {
     ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 1);
     switch_task_ID = pK_register_task(switch_task, 50);
-    push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
+    //push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
     alt_control_task_ID = pK_register_task(alt_control_task, 2);
     yaw_control_task_ID = pK_register_task(yaw_control_task, 3);
 }
@@ -177,7 +176,7 @@ int main(void)
     displayNothing();
 
     int32_t current_ADC_val;
-    current_ADC_val = get_alt_val(circBuf_t *buffer);
+    current_ADC_val = get_alt_val(&g_inbuffer);
     int32_t initial_ADC_val = current_ADC_val;
     int32_t alt_percent;
     int32_t alt_percent_change_up = 10;
@@ -197,12 +196,12 @@ int main(void)
                 //displayYaw(0, 3);
                 break;
             case YAW_REF:
-                initial_ADC_val = get_alt_val(circBuf_t *buffer);
+                initial_ADC_val = get_alt_val(&g_inbuffer);
                 heli_state = TAKEOFF;
                 break;
             case TAKEOFF:
                 // helicopter calibrates to reference yaw when take off switch pressed
-                current_ADC_val = get_alt_val(circBuf_t *buffer);
+                current_ADC_val = get_alt_val(&g_inbuffer);
                 alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
                 change_altitude(alt_percent, alt_percent_change_up);
                 //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
@@ -214,13 +213,13 @@ int main(void)
             case FLYING:
                 if (checkButton(UP) == PUSHED)
                 {
-                    current_ADC_val = get_alt_val(circBuf_t *buffer);
+                    current_ADC_val = get_alt_val(&g_inbuffer);
                     alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
                     change_altitude(alt_percent, alt_percent_change_up);
                 }
                 if (checkButton(DOWN) == PUSHED)
                 {
-                    current_ADC_val = get_alt_val(circBuf_t *buffer);
+                    current_ADC_val = get_alt_val(&g_inbuffer);
                     alt_percent = alt_val_to_percent(initial_ADC_val, current_ADC_val);
                     change_altitude(alt_percent, alt_percent_change_down);
                 }

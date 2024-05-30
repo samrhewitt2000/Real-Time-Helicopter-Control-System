@@ -39,11 +39,6 @@
 
 #define SAMPLE_RATE_HZ 100
 
-circBuf_t g_inBuffer;
-  // Counter for the interrupts
-
-
-
 
 //*****************************************************************************
 // The handler for the ADC conversion complete interrupt.
@@ -130,7 +125,10 @@ void initADC (void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+
+    initCircBuf (&g_inBuffer, BUF_SIZE);
+    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
+
 }
 
 
