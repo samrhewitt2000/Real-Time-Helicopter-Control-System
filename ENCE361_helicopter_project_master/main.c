@@ -40,11 +40,11 @@
 #include "kernel.h"
 #include "alt_control.h"
 #include "yaw_control.h"
-
+#include "communications.h"
 //*****************************************************************************
 // Constants
 //*****************************************************************************
-#define BUF_SIZE 10
+
 
 
 
@@ -60,47 +60,58 @@ typedef enum {
 
 
 // *******************************************************
-// Helicopter state enum
-// *******************************************************
-typedef enum {
-    LANDED,
-    TAKEOFF,
-    FLYING,
-    LANDING
-} helicopter_state_t;
-
-
-
-// *******************************************************
 // Global Variables
 // *******************************************************
-int32_t initial_ADC_val = 0;    // initialize first value
-int32_t current_ADC_val = 0;    // initialize first value
+extern int32_t initial_ADC_val = 0;    // initialize first value
+volatile extern int32_t current_ADC_val = 0;    // initialize first value
 uint32_t ui32RotorFreq = PWM_START_RATE_HZ;
 uint32_t ui32RotorDuty = PWM_FIXED_DUTY;
 uint32_t ui32TailFreq = PWM_START_RATE_HZ;
 uint32_t ui32TailDuty = PWM_FIXED_DUTY;
-display_state_t current_state = STATE_PERC; //initialize display state
-helicopter_state_t current_heli_state = FLYING; //initialize display state
+
+helicopter_state_t heli_state = YAW_REF; //INITIAL_REFize heli state
 int32_t current_switch_state;
+uint32_t counter = 0;
+extern unsigned char num_tasks;
+static circBuf_t g_inbuffer;
 
 
+
+//declare task IDs globally
+unsigned char ref_yaw_task_ID;
+unsigned char switch_task_ID;
+unsigned char push_buttons_task_ID;
+unsigned char alt_control_task_ID;
+unsigned char yaw_control_task_ID;
+unsigned char display_task_ID;
+
+
+
+
+// *******************************************************
+// Function prototypes
+// *******************************************************
+void increase_altitude_task(void);
+void decrease_altitude_task(void);
+void find_reference_yaw_task(void);
+void push_buttons_task(void);
+void switch_task(void);
 
 //********************************************************
 // Function to set the freq, duty cycle of M1PWM5 (tail motor)
 // ********************************************************
-void kill_motors(helicopter_state_t *current_heli_state)
-{
-    //set main motor PWM signal to zero
-    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
-    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
-
-    //set tail motor PWM signal to zero
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
-
-    *current_heli_state = LANDED;
-}
+//void kill_motors(helicopter_state_t heli_state)
+//{
+//    //set main motor PWM signal to zero
+//    PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, 0);
+//    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, 0);
+//
+//    //set tail motor PWM signal to zero
+//    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
+//    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+//
+//    heli_state = LANDED;
+//}
 
 
 
@@ -109,29 +120,59 @@ void kill_motors(helicopter_state_t *current_heli_state)
 // ********************************************************
 void initialise_program(void)
 {
+    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
     }
+    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
     initButtons();
-    initClocks ();
+    //initClocks ();
     initADC ();
     initDisplay ();
     initYaw ();
+    init_ref_yaw();
     initialise_rotor_PWM ();
     initialise_tail_PWM ();
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-    initSysTick ();
+
+
     // System initialization (e.g., clock setup, peripherals)
-    SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
-    // Initialize the protoKernel with a maximum of 10 tasks and a tick period
-    pK_init(MAX_TASKS, SysCtlClockGet() / 100); // e.g., 10ms tick period
 
-    // Register tasks with the kernel
-    //pK_register_task(Task1, 0); // Highest priority
-    //pK_register_task(Task2, 1); // Lower priority
+
+
+    //initialise buffer
+    initCircBuf (&g_inBuffer, BUF_SIZE);
+//    while (*ptr_buffer_full == 0)
+//    {
+//
+//    }
+    SysCtlDelay(SysCtlClockGet() / 10);
+    //initialize PWM clock
+    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+}
+
+//void get_ADC_task(void)
+//{
+//    current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
+//}
+
+
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void register_all_pk_tasks(void)
+{
+    ref_yaw_task_ID = pK_register_task(find_reference_yaw_task, 1);
+    switch_task_ID = pK_register_task(switch_task, 2);
+    push_buttons_task_ID = pK_register_task(push_buttons_task, 1);
+    alt_control_task_ID = pK_register_task(alt_control_task, 2);
+    yaw_control_task_ID = pK_register_task(yaw_control_task, 3);
+    display_task_ID = pK_register_task(display_task, 1);
 }
 
 
@@ -140,59 +181,66 @@ int main(void)
 {
     initialise_program();
 
-    initCircBuf (&g_inBuffer, BUF_SIZE);
-    // calculate exactly how long this needs to be
-    SysCtlDelay (SysCtlClockGet() / 6); // delay so that buffer can fill
-    initial_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
 
-    kill_motors(&current_heli_state);
+
     IntMasterEnable();
 
-    int32_t prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
+
+    register_all_pk_tasks();
+    pK_block_all_tasks();
     while (1)
     {
-        // Background task: calculate the (approximate) mean of the values in the circular buffer and display it, together with the sample number.
-        current_ADC_val = get_ADC_val(&g_inBuffer, BUF_SIZE);
-        current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+        //current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
 
-        switch(current_heli_state)
+        switch(heli_state)
         {
+            case YAW_REF:
+                pK_ready_task(display_task_ID);
+                pK_ready_task(ref_yaw_task_ID);
+                //ready reference yaw task to use tail motor to find reference yaw
+                break;
             case LANDED:
+                kill_motors();
+                pK_ready_task(display_task_ID);
+                pK_ready_task(switch_task_ID);
                 // set rotor and tail motors to zero
-                stop_rotor();
-                stop_tail();
-                if (current_switch_state != prev_switch_state && current_switch_state == SWITCH_NORMAL)
-                {
-                    current_heli_state = TAKEOFF;
-                }
+                //pK_ready_task(push_buttons_task_ID);
                 break;
             case TAKEOFF:
+                pK_ready_task(display_task_ID);
                 // helicopter calibrates to reference yaw when take off switch pressed
-
+                pK_ready_task(switch_task_ID);
+                //change_yaw_angle(0 - quad_enc_ticks, *ptr_main_duty_cycle);
+                set_rotor_PWM(250, 60);
+                heli_state = FLYING;
                 break;
             case FLYING:
+                pK_ready_task(display_task_ID);
+                pK_ready_task(push_buttons_task_ID);
+                pK_ready_task(switch_task_ID);
                 // helicopter doesnt spaz when both yaw and altitude pressed consecutively
                 // alt in range 0 - 100 and pwm duty in range 2 - 98
-                if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL)
-                {
-                    current_heli_state = LANDING;
-                }
                 break;
             case LANDING:
-                // When helicopter is landing pressing buttons or switches do nothig
+
+                pK_ready_task(display_task_ID);
+                //change_altitude(0, -100);
+                // When helicopter is landing pressing buttons or switches do nothing
                 // helicopter should return to reference yaw and land smoothly
-                break;
-            default:
+                set_rotor_PWM(250, 30);
+                if (*ptr_current_alt_percent < 1 && heli_state == LANDING)
+                {
+                    kill_motors(); //also sets heli_mode = LANDED
+                }
+
                 break;
         }
+        //UART_transmit_info(0, abs(360 * quad_enc_ticks / 448), abs(((360 * quad_enc_ticks) % 448 * 10) / 448), 0, *ptr_current_alt_percent, *ptr_tail_duty_cycle, *ptr_main_duty_cycle, heli_state);
+        pK_start();
+        pK_block_all_tasks();
 
-        //pK_ready_task(alt_control_task); // Make altitude control task ready
-        //pK_ready_task(yaw_control_task); // Make yaw control task ready
-
-        prev_switch_state = current_switch_state;
-
-        SysCtlDelay (SysCtlClockGet() / 24);  // Update display at ~ 2 Hz
     }
 }
+
 

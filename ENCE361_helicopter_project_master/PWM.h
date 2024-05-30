@@ -14,9 +14,10 @@
 //
 //*****************************************************************************
 
+#include "communications.h"
 #include <stdint.h>
-
 #include "buttons.h"
+
 
 /**********************************************************
  * Constants
@@ -59,6 +60,15 @@
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
 
+
+
+
+
+extern volatile uint32_t *ptr_main_duty_cycle;
+extern volatile uint32_t *ptr_tail_duty_cycle;
+
+
+
 // extern volatile int32_t main_rotor_duty = 0;
 
 // extern volatile int32_t tail_rotor_duty = 0;
@@ -83,8 +93,6 @@ void set_rotor_PWM (uint32_t ui32RotorFreq, uint32_t ui32RotorDuty);
 
 void set_tail_PWM(uint32_t ui32TailFreq, uint32_t ui32TailDuty);
 
-void stop_rotor(void);
-
-void stop_tail(void);
+void kill_motors(void);
 
 #endif /*PWM_H_*/

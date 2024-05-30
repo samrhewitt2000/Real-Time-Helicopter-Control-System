@@ -62,12 +62,22 @@ void UART_send(char *pucBuffer)
 //*****************************************************************************************************
 // transmits all the information required for
 //*****************************************************************************************************
-void UART_transmit_info(int32_t yaw_setpoint, int32_t yaw_actual, int32_t alt_setpoint, int32_t alt_actual, int32_t tail_duty, int32_t main_duty, helicopter_state_t mode)
+void UART_transmit_info(int32_t yaw_setpoint, int32_t yaw_actual_int, int32_t yaw_actual_decimal, int32_t alt_setpoint, int32_t alt_actual, int32_t tail_duty, int32_t main_duty, helicopter_state_t mode)
 {
     //yaw_setpoint = yaw_angle_ticks_to_int(int32_t quad_enc_ticks);
+    yaw_angle_decimal = abs(((360 * quad_enc_ticks) % 448 * 10) / 448);
 
-    sprintf(statusStr,
-            "desired yaw:  %2d\n actual yaw: %2d\n desired alt: %2d\n actual alt: %2d\n tail duty: %2d\n main duty: %2d\n mode: %c\n",
-            yaw_setpoint, yaw_actual, alt_setpoint, alt_actual, tail_duty, main_duty, mode);
-    //UART_Send();
+    int32_t yaw_angle_int = abs(360 * quad_enc_ticks / 448);
+
+    if (quad_enc_ticks < 0) {
+        usprintf(statusStr,
+                    "set yaw:  -%2d yaw: -%d.%d\n set alt: %2d alt: %2d\n tail duty: %2d main duty: %2d\n mode: %c\n", yaw_setpoint, yaw_actual_int, yaw_actual_decimal, alt_setpoint, alt_actual, tail_duty, main_duty, mode);
+    }
+    else {
+        usprintf(statusStr,
+                    "set yaw:  %2d yaw: %d.%d\n set alt: %2d alt: %2d\n tail duty: %2d main duty: %2d\n mode: %c\n", yaw_setpoint, yaw_actual_int, yaw_actual_decimal, alt_setpoint, alt_actual, tail_duty, main_duty, mode);
+    }
+    usprintf(statusStr,
+            "set yaw:  %2d yaw: %D.%D\n set alt: %2d alt: %2d\n tail duty: %2d main duty: %2d\n mode: %c\n", yaw_setpoint, yaw_actual_int, yaw_actual_decimal, alt_setpoint, alt_actual, tail_duty, main_duty, mode);
+    UART_send(statusStr);
 }

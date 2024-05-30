@@ -21,6 +21,9 @@
 #include <stdint.h>
 #include "stdlib.h"
 
+int buffer_full = 0;
+int *ptr_buffer_full = &buffer_full;
+
 // *******************************************************
 // initCircBuf: Initialise the circBuf instance. Reset both indices to
 // the start of the buffer.  Dynamically allocate and clear the the 
@@ -49,6 +52,7 @@ void writeCircBuf (circBuf_t *buffer, uint32_t entry)
     buffer->windex++;
     if (buffer->windex >= buffer->size)
        buffer->windex = 0;
+       buffer_full = 1;
 }
 
 

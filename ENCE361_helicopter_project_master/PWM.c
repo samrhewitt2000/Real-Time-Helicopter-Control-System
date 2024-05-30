@@ -27,9 +27,18 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "PWM.h"
-
+#include "kernel.h"
 #include "buttons.h"
 #include "PWM.h"
+
+
+
+volatile uint32_t *ptr_main_duty_cycle;
+volatile uint32_t *ptr_tail_duty_cycle;
+
+static uint32_t main_duty_cycle;
+static uint32_t tail_duty_cycle;
+
 
 /**********************************************************
  * Generates a single PWM signal on Tiva board pin J4-05 =
@@ -49,42 +58,24 @@
 //    //
 //    // It is not necessary to clear the SysTick interrupt.
 //}
+extern helicopter_state_t heli_state;
 
 
+///***********************************************************
+// * Initialisation functions: clock, SysTick, PWM
+// ***********************************************************
+// * Clock
+// ***********************************************************/
+//void initClocks (void)
+//{
+//    // Set the clock rate to 20 MHz
+//    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+//
+//    // Set the PWM clock rate (using the prescaler)
+//    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+//}
+//
 
-/***********************************************************
- * Initialisation functions: clock, SysTick, PWM
- ***********************************************************
- * Clock
- ***********************************************************/
-void initClocks (void)
-{
-    // Set the clock rate to 20 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
-
-    // Set the PWM clock rate (using the prescaler)
-    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
-}
-
-
-
-/*************************************************************
- * SysTick interrupt
- ************************************************************/
-void initSysTick (void)
-{
-    //
-    // Set up the period for the SysTick timer.  The SysTick
-    // timer period is set as a function of the system clock.
-    SysTickPeriodSet (SysCtlClockGet() / SYSTICK_RATE_HZ);
-    //
-    // Register the interrupt handler
-    SysTickIntRegister (SysTickIntHandler);
-    //
-    // Enable interrupt and device
-    SysTickIntEnable ();
-    SysTickEnable ();
-}
 
 
 
@@ -105,14 +96,15 @@ void initialise_rotor_PWM (void)
     //configure PWM outpus for main motor
     PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
-    // Set the initial PWM parameters
-    set_rotor_PWM (PWM_START_RATE_HZ, PWM_FIXED_DUTY);
 
     //enable PWM generator for main motor
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
 
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
+
+    ptr_main_duty_cycle = &main_duty_cycle;
+
 }
 
 
@@ -142,6 +134,8 @@ void initialise_tail_PWM(void)
 
     // Disable the output initially, can be enabled later
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
+
+    ptr_tail_duty_cycle = &tail_duty_cycle;
 }
 
 // ^fix terminology? rotor/motor?^
@@ -158,7 +152,8 @@ void set_rotor_PWM (uint32_t ui32Freq, uint32_t ui32Duty)
     PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
     PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
         ui32Period * ui32Duty / 100);
-}
+    main_duty_cycle = ui32Duty;
+    }
 
 
 
@@ -173,25 +168,17 @@ void set_tail_PWM(uint32_t ui32Freq, uint32_t ui32Duty)
     // Configure the PWM period and duty cycle
     PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
     PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+    tail_duty_cycle = ui32Duty;
 }
 
 
 
 //********************************************************
-// Function to set the freq, duty cycle of M1PWM5 (tail motor)
-//********************************************************
-void stop_rotor(void)
+// Function to set the freq, duty cycle of both motors to zero
+// ********************************************************
+void kill_motors(void)
 {
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
-}
-
-
-//********************************************************
-// Function to set the freq, duty cycle of M1PWM5 (tail motor)
-//********************************************************
-void stop_tail(void)
-{
-    PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, 0);
-    PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, 0);
+    set_rotor_PWM (0, 0);
+    set_tail_PWM(0, 0);
+    heli_state = LANDED;
 }

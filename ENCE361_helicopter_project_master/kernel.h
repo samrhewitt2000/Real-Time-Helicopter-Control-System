@@ -21,8 +21,62 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include "inc/hw_types.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
 
-#define MAX_TASKS 10
+#define MAX_TASKS 100
+#define TICK_COUNT_RESET_THRESHOLD 100000000
+
+
+
+
+//*****************************************************************************
+//
+//******************************************************************************
+typedef enum {
+    BLOCKED,
+    READY
+} task_state_t;
+
+//*****************************************************************************
+//
+//******************************************************************************
+typedef struct {
+    void (*taskEnter)(void);
+    task_state_t state;
+    uint32_t time;
+    uint32_t interval;
+} task_t;
+
+
+
+
+//*****************************************************************************
+//task IDs struct
+//*****************************************************************************
+typedef struct {
+    void (*SWITCH_TASK)(void);
+    void (*PUSH_BUTTONS_TASK)(void);
+    void (*ALT_CONTROL_TASK)(void);
+    void (*YAW_CONTROL_TASK)(void);
+    void (*TRANSITION_TASK)(void);
+    void (*REF_YAW_TASK)(void);
+    void (*DISPLAY_TASK)(void);
+} task_ID_t;
+
+
+extern task_t tasks[MAX_TASKS];
+extern unsigned char num_tasks;
+extern task_t tasks[MAX_TASKS];
+extern task_ID_t *task_IDs;
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void SysTickHandler(void);
+
+
 
 //*****************************************************************************
 // pK_init: Initialises protoKernel for up to maxTasks tasks
@@ -38,7 +92,7 @@ void pK_init (unsigned char maxTasks, unsigned long tickPeriod);
 // Tasks are in the ready state by default.
 // Returns a unique 8-bit ID.
 //*****************************************************************************
-unsigned char pK_register_task (void (*taskEnter) (void), unsigned char priority);
+unsigned char pK_register_task (void (*taskEnter) (void), uint32_t interval);
 
 //*****************************************************************************
 // pK_start: Starts the round-robin scheduling of the tasks (if any) that have
@@ -69,5 +123,16 @@ void pK_block_task (unsigned char taskId);
 // pK_task_state: Returns the current state of the task.
 //*****************************************************************************
 int pK_task_state (unsigned char taskId);
+
+//*****************************************************************************
+// pK_get_current_task_id: Returns the current task ID.
+//*****************************************************************************
+unsigned char pK_get_current_task_id(void);
+
+//*****************************************************************************
+// pK_block_all_tasks: Switches all tasks to
+// 'blocked' so that they will not be executed.
+//*****************************************************************************
+void pK_block_all_tasks(void);
 
 #endif /*KERNEL_H_*/

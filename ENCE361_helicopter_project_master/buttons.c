@@ -22,7 +22,7 @@
 //*****************************************************************************
 
 #include "buttons.h"
-
+#include "circ_buffer.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -31,6 +31,14 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/debug.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
+#include "kernel.h"
+#include "PWM.h"
+//
+//extern int32_t prev_switch_state;
+//extern int32_t current_switch_state;
+//helicopter_state_t heli_state = INIT;
+
+
 
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
@@ -45,6 +53,8 @@ void initButtons (void)
     GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
     GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
     but_normal[SWITCH] = SWITCH_NORMAL;
+    prev_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+
 
     // UP button (active HIGH)
     SysCtlPeripheralEnable (UP_BUT_PERIPH);
@@ -80,12 +90,6 @@ void initButtons (void)
     GPIOPadConfigSet (RIGHT_BUT_PORT_BASE, RIGHT_BUT_PIN, GPIO_STRENGTH_2MA,
        GPIO_PIN_TYPE_STD_WPU);
     but_normal[RIGHT] = RIGHT_BUT_NORMAL;
-
-    // SWITCH (active HIGH)
-    SysCtlPeripheralEnable (SWITCH_PERIPH);
-    GPIOPinTypeGPIOInput (SWITCH_PORT_BASE, SWITCH_PIN);
-    GPIOPadConfigSet (SWITCH_PORT_BASE, SWITCH_PIN, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
-    but_normal[SWITCH] = SWITCH_NORMAL;
 
     //initialize each button's status
     for (i = 0; i < NUM_BUTS; i++)
@@ -161,4 +165,72 @@ uint8_t checkButton (uint8_t butName)
             return PUSHED;
     }
     return NO_CHANGE;
+}
+
+//
+////*****************************************************************************
+////
+////*****************************************************************************
+//void switch_task(void)
+//{
+//    //int32_t current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+//
+//    if (heli_state == LANDED && checkButton(SWITCH) == RELEASED)//&& current_switch_state != prev_switch_state
+//    {
+//        heli_state = TAKEOFF;
+//    }
+//    if (heli_state == FLYING && checkButton(SWITCH) == PUSHED)//& current_switch_state != prev_switch_state
+//    {
+//        heli_state = LANDING;
+//    }
+//    //prev_switch_state = current_switch_state;
+//}
+//
+
+void switch_task(void)
+{
+    current_switch_state = GPIOPinRead (SWITCH_PORT_BASE, SWITCH_PIN) == SWITCH_PIN;
+    if (current_switch_state != prev_switch_state)
+    {
+        if (current_switch_state == SWITCH_NORMAL && heli_state == LANDED)
+        {
+            heli_state = TAKEOFF;
+        }
+        else if (current_switch_state != prev_switch_state && current_switch_state != SWITCH_NORMAL && heli_state == FLYING)
+        {
+            heli_state = LANDING;
+        }
+    }
+    prev_switch_state = current_switch_state;
+
+}
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void push_buttons_task(void)
+{
+
+    if (checkButton(UP) == PUSHED && heli_state == FLYING)
+    {
+        set_rotor_PWM(250, *ptr_main_duty_cycle + 10);
+        //increase altitude by 10%
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    }
+    if (checkButton(DOWN) == PUSHED && heli_state == FLYING)
+    {
+        set_rotor_PWM(250, *ptr_main_duty_cycle - 10);
+        //decrease altitude by 10%
+        //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), -10);
+    }
+    if (checkButton(LEFT) == PUSHED && heli_state == FLYING)
+    {
+        set_tail_PWM(250, *ptr_tail_duty_cycle + 15);
+    }
+    if (checkButton(RIGHT) == PUSHED && heli_state == FLYING)
+    {
+        set_tail_PWM(250, *ptr_tail_duty_cycle - 5);
+    }
 }

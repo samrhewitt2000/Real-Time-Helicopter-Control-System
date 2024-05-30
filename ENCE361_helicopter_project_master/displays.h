@@ -17,6 +17,11 @@
 // Based on AUTHOR's FILENAME.c code from YEAR (replace bold if applicable otherwise delete)
 //
 //*****************************************************************************
+#include "circ_buffer.h"
+
+
+
+extern circBuf_t g_inbuffer;
 
 
 
@@ -51,8 +56,10 @@ void displayYaw(uint32_t display_col, uint32_t display_row);
 //*****************************************************************************
 void display_rotor_PWM(uint32_t display_col, uint32_t display_row, uint32_t ui32Freq);
 
-void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
 
-void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
+void display_task(void);
+//void display_rotor_duty_cycle(int32_t duty_cycle, uint32_t display_col, uint32_t display_row);
+
+//void display_tail_duty_cycle(int32_t tail_duty_cycle, uint32_t display_col, uint32_t display_row);
 
 #endif /*DISPLAYS_H_*/

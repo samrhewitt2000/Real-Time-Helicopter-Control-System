@@ -26,12 +26,67 @@
 #include "ADC.h"
 #include "buttons.h"
 #include "kernel.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_gpio.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/interrupt.h"
+#include "displays.h"
+
 
 #define FLOAT_CONVERSION_FACTOR 10
 #define Kp 1.0 * FLOAT_CONVERSION_FACTOR
 #define Ki 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kd 1.0 * FLOAT_CONVERSION_FACTOR
 #define Kc 0.8 * FLOAT_CONVERSION_FACTOR
+
+
+
+extern circBuf_t g_inBuffer;
+
+
+void ref_yaw_int_handler(void)
+{
+    //disable interrupts, no preemption
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    //
+    //set reference yaw to zero
+    quad_enc_ticks = 0;
+    pK_block_task(ref_yaw_task_ID);
+    set_rotor_PWM(250, 30);
+    heli_state = LANDING;
+    //test code
+    //GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+}
+
+
+
+void init_ref_yaw (void)
+{
+    // Enable Peripheral
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC))
+    {
+    }
+    // Configure GPIO Pin PC4 as Inputs
+    GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    // Enable Pull-up Resistors for
+    GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+
+    // Configure Interrupt Type (Both Edges) for PC4
+    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_BOTH_EDGES);
+
+    // Register Interrupt Handlers
+    GPIOIntRegister(GPIO_PORTC_BASE, ref_yaw_int_handler);
+
+    // Enable GPIO Interrupts
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_INT_PIN_4);
+
+    // Enable Master Interrupts
+    //IntMasterEnable();
+}
 
 
 
@@ -73,7 +128,7 @@ void change_yaw_angle(int32_t yaw_angle_change, int32_t rotor_PWM)
     int32_t setpoint = (quad_enc_ticks + yaw_angle_to_ticks(yaw_angle_change));
 
     //account for coupling on main rotor
-    int32_t offset = Kc * rotor_PWM;
+    int32_t offset = Kc * *ptr_main_duty_cycle;
 
     //calculate control
     int32_t control_action = controller (setpoint, quad_enc_ticks, Kp, Ki, Kd, offset, FLOAT_CONVERSION_FACTOR, PWM_MAX_DUTY, PWM_MIN_DUTY);
@@ -96,5 +151,26 @@ void yaw_control_task(void)
     change_yaw_angle(30, 50); // Assuming 50 as rotor PWM value
 
     // Indicate task completion
-    pK_block_task(pK_get_current_task_id());
 }
+
+
+
+//*****************************************************************************
+//
+//*****************************************************************************
+void find_reference_yaw_task(void)
+{
+    //pK_block_task(pK_get_current_task_id());
+    //change_altitude(alt_val_to_percent(initial_ADC_val, current_ADC_val), 10);
+    //change_yaw_angle(360, *ptr_main_duty_cycle);
+
+    change_altitude(alt_val_to_percent(initial_ADC_val, get_alt_val(&g_inBuffer)), 10);
+    set_tail_PWM(250, 50);
+    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
+    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
+    return;
+}
+
+
+
+

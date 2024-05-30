@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#
 
 //*****************************************************************************
 // Constants
@@ -59,6 +60,21 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define NUM_BUT_POLLS_RELEASED 5 // originally 4
 #define NUM_BUT_POLLS_PUSHED 1
 
+
+
+// *******************************************************
+// Helicopter state enum
+// *******************************************************
+typedef enum {
+    YAW_REF,
+    LANDED,
+    TAKEOFF,
+    FLYING,
+    LANDING
+} helicopter_state_t;
+
+
+
 // *******************************************************
 // Globals to module
 // *******************************************************
@@ -67,6 +83,12 @@ static bool but_state[NUM_BUTS];    // Corresponds to the electrical state
 static uint8_t but_count[NUM_BUTS];
 static bool but_flag[NUM_BUTS];
 static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
+static int32_t prev_switch_state;
+volatile extern int32_t current_ADC_val;
+//extern int32_t current_switch_state;
+extern helicopter_state_t heli_state;
+int32_t current_switch_state;
+
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
@@ -91,5 +113,15 @@ void updateButtons (void);
 // NO_CHANGE.  The argument butName should be one of constants in the
 // enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
 uint8_t checkButton (uint8_t butName);
+
+
+
+
+void switch_task(void);
+
+
+
+
+void pushbuttons_task(void);
 
 #endif /*BUTTONS_H_*/
